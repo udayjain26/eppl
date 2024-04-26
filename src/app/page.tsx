@@ -3,7 +3,7 @@ import Image from 'next/image'
 export default function LandingPage() {
   return (
     <main>
-      <div>Landing Page</div>
+      <div className="bg-slate-500">Landing Page</div>
     </main>
   )
 }
