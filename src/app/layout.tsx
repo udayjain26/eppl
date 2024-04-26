@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { fontSans } from './fonts/noto_sans'
+import { ClerkProvider } from '@clerk/nextjs'
 
 export const metadata: Metadata = {
   title: 'EPPL',
@@ -14,11 +15,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${fontSans.className} antialiased`}>
-        {children}
-        <SpeedInsights />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${fontSans.className} antialiased`}>
+          {children}
+          <SpeedInsights />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
