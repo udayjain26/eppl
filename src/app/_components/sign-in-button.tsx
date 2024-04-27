@@ -9,7 +9,11 @@ export default function SignInButtonWithLogo() {
       </ClerkLoading>
 
       <ClerkLoaded>
-        <SignInButton mode="modal"></SignInButton>
+        <SignInButton
+          mode="modal"
+          forceRedirectUrl={'/dashboard'}
+          fallbackRedirectUrl={'/'}
+        ></SignInButton>
         <LogIn strokeWidth="1" size={24} />
       </ClerkLoaded>
     </div>
