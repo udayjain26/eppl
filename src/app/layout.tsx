@@ -3,9 +3,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { fontSans } from './fonts/noto_sans'
 import { ClerkProvider } from '@clerk/nextjs'
-import Image from 'next/image'
-import eppl from '../../public/eppl.svg'
-import Link from 'next/link'
+
+import LogoButton from './_components/logo-button'
 export const metadata: Metadata = {
   title: 'EPPL',
   description: 'EPPL Internal Portal',
@@ -39,18 +38,8 @@ export default function RootLayout({
         <body
           className={`${fontSans.className} flex min-h-screen flex-col  antialiased`}
         >
-          <header className="sticky flex h-12 w-full items-center gap-4 bg-slate-600 px-4">
-            <div className="relative flex h-10 w-10 flex-col items-center justify-center overflow-clip rounded-xl hover:bg-slate-400">
-              <Link href={'/'}>
-                <Image
-                  className=""
-                  src={eppl}
-                  alt={''}
-                  style={{ objectFit: 'contain' }}
-                  fill
-                ></Image>
-              </Link>
-            </div>
+          <header className="sticky flex h-12 w-full items-center gap-4 bg-slate-700 px-4">
+            <LogoButton />
             <nav className="flex-row gap-4 ">
               {/* {listItems.map((item, index) => (
                 <a key={index} href="#" className="text-white">
