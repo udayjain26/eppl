@@ -30,12 +30,13 @@ export default function RootLayout({
         <body
           className={`${fontSans.className} flex min-h-screen w-screen flex-col antialiased`}
         >
-          <header className="sticky flex h-12 w-full items-center gap-4 bg-slate-700 px-4 font-sans font-light">
+          <header className="sticky flex h-16 w-full items-center gap-4 bg-slate-700 px-4 font-sans font-light">
             <LogoButton />
-            <nav className="flex w-full flex-row gap-4 text-xl text-white">
+            <nav className="flex w-full flex-row gap-1 text-sm text-white sm:gap-4 sm:text-xl">
               <SignedOut>
                 <SignInPrompt />
               </SignedOut>
+
               {/* <div>Wrap Everything in Sign In here</div> */}
               <div>{/* Breadcrumbs here*/}</div>
               <div>{/* Search here*/}</div>
