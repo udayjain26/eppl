@@ -1,9 +1,7 @@
-import Image from 'next/image'
-
-export default function LandingPage() {
+export default function HomePage() {
   return (
     <main>
-      <div className="bg-slate-500">Landing Page</div>
+      <div className=" h-fit w-fit bg-slate-500">Landing Page</div>
     </main>
   )
 }
