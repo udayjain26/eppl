@@ -1,8 +1,9 @@
+import PageWrapper from '../_components/page-wrapper'
+
 export default function DashboardPage() {
   return (
-    <div>
+    <PageWrapper>
       <h1>Dashboard</h1>
-      <p>This is the dashboard page</p>
-    </div>
+    </PageWrapper>
   )
 }

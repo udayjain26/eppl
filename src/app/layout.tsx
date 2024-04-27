@@ -8,6 +8,9 @@ import LogoButton from './_components/logo-button'
 import SignInButtonWithLogo from './_components/sign-in-button'
 import SignInPrompt from './_components/login-prompt'
 import UserButtonPadded from './_components/user-button'
+import TopNav from './_components/top-nav'
+import SideNav from './_components/side-nav'
+
 export const metadata: Metadata = {
   title: 'EPPL',
   description: 'EPPL Internal Portal',
@@ -24,26 +27,12 @@ export default function RootLayout({
         <body
           className={`${fontSans.className} flex min-h-screen w-screen flex-col antialiased`}
         >
-          <header className="sticky flex h-16 w-full items-center gap-4 bg-slate-700 px-4 font-sans font-light">
+          <header className="fixed flex h-16 w-full items-center gap-4 bg-slate-700 px-4 font-sans font-light">
             <LogoButton />
-            <nav className="flex w-full flex-row gap-1 text-sm text-white sm:gap-4 sm:text-xl">
-              {/* <SignedOut></SignedOut> */}
 
-              {/* <div>Wrap Everything in Sign In here</div> */}
-              <div>{/* Breadcrumbs here*/}</div>
-              <div>{/* Search here*/}</div>
-              <div>{/* More components here*/}</div>
-
-              <SignedIn>
-                <UserButtonPadded />
-              </SignedIn>
-              <SignedOut>
-                <SignInPrompt />
-
-                <SignInButtonWithLogo />
-              </SignedOut>
-            </nav>
+            <TopNav></TopNav>
           </header>
+          <SideNav></SideNav>
 
           {children}
           {/* Footer goes here */}
