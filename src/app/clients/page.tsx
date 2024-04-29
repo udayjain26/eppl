@@ -1,9 +1,9 @@
 import PageWrapper from '../_components/page-wrapper'
 
-export default function DashboardPage() {
+export default function ClientsPage() {
   return (
     <PageWrapper>
-      <h1>Quotations Page</h1>
+      <h1>Clients Page</h1>
     </PageWrapper>
   )
 }

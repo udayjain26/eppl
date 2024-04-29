@@ -27,7 +27,7 @@ export default function RootLayout({
         <body
           className={`${fontSans.className} flex min-h-screen w-screen flex-col antialiased`}
         >
-          <header className="fixed flex h-16 w-full items-center gap-4 bg-slate-700 px-4 font-sans font-light">
+          <header className="fixed z-10 flex h-16 w-full items-center gap-4 bg-slate-700 px-4 font-sans font-light">
             <LogoButton />
 
             <TopNav></TopNav>

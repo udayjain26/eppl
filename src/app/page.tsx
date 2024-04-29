@@ -5,8 +5,7 @@ export default function HomePage() {
   return (
     <main>
       <PageWrapper>
-        <p>Then what happens to this</p>
-        <p>Then what happens to this</p> <p>Then what happens to this</p>{' '}
+        <></>
       </PageWrapper>
     </main>
   )

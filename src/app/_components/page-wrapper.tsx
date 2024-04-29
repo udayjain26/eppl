@@ -12,9 +12,9 @@ export default function PageWrapper({
   return (
     <div
       className={cn(
-        'p-2, fixed left-16 top-16 -m-2 flex h-full w-full max-w-full flex-col overflow-y-scroll rounded-3xl bg-white',
+        'fixed left-16 top-16 z-20 -m-2 flex h-full w-full max-w-full flex-col overflow-y-scroll rounded-3xl bg-white p-2',
         //If user is not logged in, show the home page UI style
-        { 'left-0 ml-0 rounded-none': !isLoggedIn }
+        { 'left-0 ml-0 rounded-none': !isLoggedIn },
       )}
     >
       {children}

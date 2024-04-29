@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
-  '/quotation(.*)',
+  '/quotations(.*)',
+  '/clients(.*)',
 ])
 
 function middleware(request: NextRequest) {
