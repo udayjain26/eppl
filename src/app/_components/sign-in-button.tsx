@@ -3,9 +3,9 @@ import { ClerkLoaded, ClerkLoading, SignInButton } from '@clerk/nextjs'
 
 export default function SignInButtonWithLogo() {
   return (
-    <div className="flex h-10 w-24 flex-row items-center rounded-xl p-1 hover:bg-white/20">
+    <div className="flex h-12 w-24 flex-row items-center  rounded-xl p-1 hover:bg-white/20">
       <ClerkLoading>
-        <div className="h-10 w-24 animate-pulse rounded-xl bg-white/20 "></div>
+        <div className="h-12 w-24 animate-pulse rounded-xl bg-white/20 "></div>
       </ClerkLoading>
 
       <ClerkLoaded>

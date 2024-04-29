@@ -5,7 +5,7 @@ import SignInPrompt from './login-prompt'
 
 export default function TopNav() {
   return (
-    <nav className="flex w-full flex-row gap-1 text-sm text-white sm:gap-4 sm:text-xl">
+    <nav className="flex h-full w-full flex-row place-items-center gap-1 pb-2 text-sm text-white sm:gap-4 sm:text-xl">
       {/* <SignedOut></SignedOut> */}
 
       {/* <div>Wrap Everything in Sign In here</div> */}
