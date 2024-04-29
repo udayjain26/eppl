@@ -30,6 +30,7 @@ export default function NavLinks() {
           <Link
             key={link.name}
             href={link.href}
+            //Classnames are used to style the links based on the current tab the user is on.
             className={cn(
               'flex h-10 w-10 flex-col items-center justify-center rounded-xl bg-slate-700 hover:bg-sky-100 hover:bg-white/20',
               {
