@@ -31,14 +31,14 @@ export default function NavLinks() {
             key={link.name}
             href={link.href}
             className={cn(
-              'flex flex-col items-center justify-center gap-2 rounded-md bg-slate-700 p-2 hover:bg-sky-100 hover:bg-white/20 ',
+              'flex h-10 w-10 flex-col items-center justify-center rounded-xl bg-slate-700 hover:bg-sky-100 hover:bg-white/20',
               {
                 'bg-slate-500': pathname === link.href,
               },
             )}
           >
             {' '}
-            <LinkIcon strokeWidth="1" size={24} />
+            <LinkIcon strokeWidth="1" size={28} />
             {/* <p className="">{link.name}</p> */}
           </Link>
         )
