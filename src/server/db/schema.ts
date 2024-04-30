@@ -1,6 +1,3 @@
-import { create } from 'domain'
-import { sql } from 'drizzle-orm'
-import { char } from 'drizzle-orm/mysql-core'
 import {
   uuid,
   pgTableCreator,
@@ -55,7 +52,7 @@ export const stateEnum = pgEnum('states', [
 
 export const clientCreationStatus = pgEnum('client_creation_status', [
   'New',
-  'Existing',
+  'Old',
 ])
 
 export const clients = createTable(
@@ -63,10 +60,13 @@ export const clients = createTable(
   {
     uuid: uuid('uuid').defaultRandom().primaryKey(),
     clientName: varchar('client_name', { length: 256 }).notNull(),
-    clientNickName: varchar('client_nick_name', { length: 256 }).notNull(),
+    clientNickName: varchar('client_nick_name', { length: 256 }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at'),
     gstin: varchar('gstin', { length: 15 }),
+    clientCreationStatus: clientCreationStatus(
+      'client_creation_status',
+    ).notNull(),
   },
   (table) => {
     return {
