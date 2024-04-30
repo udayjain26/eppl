@@ -8,9 +8,9 @@ const isProtectedRoute = createRouteMatcher([
   '/clients(.*)',
 ])
 
-function middleware(request: NextRequest) {
-  return NextResponse.redirect(new URL('/home', request.url))
-}
+// function middleware(request: NextRequest) {
+//   return NextResponse.redirect(new URL('/home', request.url))
+// }
 
 export default clerkMiddleware((auth, request) => {
   const pathname = request.nextUrl.pathname

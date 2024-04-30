@@ -1,26 +1,72 @@
 import { create } from 'domain'
 import { sql } from 'drizzle-orm'
+import { char } from 'drizzle-orm/mysql-core'
 import {
-  pgTable,
   uuid,
-  text,
   pgTableCreator,
   varchar,
   timestamp,
   index,
-  uniqueIndex,
+  pgEnum,
 } from 'drizzle-orm/pg-core'
 
 export const createTable = pgTableCreator((name) => `eppl_${name}`)
+
+// ENUMS used in the application
+export const stateEnum = pgEnum('states', [
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  'Andaman and Nicobar Islands',
+  'Chandigarh',
+  'Dadra and Nagar Haveli',
+  'Daman and Diu',
+  'Jammu and Kashmir',
+  'Lakshadweep',
+  'Delhi',
+  'Puducherry',
+  'Ladakh',
+])
+
+export const clientCreationStatus = pgEnum('client_creation_status', [
+  'New',
+  'Existing',
+])
 
 export const clients = createTable(
   'clients',
   {
     uuid: uuid('uuid').defaultRandom().primaryKey(),
-    clientName: varchar('company_name', { length: 256 }).notNull(),
-    createdAt: timestamp('created_at')
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    clientName: varchar('client_name', { length: 256 }).notNull(),
+    clientNickName: varchar('client_nick_name', { length: 256 }).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at'),
+    gstin: varchar('gstin', { length: 15 }),
   },
   (table) => {
     return {

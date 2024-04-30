@@ -7,6 +7,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import LogoButton from './_components/logo-button'
 import TopNav from './_components/top-nav'
 import SideNav from './_components/side-nav'
+import { fontSerif } from './fonts/noto_serif'
 
 export const metadata: Metadata = {
   title: 'EPPL',
@@ -22,7 +23,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${fontSans.className} flex min-h-screen w-screen flex-col antialiased`}
+          className={`${fontSerif.className} flex min-h-screen w-screen flex-col antialiased`}
         >
           <header className="fixed z-10 flex h-16 w-full items-center gap-4 bg-slate-700 px-2 font-light">
             <LogoButton />

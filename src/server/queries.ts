@@ -10,8 +10,7 @@ export async function createClient() {
   if (!user.userId) {
     throw new Error('Unauthenitcated User')
   }
-  await db.insert(clients).values({
-    clientName: 'New Client',
-  })
-  console.log('Client Created')
+  //   await db.insert(clients).values({
+  //     clientName: 'New Client',
+  //   })
 }
