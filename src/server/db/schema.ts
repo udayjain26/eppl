@@ -13,12 +13,12 @@ import {
 
 export const createTable = pgTableCreator((name) => `eppl_${name}`)
 
-export const usersTable = createTable(
+export const clients = createTable(
   'clients',
   {
-    uuid: uuid('uuid').primaryKey(),
+    uuid: uuid('uuid').defaultRandom().primaryKey(),
     clientName: varchar('company_name', { length: 256 }).notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true })
+    createdAt: timestamp('created_at')
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },

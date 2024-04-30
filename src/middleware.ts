@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from './server/queries'
 
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
