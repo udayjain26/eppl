@@ -16,7 +16,7 @@ import CreateClientForm from './_components/create-client-form'
 export default function ClientsDashboard() {
   return (
     <PageWrapper>
-      <div className="flex flex-row justify-evenly">
+      <div className="flex flex-row justify-evenly ">
         <div className="flex grow"></div>
         <div className="flex">
           <Dialog>
@@ -26,7 +26,7 @@ export default function ClientsDashboard() {
               </span>
               Create Client
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="flex h-[95%] flex-col overflow-y-scroll">
               <DialogHeader>
                 <DialogTitle>Client Creation Form</DialogTitle>
                 <DialogDescription>
