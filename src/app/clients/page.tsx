@@ -1,30 +1,43 @@
 import Link from 'next/link'
 import PageWrapper from '../_components/page-wrapper'
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import CreateClientForm from './_components/create-client-form'
 
 export default function ClientsDashboard() {
   return (
     <PageWrapper>
-      <div>Client Dashboard</div>
-      <Sheet>
-        <SheetTrigger>Open</SheetTrigger>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Are you absolutely sure?</SheetTitle>
-            <SheetDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
+      <div className="flex flex-row justify-evenly">
+        <div className="flex grow"></div>
+        <div className="flex">
+          <Dialog>
+            <DialogTrigger className={buttonVariants()}>
+              <span className="pr-1">
+                <Plus strokeWidth="1" size={28}></Plus>
+              </span>
+              Create Client
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Client Creation Form</DialogTitle>
+                <DialogDescription>
+                  Please fill out the form below to add a client to the system.
+                </DialogDescription>
+              </DialogHeader>
+              <CreateClientForm />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
     </PageWrapper>
   )
 }
