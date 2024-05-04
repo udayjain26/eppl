@@ -1,7 +1,7 @@
 import { pgEnum } from 'drizzle-orm/pg-core'
 
 // ENUMS used in the application
-export stateEnum = pgEnum('states', [
+export const stateEnum = pgEnum('states', [
   'Andhra Pradesh',
   'Arunachal Pradesh',
   'Assam',
