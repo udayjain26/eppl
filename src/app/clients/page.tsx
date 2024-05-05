@@ -26,7 +26,7 @@ export default function ClientsDashboard() {
               </span>
               Create Client
             </DialogTrigger>
-            <DialogContent className="flex h-fit flex-col overflow-y-scroll overscroll-y-auto">
+            <DialogContent className="flex h-full flex-col overflow-y-scroll overscroll-auto">
               <DialogHeader>
                 <DialogTitle>Client Creation Form</DialogTitle>
                 <DialogDescription>
