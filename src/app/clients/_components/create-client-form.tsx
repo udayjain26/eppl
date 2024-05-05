@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import { FormState } from 'react-hook-form'
 
 export default function CreateClientForm() {
   return (
@@ -20,14 +21,6 @@ export default function CreateClientForm() {
           name="clientFullName"
           placeholder="Excel Printers Private Limited"
         />
-        {/* <div id="customer-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.customerId &&
-            state.errors.customerId.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-        </div> */}
 
         <Label>Client Nick Name(Required)</Label>
         <Input required type="text" name="clientNickName" placeholder="Excel" />
