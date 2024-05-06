@@ -11,7 +11,8 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import CreateClientForm from './_components/create-client-form'
+// import CreateClientForm from './_components/create-client-form'
+import { CreateClientForm } from './_components/create-client-form-zod'
 
 export default function ClientsDashboard() {
   return (
@@ -33,7 +34,8 @@ export default function ClientsDashboard() {
                   Please fill out the form below to add a client to the system.
                 </DialogDescription>
               </DialogHeader>
-              <CreateClientForm />
+              {/* <CreateClientForm /> */}
+              <CreateClientForm></CreateClientForm>
             </DialogContent>
           </Dialog>
         </div>
