@@ -8,6 +8,7 @@ import LogoButton from './_components/logo-button'
 import TopNav from './_components/top-nav'
 import SideNav from './_components/side-nav'
 import { fontSerif } from './fonts/noto_serif'
+import { Toaster } from '@/components/ui/sonner'
 
 export const metadata: Metadata = {
   title: 'EPPL',
@@ -34,6 +35,8 @@ export default function RootLayout({
 
           {children}
           {/* Footer goes here */}
+          <Toaster />
+
           <SpeedInsights />
         </body>
       </html>

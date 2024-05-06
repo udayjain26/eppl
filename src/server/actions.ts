@@ -53,8 +53,6 @@ export async function createClient(
   previousState: FormState,
   formData: FormData,
 ) {
-  console.log('RAW FORM DATA', formData)
-
   //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
   const user = auth()
   if (!user.userId) {
@@ -71,16 +69,10 @@ export async function createClient(
     transformedData[key] = emptyStringToNullTransformer(value)
   })
 
-  console.log('This is the final Data', transformedData)
-
   //Validating the form fields
   const validatedFields = CreateClient.safeParse(transformedData)
 
   if (!validatedFields.success) {
-    console.log(
-      'validatedFields.error.flatten().fieldErrors',
-      validatedFields.error.flatten().fieldErrors,
-    )
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Failed to Create Client',
@@ -90,7 +82,7 @@ export async function createClient(
       await db.insert(clients).values(validatedFields.data)
     } catch (error) {
       return {
-        message: 'Database Error: Failed to Create Invoice.',
+        message: 'Database Error: Failed to Create Client.',
       } as FormState
     }
   }
