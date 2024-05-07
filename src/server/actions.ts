@@ -48,12 +48,15 @@ export type FormState = {
     clientWebsite?: string[]
   }
   message?: string | null
+  actionSuccess?: boolean | null
 }
 
 export async function createClient(
   previousState: FormState,
   formData: FormData,
 ) {
+  console.log(formData)
+
   //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
   const user = auth()
   if (!user.userId) {
@@ -74,6 +77,7 @@ export async function createClient(
   const validatedFields = CreateClient.safeParse(transformedData)
 
   if (!validatedFields.success) {
+    console.log(validatedFields)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message:
@@ -88,5 +92,5 @@ export async function createClient(
       } as FormState
     }
   }
-  return { message: 'Client Created' } as FormState
+  return { message: 'Client Created', actionSuccess: true } as FormState
 }

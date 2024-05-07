@@ -11,10 +11,17 @@ import {
 import { CreateClientForm } from './create-client-form'
 import { buttonVariants } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+import { useState } from 'react'
 
 export function CreateClientDialog() {
+  const [open, setOpen] = useState(false)
+
+  const closeDialog = () => {
+    setOpen(false)
+  }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className={buttonVariants()}>
         <span className="pr-1">
           <Plus strokeWidth="1" size={28}></Plus>
@@ -33,7 +40,7 @@ export function CreateClientDialog() {
             Please fill out the form below to add a client to the system.
           </DialogDescription>
         </DialogHeader>
-        <CreateClientForm></CreateClientForm>
+        <CreateClientForm closeDialog={closeDialog}></CreateClientForm>
       </DialogContent>
     </Dialog>
   )
