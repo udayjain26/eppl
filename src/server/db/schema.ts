@@ -68,6 +68,7 @@ export const clients = createTable(
     clientAddressCity: varchar('client_address_city', { length: 256 }),
     clientAddressState: stateEnum('client_address_state'),
     clientAddressPincode: varchar('client_address_pincode', { length: 6 }),
+    clientWebsite: varchar('client_website', { length: 256 }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },

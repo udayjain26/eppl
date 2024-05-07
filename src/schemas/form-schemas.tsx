@@ -26,6 +26,7 @@ export const ClientFormSchema = z.object({
     })
     .length(6)
     .nullable(),
+  clientWebsite: z.string().trim().url().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
 })
