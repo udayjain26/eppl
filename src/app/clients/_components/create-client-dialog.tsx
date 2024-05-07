@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogContent,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { CreateClientForm } from './create-client-form'
 import { buttonVariants } from '@/components/ui/button'
@@ -32,9 +33,9 @@ export function CreateClientDialog() {
         onInteractOutside={(event) => {
           event.preventDefault()
         }}
-        className="flex max-h-[90%] min-h-fit flex-col overflow-y-scroll overscroll-auto"
+        className="flex h-[90%] w-full flex-col"
       >
-        <DialogHeader>
+        <DialogHeader className="max-h-[10%]">
           <DialogTitle>Client Creation Form</DialogTitle>
           <DialogDescription>
             Please fill out the form below to add a client to the system.
