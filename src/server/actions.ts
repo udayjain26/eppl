@@ -6,7 +6,6 @@ import { clients } from './db/schema'
 
 import { ClientFormSchema } from '@/schemas/client-schema'
 import { revalidatePath } from 'next/cache'
-import { date } from 'drizzle-orm/mysql-core'
 
 //Form Schema for creating a client in the database
 //Nullable represents optional form fields from the user's pov
@@ -50,6 +49,7 @@ export type FormState = {
     clientAddressState?: string[]
     clientAddressPincode?: string[]
     clientWebsite?: string[]
+    clientIndustry?: string[]
   }
   message?: string | null
   actionSuccess?: boolean | null

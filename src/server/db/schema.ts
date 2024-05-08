@@ -51,6 +51,32 @@ export const stateEnum = pgEnum('states', [
   'Ladakh',
 ])
 
+export const industryEnum = pgEnum('industries', [
+  'Agriculture',
+  'Automotive',
+  'Banking',
+  'Biotechnology',
+  'Construction',
+  'Education ',
+  'Energy',
+  'Entertainment',
+  'Finance',
+  'Food and Beverage',
+  'Healthcare',
+  'Hospitality',
+  'Information Technology',
+  'Insurance',
+  'Manufacturing',
+  'Media',
+  'Pharmaceutical',
+  'Publishing',
+  'Real Estate',
+  'Retail',
+  'Telecommunications',
+  'Transportation',
+  'Utilities',
+])
+
 export const createTable = pgTableCreator((name) => `eppl_${name}`)
 
 export const clients = createTable(
@@ -69,6 +95,7 @@ export const clients = createTable(
     clientAddressState: stateEnum('client_address_state'),
     clientAddressPincode: varchar('client_address_pincode', { length: 6 }),
     clientWebsite: varchar('client_website', { length: 256 }),
+    clientIndustry: industryEnum('industry'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
     createdBy: varchar('created_by', { length: 256 }),

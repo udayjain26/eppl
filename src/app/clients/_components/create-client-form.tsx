@@ -34,16 +34,24 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { stateEnum } from '@/server/db/schema'
+import { industryEnum, stateEnum } from '@/server/db/schema'
 import { toast } from 'sonner'
 
 import { useEffect } from 'react'
 import { Card } from '@/components/ui/card'
+import { DropdownMenuSeparator, Separator } from '@radix-ui/react-dropdown-menu'
 
 const states = Object.entries(stateEnum.enumValues).map(([key, value]) => ({
   label: value,
   value: value,
 }))
+
+const industries = Object.entries(industryEnum.enumValues).map(
+  ([key, value]) => ({
+    label: value,
+    value: value,
+  }),
+)
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -167,6 +175,9 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
               </FormItem>
             )}
           />
+
+          <Separator />
+          <h2 className="text-lg">Optional Fields</h2>
 
           <FormField
             control={form.control}
@@ -395,6 +406,86 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                       </p>
                     ))}
                 </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="clientIndustry"
+            render={({ field }) => (
+              <FormItem className="flex flex-col space-y-1">
+                <FormLabel>Industry</FormLabel>
+                <Popover modal={true}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          ' justify-between',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                        name="clientIndustry"
+                      >
+                        <input
+                          type="hidden"
+                          name="clientIndustry"
+                          value={
+                            field.value
+                              ? industries.find(
+                                  (industry) => industry.value === field.value,
+                                )?.label
+                              : ''
+                          }
+                        />
+                        {field.value
+                          ? industries.find(
+                              (industry) => industry.value === field.value,
+                            )?.label
+                          : 'Select industry'}
+                        <ChevronsUpDown strokeWidth="1" size={24} />{' '}
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search state..."
+                        className="h-10"
+                        name="clientIndustry"
+                      />
+                      <CommandEmpty>No state found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandList>
+                          {industries &&
+                            industries.map((industry) => (
+                              <CommandItem
+                                value={industry.label}
+                                key={industry.value}
+                                onSelect={() => {
+                                  form.setValue(
+                                    'clientIndustry',
+                                    industry.value,
+                                  )
+                                }}
+                              >
+                                {' '}
+                                {industry.label}
+                                <CheckIcon
+                                  className={cn(
+                                    'ml-auto h-4 w-4',
+                                    industry.value === field.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                        </CommandList>
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </FormItem>
             )}
           />

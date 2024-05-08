@@ -1,4 +1,4 @@
-import { stateEnum } from '@/server/db/schema'
+import { industryEnum, stateEnum } from '@/server/db/schema'
 import { z } from 'zod'
 
 export const ClientFormSchema = z.object({
@@ -27,6 +27,7 @@ export const ClientFormSchema = z.object({
     .length(6)
     .nullable(),
   clientWebsite: z.string().trim().url().nullable(),
+  clientIndustry: z.enum(industryEnum.enumValues).nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().trim().nullable(),

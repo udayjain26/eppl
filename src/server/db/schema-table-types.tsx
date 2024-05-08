@@ -10,6 +10,7 @@ export type Client = {
   clientAddressState: string | null
   clientAddressPincode: string | null
   clientWebsite: string | null
+  clientIndustry: string
   createdAt: Date
   updatedAt: Date
   createdBy: string | null

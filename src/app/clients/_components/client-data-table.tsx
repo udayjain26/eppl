@@ -24,7 +24,6 @@ import {
 
 import { Input } from '@/components/ui/input'
 import { CreateClientDialog } from './create-client-dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -79,7 +78,7 @@ export function DataTable<TData, TValue>({
 
       <div className="relative h-[70%] rounded-lg border pl-4 pr-4 pt-4">
         <Table>
-          <TableHeader className="sticky top-0 bg-white/80 backdrop-blur-sm">
+          <TableHeader className="sticky top-0 bg-white/70 backdrop-blur-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

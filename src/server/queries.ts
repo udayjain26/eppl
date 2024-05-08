@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from './db'
-import { Client } from './db/types'
+import { Client } from './db/schema-table-types'
 
 export async function getClientsData(): Promise<Client[]> {
   try {

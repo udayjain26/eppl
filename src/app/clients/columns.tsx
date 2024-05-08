@@ -1,13 +1,12 @@
 'use client'
 
-import { Client } from '@/server/db/types'
+import { Client } from '@/server/db/schema-table-types'
 import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
@@ -68,6 +67,10 @@ export const columns: ColumnDef<Client>[] = [
     header: () => <div className="text-md">Pincode</div>,
   },
   {
+    accessorKey: 'clientIndustry',
+    header: () => <div className="text-md">Industry</div>,
+  },
+  {
     accessorKey: 'createdAt',
     header: () => <div className="text-md">Created At</div>,
     cell: ({ row }) => {
@@ -87,6 +90,7 @@ export const columns: ColumnDef<Client>[] = [
       return <div className="">{date}</div>
     },
   },
+
   {
     id: 'actions',
     cell: ({ row }) => {
