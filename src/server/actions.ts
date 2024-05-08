@@ -6,6 +6,7 @@ import { clients } from './db/schema'
 
 import { ClientFormSchema } from '@/schemas/client-schema'
 import { revalidatePath } from 'next/cache'
+import { date } from 'drizzle-orm/mysql-core'
 
 //Form Schema for creating a client in the database
 //Nullable represents optional form fields from the user's pov
@@ -15,6 +16,8 @@ const CreateClient = ClientFormSchema.omit({
   uuid: true,
   createdAt: true,
   updatedAt: true,
+  createdBy: true,
+  updatedBy: true,
 })
 
 function emptyStringToNullTransformer(data: any) {
@@ -86,7 +89,13 @@ export async function createClient(
     } as FormState
   } else {
     try {
-      await db.insert(clients).values(validatedFields.data)
+      // Add createdBy and updatedBy fields to the validated data
+      const dataWithUserIds = {
+        ...validatedFields.data,
+        createdBy: user.userId,
+        updatedBy: user.userId,
+      }
+      await db.insert(clients).values(dataWithUserIds)
     } catch (error) {
       return {
         message: 'Database Error: Failed to Create Client.',

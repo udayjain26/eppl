@@ -12,4 +12,6 @@ export type Client = {
   clientWebsite: string | null
   createdAt: Date
   updatedAt: Date
+  createdBy: string | null
+  updatedBy: string | null
 }

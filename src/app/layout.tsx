@@ -24,7 +24,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${fontSerif.className} flex min-h-screen w-screen flex-col antialiased`}
+          className={`${fontSans.className} flex min-h-screen w-screen flex-col antialiased`}
         >
           <header className="fixed z-10 flex h-16 w-full items-center gap-4 bg-slate-700 px-2 font-light">
             <LogoButton />

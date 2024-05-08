@@ -2,7 +2,6 @@
 
 import { Client } from '@/server/db/types'
 import { ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,15 +11,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react'
 
 export const columns: ColumnDef<Client>[] = [
   {
     accessorKey: 'clientFullName',
-    header: () => <div className="text-md">Full Name</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Full Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
   },
   {
     accessorKey: 'clientNickName',
-    header: () => <div className="text-md">Nick Name</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Nick Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
   },
 
   {

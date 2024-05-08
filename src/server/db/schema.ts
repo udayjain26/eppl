@@ -71,6 +71,8 @@ export const clients = createTable(
     clientWebsite: varchar('client_website', { length: 256 }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    createdBy: varchar('created_by', { length: 256 }),
+    updatedBy: varchar('updated_by', { length: 256 }),
   },
   (table) => {
     return {
