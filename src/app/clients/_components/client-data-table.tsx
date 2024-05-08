@@ -23,6 +23,8 @@ import {
 } from '@/components/ui/table'
 
 import { Input } from '@/components/ui/input'
+import { CreateClientDialog } from './create-client-dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -53,25 +55,31 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Search Clients by Nickname..."
-          value={
-            (table.getColumn('clientNickName')?.getFilterValue() as string) ??
-            ''
-          }
-          onChange={(event) =>
-            table
-              .getColumn('clientNickName')
-              ?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+    <div className="h-full w-full ">
+      <div className="flex flex-row justify-between  py-2">
+        <div className="flex grow items-center">
+          <Input
+            placeholder="Search Clients by Nickname..."
+            value={
+              (table.getColumn('clientNickName')?.getFilterValue() as string) ??
+              ''
+            }
+            onChange={(event) =>
+              table
+                .getColumn('clientNickName')
+                ?.setFilterValue(event.target.value)
+            }
+            className=""
+          />
+        </div>
+        <div className="flex w-8/12"></div>
+
+        <CreateClientDialog></CreateClientDialog>
       </div>
-      <div className="rounded-lg border pl-4 pr-4 pt-4">
+
+      <div className="relative h-[70%] rounded-lg border pl-4 pr-4 pt-4">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 bg-white/80 backdrop-blur-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -89,7 +97,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className=" ">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

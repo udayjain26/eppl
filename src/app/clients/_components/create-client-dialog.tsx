@@ -27,7 +27,7 @@ export function CreateClientDialog() {
         <span className="pr-1">
           <Plus strokeWidth="1" size={28}></Plus>
         </span>
-        Create Client
+        <div className="hidden sm:block">Create Client</div>
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(event) => {
