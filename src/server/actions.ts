@@ -4,7 +4,8 @@ import { auth } from '@clerk/nextjs/server'
 import { db } from './db'
 import { clients } from './db/schema'
 
-import { ClientFormSchema } from '@/schemas/form-schemas'
+import { ClientFormSchema } from '@/schemas/client-schema'
+import { revalidatePath } from 'next/cache'
 
 //Form Schema for creating a client in the database
 //Nullable represents optional form fields from the user's pov
@@ -92,5 +93,7 @@ export async function createClient(
       } as FormState
     }
   }
+  revalidatePath('/clients')
+
   return { message: 'Client Created', actionSuccess: true } as FormState
 }

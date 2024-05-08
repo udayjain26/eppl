@@ -16,7 +16,7 @@ import {
 import { FormState, createClient } from '@/server/actions'
 import { useFormState, useFormStatus } from 'react-dom'
 
-import { ClientFormSchema } from '@/schemas/form-schemas'
+import { ClientFormSchema } from '@/schemas/client-schema'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -37,16 +37,8 @@ import {
 import { stateEnum } from '@/server/db/schema'
 import { toast } from 'sonner'
 
-import { DialogClose } from '@radix-ui/react-dialog'
 import { useEffect } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 
 const states = Object.entries(stateEnum.enumValues).map(([key, value]) => ({
   label: value,
