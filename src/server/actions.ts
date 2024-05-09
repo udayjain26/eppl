@@ -104,5 +104,5 @@ export async function createClient(
   }
   revalidatePath('/clients')
 
-  return { message: 'Client Created', actionSuccess: true } as FormState
+  return { actionSuccess: true } as FormState
 }

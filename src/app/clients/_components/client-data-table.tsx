@@ -24,6 +24,8 @@ import {
 
 import { Input } from '@/components/ui/input'
 import { CreateClientDialog } from './create-client-dialog'
+import { cn } from '@/lib/utils'
+import { ArrowBigDown, ArrowRight, Icon } from 'lucide-react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -53,6 +55,8 @@ export function DataTable<TData, TValue>({
     },
   })
 
+  console.log()
+
   return (
     <div className="h-full w-full ">
       <div className="flex flex-row justify-between  py-2">
@@ -76,14 +80,20 @@ export function DataTable<TData, TValue>({
         <CreateClientDialog></CreateClientDialog>
       </div>
 
-      <div className="relative h-[70%] rounded-lg border pl-4 pr-4 pt-4">
-        <Table>
+      <div className="relative h-full rounded-lg border  pl-4 pr-4 pt-4">
+        <Table className="">
           <TableHeader className="sticky top-0 bg-white/70 backdrop-blur-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  console.log(header.id)
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      // className={cn('', {
+                      //   '': sorting.at(0)?.id == header.id,
+                      // })}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -96,7 +106,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className=" ">
+          <TableBody className="">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

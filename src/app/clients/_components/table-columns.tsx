@@ -1,7 +1,7 @@
 'use client'
 
 import { Client } from '@/server/db/schema-table-types'
-import { ColumnDef } from '@tanstack/react-table'
+import { Column, ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,69 +10,78 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react'
+import {
+  ArrowDownNarrowWide,
+  ArrowUpDown,
+  ArrowUpNarrowWide,
+  Icon,
+  MoreHorizontal,
+} from 'lucide-react'
+
+function columnHeader(column: Column<Client, unknown>, title: string) {
+  const icon =
+    column.getIsSorted() === 'asc' ? (
+      <ArrowUpNarrowWide className="ml-2 h-4 w-4" />
+    ) : column.getIsSorted() === 'desc' ? (
+      <ArrowDownNarrowWide className="ml-2 h-4 w-4" />
+    ) : (
+      <Icon iconNode={[]}></Icon>
+    )
+
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      className="w-full p-0"
+    >
+      {title}
+      {icon}
+    </Button>
+  )
+}
 
 export const columns: ColumnDef<Client>[] = [
   {
     accessorKey: 'clientFullName',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Full Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: ({ column }) => columnHeader(column, 'Full Name'),
   },
   {
     accessorKey: 'clientNickName',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Nick Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: ({ column }) => columnHeader(column, 'Nick Name'),
   },
 
   {
     accessorKey: 'gstin',
-    header: () => <div className="text-md">GSTIN</div>,
+    header: ({ column }) => columnHeader(column, 'GSTIN'),
   },
   {
     accessorKey: 'clientAddressLine1',
-    header: () => <div className="text-md">Address 1</div>,
+    header: ({ column }) => columnHeader(column, 'Address 1'),
   },
   {
     accessorKey: 'clientAddressLine2',
-    header: () => <div className="text-md">Address 2</div>,
+    header: ({ column }) => columnHeader(column, 'Address 2'),
   },
   {
     accessorKey: 'clientAddressCity',
-    header: () => <div className="text-md">City</div>,
+    header: ({ column }) => columnHeader(column, 'City'),
   },
   {
     accessorKey: 'clientAddressState',
-    header: () => <div className="text-md">State</div>,
+    header: ({ column }) => columnHeader(column, 'State'),
   },
   {
     accessorKey: 'clientAddressPincode',
-    header: () => <div className="text-md">Pincode</div>,
+    header: ({ column }) => columnHeader(column, 'Pincode'),
   },
   {
     accessorKey: 'clientIndustry',
-    header: () => <div className="text-md">Industry</div>,
+    header: ({ column }) => columnHeader(column, 'Industry'),
   },
   {
     accessorKey: 'createdAt',
-    header: () => <div className="text-md">Created At</div>,
+    header: ({ column }) => columnHeader(column, 'Created At'),
+
     cell: ({ row }) => {
       const dateOptions = {
         day: '2-digit',
@@ -85,7 +94,6 @@ export const columns: ColumnDef<Client>[] = [
         'en-IN',
         dateOptions,
       )
-      console.log(date)
 
       return <div className="">{date}</div>
     },
@@ -110,29 +118,25 @@ export const columns: ColumnDef<Client>[] = [
                 const clientDetails =
                   client.clientFullName +
                   '\n' +
-                  (client.gstin != null ? client.gstin! : '') +
-                  '\n' +
+                  (client.gstin != null ? client.gstin! + '\n' : '') +
                   (client.clientAddressLine1 != null
-                    ? client.clientAddressLine1!
+                    ? client.clientAddressLine1! + '\n'
                     : '') +
-                  '\n' +
                   (client.clientAddressLine2 != null
-                    ? client.clientAddressLine2!
+                    ? client.clientAddressLine2! + '\n'
                     : '') +
-                  '\n' +
                   (client.clientAddressCity != null
-                    ? client.clientAddressCity!
+                    ? client.clientAddressCity! + '\n'
                     : '') +
-                  '\n' +
                   (client.clientAddressState != null
-                    ? client.clientAddressState!
+                    ? client.clientAddressState! + '\n'
                     : '') +
-                  '\n' +
                   (client.clientAddressPincode != null
-                    ? client.clientAddressPincode!
+                    ? client.clientAddressPincode! + '\n'
                     : '') +
-                  '\n' +
-                  (client.clientWebsite != null ? client.clientWebsite! : '')
+                  (client.clientWebsite != null
+                    ? client.clientWebsite! + '\n'
+                    : '')
                 navigator.clipboard.writeText(clientDetails)
               }}
             >
