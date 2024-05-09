@@ -22,9 +22,9 @@ import Link from 'next/link'
 function columnHeader(column: Column<Client, unknown>, title: string) {
   const icon =
     column.getIsSorted() === 'asc' ? (
-      <ArrowUpNarrowWide className="ml-2 h-4 w-4" />
+      <ArrowUpNarrowWide strokeWidth={1} size={28} className="ml-2" />
     ) : column.getIsSorted() === 'desc' ? (
-      <ArrowDownNarrowWide className="ml-2 h-4 w-4" />
+      <ArrowDownNarrowWide strokeWidth={1} size={28} className="ml-2" />
     ) : (
       <Icon iconNode={[]}></Icon>
     )
@@ -33,7 +33,7 @@ function columnHeader(column: Column<Client, unknown>, title: string) {
     <Button
       variant="ghost"
       onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      className="w-full p-0"
+      className="min-w-28 p-0"
     >
       {title}
       {icon}
@@ -51,10 +51,10 @@ export const columns: ColumnDef<Client>[] = [
     header: ({ column }) => columnHeader(column, 'Nick Name'),
     cell: ({ row }) => {
       const nickName: string = row.getValue('clientNickName')
-      const uuid = console.log(row.original.uuid)
+      const id = row.original.uuid
 
       return (
-        <Link href={`/clients/${uuid}`}>
+        <Link href={`/clients/${id}`}>
           <p className=" underline underline-offset-2"> {nickName}</p>
         </Link>
       )
