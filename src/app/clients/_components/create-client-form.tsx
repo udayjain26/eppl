@@ -85,9 +85,6 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
   const [state, formAction] = useFormState(createClient, initialState)
   const form = useForm<z.infer<typeof ClientFormSchema>>({
     resolver: zodResolver(ClientFormSchema),
-    defaultValues: {
-      isNewClient: false,
-    },
   })
 
   useEffect(() => {
@@ -101,9 +98,9 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
     <Form {...form}>
       <form
         action={formAction}
-        className="h-full w-full flex-col justify-between space-y-2 "
+        className=" flex h-full w-full flex-col justify-between space-y-2"
       >
-        <Card className="flex max-h-[75%] flex-col space-y-2 overflow-scroll scroll-smooth px-4 py-4">
+        <div className="flex h-full flex-col gap-y-2 overflow-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
           <FormField
             control={form.control}
             name="clientFullName"
@@ -154,31 +151,7 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="isNewClient"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    name="isNewClient"
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>New Client</FormLabel>
-                  <FormDescription>
-                    Check this box if we have never billed this client before
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
-
-          <Separator />
           <h2 className="text-lg">Optional Fields</h2>
-
           <FormField
             control={form.control}
             name="gstin"
@@ -279,7 +252,6 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="clientAddressState"
@@ -489,13 +461,13 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
               </FormItem>
             )}
           />
-        </Card>
+        </div>
 
-        <div className=" h-[20%] w-full space-y-1">
+        <div className="flex h-64 w-full flex-col space-y-2 ">
           {' '}
           <div>
             {
-              <p className=" text-sm text-red-500" key={state.message}>
+              <p className=" text-sm " key={state.message}>
                 {state.message}
               </p>
             }

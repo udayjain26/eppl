@@ -88,7 +88,7 @@ export const clients = createTable(
       .notNull()
       .unique(),
     gstin: varchar('gstin', { length: 15 }).unique(),
-    isNewClient: boolean('is_new_client').default(false).notNull(),
+    // isNewClient: boolean('is_new_client').default(false).notNull(),
     clientAddressLine1: varchar('client_address_line1', { length: 256 }),
     clientAddressLine2: varchar('client_address_line2', { length: 256 }),
     clientAddressCity: varchar('client_address_city', { length: 256 }),

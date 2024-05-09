@@ -51,10 +51,9 @@ export const columns: ColumnDef<Client>[] = [
     header: ({ column }) => columnHeader(column, 'Nick Name'),
     cell: ({ row }) => {
       const nickName: string = row.getValue('clientNickName')
-      const id = row.original.uuid
 
       return (
-        <Link href={`/clients/${id}`}>
+        <Link href={`/clients/${row.original.uuid}`}>
           <p className=" underline underline-offset-2"> {nickName}</p>
         </Link>
       )
@@ -89,6 +88,7 @@ export const columns: ColumnDef<Client>[] = [
     accessorKey: 'clientIndustry',
     header: ({ column }) => columnHeader(column, 'Industry'),
   },
+
   {
     accessorKey: 'createdAt',
     header: ({ column }) => columnHeader(column, 'Created At'),
@@ -155,7 +155,12 @@ export const columns: ColumnDef<Client>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Create New Project</DropdownMenuItem>
-            <DropdownMenuItem>View Full Page</DropdownMenuItem>
+            <DropdownMenuItem>
+              {' '}
+              <Link href={`/clients/${row.original.uuid}`}>
+                <p className=" "> View Full Page</p>
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

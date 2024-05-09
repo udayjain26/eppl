@@ -13,7 +13,7 @@ export const ClientFormSchema = z.object({
     })
     .length(15, { message: 'The GSTIN must be exactly 15 characters' })
     .nullable(),
-  isNewClient: z.boolean().default(false),
+  // isNewClient: z.boolean().default(false),
   clientAddressLine1: z.string().trim().nullable(),
   clientAddressLine2: z.string().trim().nullable(),
   clientAddressCity: z.string().trim().nullable(),

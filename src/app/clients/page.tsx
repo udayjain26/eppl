@@ -9,21 +9,27 @@ export default async function ClientsDashboard() {
 
   return (
     <PageWrapper>
-      <div className="h-full w-full ">
-        <div className="flex flex-row justify-evenly ">
-          <div className="flex grow px-4 ">
-            {' '}
-            <Link href={'/clients'}>
-              <p className="text-2xl">Clients</p>
-            </Link>
-          </div>
+      <div className="flex h-full w-full flex-col px-4">
+        <div className="flex flex-row ">
+          {' '}
+          <Link href={'/clients'}>
+            <p className="text-2xl">Clients</p>
+          </Link>
         </div>
-        <p className=" px-4 text-xs">Total Clients: {clientsData.length}</p>
-
-        <div className="relative h-[80%]  p-4">
+        <p className=" text-xs">Total Clients: {clientsData.length}</p>
+        <div className="flex max-h-[90%] flex-col">
+          {' '}
           <DataTable columns={columns} data={clientsData} />
         </div>
       </div>
+
+      {/* <div className=" h-full w-full">
+
+
+        <div className="relative h-full p-4">
+          <DataTable columns={columns} data={clientsData} />
+        </div>
+      </div> */}
     </PageWrapper>
   )
 }
