@@ -55,8 +55,6 @@ export function DataTable<TData, TValue>({
     },
   })
 
-  console.log()
-
   return (
     <div className="h-full w-full ">
       <div className="flex flex-row justify-between  py-2">
@@ -86,7 +84,6 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  console.log(header.id)
                   return (
                     <TableHead
                       key={header.id}

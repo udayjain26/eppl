@@ -1,11 +1,13 @@
-import { getClientsData } from '@/server/queries'
-import { DataTable } from './_components/client-data-table'
-import PageWrapper from '../_components/page-wrapper'
-import { columns } from './_components/table-columns'
+import PageWrapper from '@/app/_components/page-wrapper'
 import Link from 'next/link'
 
-export default async function ClientsDashboard() {
-  const clientsData = await getClientsData()
+export default async function FullClientPage({
+  params,
+}: {
+  params: { uuid: string }
+}) {
+  const id = params.uuid
+  console.log('PLEASE', id)
 
   return (
     <PageWrapper>
@@ -18,11 +20,11 @@ export default async function ClientsDashboard() {
             </Link>
           </div>
         </div>
-        <p className=" px-4 text-xs">Total Clients: {clientsData.length}</p>
+        <p className=" px-4 text-xs">ID: {id}</p>
 
-        <div className="relative h-[80%]  p-4">
+        {/* <div className="relative h-[80%]  p-4">
           <DataTable columns={columns} data={clientsData} />
-        </div>
+        </div> */}
       </div>
     </PageWrapper>
   )

@@ -17,6 +17,7 @@ import {
   Icon,
   MoreHorizontal,
 } from 'lucide-react'
+import Link from 'next/link'
 
 function columnHeader(column: Column<Client, unknown>, title: string) {
   const icon =
@@ -48,6 +49,16 @@ export const columns: ColumnDef<Client>[] = [
   {
     accessorKey: 'clientNickName',
     header: ({ column }) => columnHeader(column, 'Nick Name'),
+    cell: ({ row }) => {
+      const nickName: string = row.getValue('clientNickName')
+      const uuid = console.log(row.original.uuid)
+
+      return (
+        <Link href={`/clients/${uuid}`}>
+          <p className=" underline underline-offset-2"> {nickName}</p>
+        </Link>
+      )
+    },
   },
 
   {
