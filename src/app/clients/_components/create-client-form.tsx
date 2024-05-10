@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,7 +18,6 @@ import { useFormState, useFormStatus } from 'react-dom'
 import { ClientFormSchema } from '@/schemas/client-schema'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { Checkbox } from '@/components/ui/checkbox'
 import { CheckIcon, ChevronsUpDown } from 'lucide-react'
 import {
   Popover,
@@ -37,9 +35,13 @@ import {
 import { industryEnum, stateEnum } from '@/server/db/schema'
 import { toast } from 'sonner'
 
-import { useEffect } from 'react'
-import { Card } from '@/components/ui/card'
-import { DropdownMenuSeparator, Separator } from '@radix-ui/react-dropdown-menu'
+import { useEffect, useState } from 'react'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 
 const states = Object.entries(stateEnum.enumValues).map(([key, value]) => ({
   label: value,
@@ -98,9 +100,9 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
     <Form {...form}>
       <form
         action={formAction}
-        className=" flex h-full w-full flex-col justify-between space-y-2"
+        className=" flex h-full w-full flex-col justify-start space-y-2"
       >
-        <div className="flex h-full flex-col gap-y-2 overflow-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
+        <div className="flex h-fit flex-col  gap-y-2 overflow-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
           <FormField
             control={form.control}
             name="clientFullName"
@@ -151,316 +153,335 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
               </FormItem>
             )}
           />
-          <h2 className="text-lg">Optional Fields</h2>
-          <FormField
-            control={form.control}
-            name="gstin"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>GST Identification Number</FormLabel>
-                <Input
-                  className={cn('border', {
-                    'border-red-500': state.errors?.gstin,
-                  })}
-                  type="text"
-                  placeholder="22AAAAA0000A1Z5"
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="additional fields">
+              <AccordionTrigger>Optional Fields</AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-y-2 p-1">
+                <FormField
+                  control={form.control}
                   name="gstin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>GST Identification Number</FormLabel>
+                      <Input
+                        className={cn('border', {
+                          'border-red-500': state.errors?.gstin,
+                        })}
+                        type="text"
+                        placeholder="22AAAAA0000A1Z5"
+                        name="gstin"
+                      />
+                      <div>
+                        {state.errors?.gstin &&
+                          state.errors.gstin.map((error: string) => (
+                            <p className=" text-sm text-red-500" key={error}>
+                              {error}
+                            </p>
+                          ))}
+                      </div>
+                    </FormItem>
+                  )}
                 />
-                <div>
-                  {state.errors?.gstin &&
-                    state.errors.gstin.map((error: string) => (
-                      <p className=" text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="clientAddressLine1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Street Address 1</FormLabel>
-                <Input
-                  className={cn('border', {
-                    'border-red-500': state.errors?.clientAddressLine1,
-                  })}
-                  type="text"
-                  placeholder="A-82, Third Floor"
+                <FormField
+                  control={form.control}
                   name="clientAddressLine1"
+                  render={({ field }) => (
+                    <FormItem className="">
+                      <FormLabel>Street Address 1</FormLabel>
+                      <Input
+                        className={cn(' border', {
+                          'border-red-500': state.errors?.clientAddressLine1,
+                        })}
+                        type="text"
+                        placeholder="A-82, Third Floor"
+                        name="clientAddressLine1"
+                      />
+                      <div>
+                        {state.errors?.clientAddressLine1 &&
+                          state.errors.clientAddressLine1.map(
+                            (error: string) => (
+                              <p className=" text-sm text-red-500" key={error}>
+                                {error}
+                              </p>
+                            ),
+                          )}
+                      </div>
+                    </FormItem>
+                  )}
                 />
-                <div>
-                  {state.errors?.clientAddressLine1 &&
-                    state.errors.clientAddressLine1.map((error: string) => (
-                      <p className=" text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="clientAddressLine2"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Street Address 2</FormLabel>
-                <Input
-                  className={cn('border', {
-                    'border-red-500': state.errors?.clientAddressLine2,
-                  })}
-                  type="text"
-                  placeholder="Narania Inustrial Area Phase 1"
+                <FormField
+                  control={form.control}
                   name="clientAddressLine2"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street Address 2</FormLabel>
+                      <Input
+                        className={cn('border', {
+                          'border-red-500': state.errors?.clientAddressLine2,
+                        })}
+                        type="text"
+                        placeholder="Narania Inustrial Area Phase 1"
+                        name="clientAddressLine2"
+                      />
+                      <div>
+                        {state.errors?.clientAddressLine2 &&
+                          state.errors.clientAddressLine2.map(
+                            (error: string) => (
+                              <p className=" text-sm text-red-500" key={error}>
+                                {error}
+                              </p>
+                            ),
+                          )}
+                      </div>
+                    </FormItem>
+                  )}
                 />
-                <div>
-                  {state.errors?.clientAddressLine2 &&
-                    state.errors.clientAddressLine2.map((error: string) => (
-                      <p className=" text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="clientAddressCity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>City</FormLabel>
-                <Input
-                  className={cn('border', {
-                    'border-red-500': state.errors?.clientAddressCity,
-                  })}
-                  type="text"
-                  placeholder="New Delhi"
+
+                <FormField
+                  control={form.control}
                   name="clientAddressCity"
-                />
-                <div>
-                  {state.errors?.clientAddressCity &&
-                    state.errors.clientAddressCity.map((error: string) => (
-                      <p className=" text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="clientAddressState"
-            render={({ field }) => (
-              <FormItem className="flex flex-col space-y-1">
-                <FormLabel>State</FormLabel>
-                <Popover modal={true}>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className={cn(
-                          ' justify-between',
-                          !field.value && 'text-muted-foreground',
-                        )}
-                        name="clientAddressState"
-                      >
-                        <input
-                          type="hidden"
-                          name="clientAddressState"
-                          value={
-                            field.value
-                              ? states.find(
-                                  (state) => state.value === field.value,
-                                )?.label
-                              : ''
-                          }
-                        />
-                        {field.value
-                          ? states.find((state) => state.value === field.value)
-                              ?.label
-                          : 'Select state'}
-                        <ChevronsUpDown strokeWidth="1" size={24} />{' '}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput
-                        placeholder="Search state..."
-                        className="h-10"
-                        name="clientAddressState"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <Input
+                        className={cn('border', {
+                          'border-red-500': state.errors?.clientAddressCity,
+                        })}
+                        type="text"
+                        placeholder="New Delhi"
+                        name="clientAddressCity"
                       />
-                      <CommandEmpty>No state found.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandList>
-                          {states &&
-                            states.map((state) => (
-                              <CommandItem
-                                value={state.label}
-                                key={state.value}
-                                onSelect={() => {
-                                  form.setValue(
-                                    'clientAddressState',
-                                    state.value,
-                                  )
-                                }}
-                              >
-                                {' '}
-                                {state.label}
-                                <CheckIcon
-                                  className={cn(
-                                    'ml-auto h-4 w-4',
-                                    state.value === field.value
-                                      ? 'opacity-100'
-                                      : 'opacity-0',
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                        </CommandList>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="clientAddressPincode"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Pincode</FormLabel>
-                <Input
-                  className={cn('border', {
-                    'border-red-500': state.errors?.gstin,
-                  })}
-                  type="text"
-                  placeholder="110028"
+                      <div>
+                        {state.errors?.clientAddressCity &&
+                          state.errors.clientAddressCity.map(
+                            (error: string) => (
+                              <p className=" text-sm text-red-500" key={error}>
+                                {error}
+                              </p>
+                            ),
+                          )}
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="clientAddressState"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col space-y-1">
+                      <FormLabel>State</FormLabel>
+                      <Popover modal={true}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                ' justify-between',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                              name="clientAddressState"
+                            >
+                              <input
+                                type="hidden"
+                                name="clientAddressState"
+                                value={
+                                  field.value
+                                    ? states.find(
+                                        (state) => state.value === field.value,
+                                      )?.label
+                                    : ''
+                                }
+                              />
+                              {field.value
+                                ? states.find(
+                                    (state) => state.value === field.value,
+                                  )?.label
+                                : 'Select state'}
+                              <ChevronsUpDown strokeWidth="1" size={24} />{' '}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search state..."
+                              className="h-10"
+                              name="clientAddressState"
+                            />
+                            <CommandEmpty>No state found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandList>
+                                {states &&
+                                  states.map((state) => (
+                                    <CommandItem
+                                      value={state.label}
+                                      key={state.value}
+                                      onSelect={() => {
+                                        form.setValue(
+                                          'clientAddressState',
+                                          state.value,
+                                        )
+                                      }}
+                                    >
+                                      {' '}
+                                      {state.label}
+                                      <CheckIcon
+                                        className={cn(
+                                          'ml-auto h-4 w-4',
+                                          state.value === field.value
+                                            ? 'opacity-100'
+                                            : 'opacity-0',
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                              </CommandList>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="clientAddressPincode"
-                />
-                <div>
-                  {state.errors?.clientAddressPincode &&
-                    state.errors.clientAddressPincode.map((error: string) => (
-                      <p className=" text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="clientWebsite"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Website URL</FormLabel>
-                <Input
-                  className={cn('border', {
-                    'border-red-500': state.errors?.clientWebsite,
-                  })}
-                  type="text"
-                  placeholder="www.excelprinters.com"
-                  name="clientWebsite"
-                />
-                <div>
-                  {state.errors?.clientWebsite &&
-                    state.errors.clientWebsite.map((error: string) => (
-                      <p className=" text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="clientIndustry"
-            render={({ field }) => (
-              <FormItem className="flex flex-col space-y-1">
-                <FormLabel>Industry</FormLabel>
-                <Popover modal={true}>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className={cn(
-                          ' justify-between',
-                          !field.value && 'text-muted-foreground',
-                        )}
-                        name="clientIndustry"
-                      >
-                        <input
-                          type="hidden"
-                          name="clientIndustry"
-                          value={
-                            field.value
-                              ? industries.find(
-                                  (industry) => industry.value === field.value,
-                                )?.label
-                              : ''
-                          }
-                        />
-                        {field.value
-                          ? industries.find(
-                              (industry) => industry.value === field.value,
-                            )?.label
-                          : 'Select industry'}
-                        <ChevronsUpDown strokeWidth="1" size={24} />{' '}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput
-                        placeholder="Search state..."
-                        className="h-10"
-                        name="clientIndustry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pincode</FormLabel>
+                      <Input
+                        className={cn('border', {
+                          'border-red-500': state.errors?.gstin,
+                        })}
+                        type="text"
+                        placeholder="110028"
+                        name="clientAddressPincode"
                       />
-                      <CommandEmpty>No state found.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandList>
-                          {industries &&
-                            industries.map((industry) => (
-                              <CommandItem
-                                value={industry.label}
-                                key={industry.value}
-                                onSelect={() => {
-                                  form.setValue(
-                                    'clientIndustry',
-                                    industry.value,
-                                  )
-                                }}
-                              >
-                                {' '}
-                                {industry.label}
-                                <CheckIcon
-                                  className={cn(
-                                    'ml-auto h-4 w-4',
-                                    industry.value === field.value
-                                      ? 'opacity-100'
-                                      : 'opacity-0',
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                        </CommandList>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </FormItem>
-            )}
-          />
+                      <div>
+                        {state.errors?.clientAddressPincode &&
+                          state.errors.clientAddressPincode.map(
+                            (error: string) => (
+                              <p className=" text-sm text-red-500" key={error}>
+                                {error}
+                              </p>
+                            ),
+                          )}
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="clientWebsite"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Website URL</FormLabel>
+                      <Input
+                        className={cn('border', {
+                          'border-red-500': state.errors?.clientWebsite,
+                        })}
+                        type="text"
+                        placeholder="www.excelprinters.com"
+                        name="clientWebsite"
+                      />
+                      <div>
+                        {state.errors?.clientWebsite &&
+                          state.errors.clientWebsite.map((error: string) => (
+                            <p className=" text-sm text-red-500" key={error}>
+                              {error}
+                            </p>
+                          ))}
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="clientIndustry"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col space-y-1">
+                      <FormLabel>Industry</FormLabel>
+                      <Popover modal={true}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                ' justify-between',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                              name="clientIndustry"
+                            >
+                              <input
+                                type="hidden"
+                                name="clientIndustry"
+                                value={
+                                  field.value
+                                    ? industries.find(
+                                        (industry) =>
+                                          industry.value === field.value,
+                                      )?.label
+                                    : ''
+                                }
+                              />
+                              {field.value
+                                ? industries.find(
+                                    (industry) =>
+                                      industry.value === field.value,
+                                  )?.label
+                                : 'Select industry'}
+                              <ChevronsUpDown strokeWidth="1" size={24} />{' '}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search state..."
+                              className="h-10"
+                              name="clientIndustry"
+                            />
+                            <CommandEmpty>No state found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandList>
+                                {industries &&
+                                  industries.map((industry) => (
+                                    <CommandItem
+                                      value={industry.label}
+                                      key={industry.value}
+                                      onSelect={() => {
+                                        form.setValue(
+                                          'clientIndustry',
+                                          industry.value,
+                                        )
+                                      }}
+                                    >
+                                      {' '}
+                                      {industry.label}
+                                      <CheckIcon
+                                        className={cn(
+                                          'ml-auto h-4 w-4',
+                                          industry.value === field.value
+                                            ? 'opacity-100'
+                                            : 'opacity-0',
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                              </CommandList>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          {/* <h2 className="text-lg">Optional Fields</h2> */}
         </div>
 
         <div className="flex h-64 w-full flex-col space-y-2 ">

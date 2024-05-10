@@ -1,7 +1,7 @@
 'use client'
 
 import { Client } from '@/server/db/schema-table-types'
-import { Column, ColumnDef } from '@tanstack/react-table'
+import { Column, ColumnDef, RowData } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -14,10 +14,24 @@ import {
   ArrowDownNarrowWide,
   ArrowUpDown,
   ArrowUpNarrowWide,
+  ClipboardCopy,
+  FolderPlus,
   Icon,
   MoreHorizontal,
+  StickyNote,
+  UserPlus,
 } from 'lucide-react'
 import Link from 'next/link'
+import { CreateContactSheet } from './create-contact-sheet'
+import test from 'node:test'
+
+import '@tanstack/react-table' //or vue, svelte, solid, qwik, etc.
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    columnName: string
+  }
+}
 
 function columnHeader(column: Column<Client, unknown>, title: string) {
   const icon =
@@ -45,6 +59,7 @@ export const columns: ColumnDef<Client>[] = [
   {
     accessorKey: 'clientFullName',
     header: ({ column }) => columnHeader(column, 'Full Name'),
+    meta: { columnName: 'Full Name' },
   },
   {
     accessorKey: 'clientNickName',
@@ -58,40 +73,49 @@ export const columns: ColumnDef<Client>[] = [
         </Link>
       )
     },
+    meta: { columnName: 'Nick Name' },
   },
 
   {
     accessorKey: 'gstin',
     header: ({ column }) => columnHeader(column, 'GSTIN'),
+    meta: { columnName: 'GSTIN' },
   },
   {
     accessorKey: 'clientAddressLine1',
     header: ({ column }) => columnHeader(column, 'Address 1'),
+    meta: { columnName: 'Address 1' },
   },
   {
     accessorKey: 'clientAddressLine2',
     header: ({ column }) => columnHeader(column, 'Address 2'),
+    meta: { columnName: 'Address 2' },
   },
   {
     accessorKey: 'clientAddressCity',
     header: ({ column }) => columnHeader(column, 'City'),
+    meta: { columnName: 'City' },
   },
   {
     accessorKey: 'clientAddressState',
     header: ({ column }) => columnHeader(column, 'State'),
+    meta: { columnName: 'State' },
   },
   {
     accessorKey: 'clientAddressPincode',
     header: ({ column }) => columnHeader(column, 'Pincode'),
+    meta: { columnName: 'Pincode' },
   },
   {
     accessorKey: 'clientIndustry',
     header: ({ column }) => columnHeader(column, 'Industry'),
+    meta: { columnName: 'Industry' },
   },
 
   {
     accessorKey: 'createdAt',
     header: ({ column }) => columnHeader(column, 'Created At'),
+    meta: { columnName: 'Created At' },
 
     cell: ({ row }) => {
       const dateOptions = {
@@ -112,6 +136,8 @@ export const columns: ColumnDef<Client>[] = [
 
   {
     id: 'actions',
+    meta: { columnName: 'Actions' },
+
     cell: ({ row }) => {
       const client = row.original
 
@@ -120,11 +146,17 @@ export const columns: ColumnDef<Client>[] = [
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal strokeWidth={1} size={24} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <CreateContactSheet
+                props={{ row: row.original }}
+              ></CreateContactSheet>
+            </DropdownMenuItem>
+            {/* <DropdownMenuItem
+              className="gap-x-1"
               onClick={() => {
                 const clientDetails =
                   client.clientFullName +
@@ -151,16 +183,31 @@ export const columns: ColumnDef<Client>[] = [
                 navigator.clipboard.writeText(clientDetails)
               }}
             >
+              <span>
+                <ClipboardCopy strokeWidth={1} size={24}></ClipboardCopy>
+              </span>
               Copy Client Details
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Create New Project</DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem className="gap-x-1">
+              {' '}
+              <span>
+                <FolderPlus strokeWidth={1} size={24}></FolderPlus>
+              </span>
+              New Project
+            </DropdownMenuItem> */}
+
+            {/* <DropdownMenuItem className="">
               {' '}
               <Link href={`/clients/${row.original.uuid}`}>
-                <p className=" "> View Full Page</p>
+                <span className="flex flex-row gap-x-1">
+                  <span>
+                    <StickyNote strokeWidth={1} size={24}></StickyNote>
+                  </span>
+                  View Full Page
+                </span>
               </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       )

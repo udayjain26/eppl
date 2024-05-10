@@ -12,14 +12,14 @@ export default function PageWrapper({
   return (
     <div
       className={cn(
-        'fixed left-14 top-14 z-20 flex h-[calc(100%-2rem)] w-[calc(100%-2rem)] flex-col rounded-3xl p-2 ',
+        'fixed left-14 top-14 z-20 flex h-[calc(100%-2rem)] w-[calc(100%-2rem)] flex-col rounded-3xl bg-white p-2 ',
         //If user is not logged in, show the home page UI style
         { 'left-0 ml-0 w-full rounded-none': !isLoggedIn },
       )}
     >
-      <div className="h-[calc(100%-1.5rem)] w-[calc(100%-1.5rem)]">
-        {children}
-      </div>
+      {/* <div className="h-[calc(100%-1.5rem)] w-[calc(100%-1.5rem)]"> */}
+      {children}
+      {/* </div> */}
     </div>
   )
 }

@@ -19,6 +19,11 @@ const CreateClient = ClientFormSchema.omit({
   updatedBy: true,
 })
 
+const CreateClientBasic = ClientFormSchema.pick({
+  clientFullName: true,
+  clientNickName: true,
+})
+
 function emptyStringToNullTransformer(data: any) {
   if (typeof data === 'string' && data === '') {
     return null
@@ -59,8 +64,6 @@ export async function createClient(
   previousState: FormState,
   formData: FormData,
 ) {
-  console.log(formData)
-
   //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
   const user = auth()
   if (!user.userId) {
@@ -69,16 +72,16 @@ export async function createClient(
 
   //Transforming the form data to remove empty strings
   const transformedData: transformedData = {}
+  var numFields = 0
   formData.forEach((value, key) => {
-    if (key === 'isNewClient') {
-      transformedData[key] = onStringToBooleanTransformer(value)
-      return
-    }
+    numFields += 1
     transformedData[key] = emptyStringToNullTransformer(value)
   })
-
-  //Validating the form fields
-  const validatedFields = CreateClient.safeParse(transformedData)
+  //BANDAID solution to getting only
+  const validatedFields =
+    numFields === 2
+      ? CreateClientBasic.safeParse(transformedData)
+      : CreateClient.safeParse(transformedData)
 
   if (!validatedFields.success) {
     console.log(validatedFields)

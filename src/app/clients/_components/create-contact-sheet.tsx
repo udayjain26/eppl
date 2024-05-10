@@ -2,7 +2,7 @@
 
 import { CreateClientForm } from './create-client-form'
 import { buttonVariants } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import {
   Sheet,
@@ -12,23 +12,23 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { getClientById } from '@/server/queries'
+import { Client } from '@/server/db/schema-table-types'
 
-export function CreateClientSheet() {
+export function CreateContactSheet({ props }: { props: { row: Client } }) {
   const [open, setOpen] = useState(false)
 
   const closeDialog = () => {
     setOpen(false)
   }
 
-  console.log('CreateClientSheet')
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className={buttonVariants()}>
-        <span className="pr-1">
-          <Plus strokeWidth="1" size={28}></Plus>{' '}
+      <SheetTrigger className={buttonVariants({ variant: 'ghost' })}>
+        <span className="pr-2">
+          <UserPlus strokeWidth="1" size={28}></UserPlus>{' '}
         </span>
-        <div className="hidden sm:block">Create Client</div>
+        <div className="block">Create Contact</div>
       </SheetTrigger>
       <SheetContent
         className="flex h-full flex-col"
@@ -37,12 +37,13 @@ export function CreateClientSheet() {
         }}
       >
         <SheetHeader className="">
-          <SheetTitle>Create New Client</SheetTitle>
+          <SheetTitle>Create New Contact</SheetTitle>
           <SheetDescription>
-            Please fill out the form below to add a new client to the system.
+            Please fill out the form below to add a contact person to{' '}
+            {props.row.clientNickName}
           </SheetDescription>
         </SheetHeader>
-        <CreateClientForm closeDialog={closeDialog}></CreateClientForm>
+        {/* <CreateClientForm closeDialog={closeDialog}></CreateClientForm> */}
       </SheetContent>
     </Sheet>
   )
