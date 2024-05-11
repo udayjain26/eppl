@@ -16,3 +16,18 @@ export type Client = {
   createdBy: string | null
   updatedBy: string | null
 }
+
+export type Contact = {
+  uuid: string
+  clientUuid: string
+  contactFirstName: string
+  contactLastName: string
+  contactEmail: string
+  contactMobile: string
+  contactDesignation: string
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+  createdBy: string | null
+  updatedBy: string | null
+}

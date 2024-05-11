@@ -88,7 +88,6 @@ export const clients = createTable(
       .notNull()
       .unique(),
     gstin: varchar('gstin', { length: 15 }).unique(),
-    // isNewClient: boolean('is_new_client').default(false).notNull(),
     clientAddressLine1: varchar('client_address_line1', { length: 256 }),
     clientAddressLine2: varchar('client_address_line2', { length: 256 }),
     clientAddressCity: varchar('client_address_city', { length: 256 }),
@@ -107,3 +106,20 @@ export const clients = createTable(
     }
   },
 )
+export const contacts = createTable('contacts', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  clientUuid: uuid('client_uuid')
+    .references(() => clients.uuid)
+    .notNull(),
+  // companyName: varchar('company_name', { length: 256 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }),
+  updatedBy: varchar('updated_by', { length: 256 }),
+  contactFirstName: varchar('contact_first_name', { length: 256 }).notNull(),
+  contactLastName: varchar('contact_last_name', { length: 256 }),
+  contactDesignation: varchar('contact_designation', { length: 256 }),
+  contactEmail: varchar('contact_email', { length: 256 }),
+  contactMobile: varchar('contact_mobile', { length: 15 }),
+  isActive: boolean('is_active').default(true).notNull(),
+})

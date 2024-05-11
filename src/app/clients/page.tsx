@@ -1,4 +1,4 @@
-import { getClientsData } from '@/server/queries'
+import { getClientsData } from '@/server/clients/queries'
 import { DataTable } from './_components/client-data-table'
 import PageWrapper from '../_components/page-wrapper'
 import { columns } from './_components/table-columns'

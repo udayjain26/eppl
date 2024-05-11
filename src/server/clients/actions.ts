@@ -1,8 +1,8 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
-import { db } from './db'
-import { clients } from './db/schema'
+import { db } from '../db'
+import { clients } from '../db/schema'
 
 import { ClientFormSchema } from '@/schemas/client-schema'
 import { revalidatePath } from 'next/cache'
@@ -31,18 +31,18 @@ function emptyStringToNullTransformer(data: any) {
   return data
 }
 
-function onStringToBooleanTransformer(data: any) {
-  if (typeof data === 'string' && data === 'on') {
-    return true
-  }
-  return false
-}
+// function onStringToBooleanTransformer(data: any) {
+//   if (typeof data === 'string' && data === 'on') {
+//     return true
+//   }
+//   return false
+// }
 
 interface transformedData {
   [key: string]: any
 }
 
-export type FormState = {
+export type ClientFormState = {
   errors?: {
     clientFullName?: string[]
     clientNickName?: string[]
@@ -61,7 +61,7 @@ export type FormState = {
 }
 
 export async function createClient(
-  previousState: FormState,
+  previousState: ClientFormState,
   formData: FormData,
 ) {
   //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
@@ -89,7 +89,7 @@ export async function createClient(
       errors: validatedFields.error.flatten().fieldErrors,
       message:
         'Failed to Create Client. Make sure fields are filled out properly!',
-    } as FormState
+    } as ClientFormState
   } else {
     try {
       // Add createdBy and updatedBy fields to the validated data
@@ -102,10 +102,10 @@ export async function createClient(
     } catch (error) {
       return {
         message: 'Database Error: Failed to Create Client.',
-      } as FormState
+      } as ClientFormState
     }
   }
   revalidatePath('/clients')
 
-  return { actionSuccess: true } as FormState
+  return { actionSuccess: true } as ClientFormState
 }

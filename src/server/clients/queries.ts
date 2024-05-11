@@ -1,8 +1,8 @@
 'use server'
 
 import { unstable_noStore } from 'next/cache'
-import { db } from './db'
-import { Client } from './db/schema-table-types'
+import { db } from '../db'
+import { Client } from '../../schemas/schema-table-types'
 
 export async function getClientsData(): Promise<Client[]> {
   try {

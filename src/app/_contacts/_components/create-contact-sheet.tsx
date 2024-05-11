@@ -1,6 +1,5 @@
 'use client'
 
-import { CreateClientForm } from './create-client-form'
 import { buttonVariants } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
 import { useState } from 'react'
@@ -12,8 +11,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { getClientById } from '@/server/queries'
-import { Client } from '@/server/db/schema-table-types'
+import { Client } from '@/schemas/schema-table-types'
+import Link from 'next/link'
+import { CreateContactForm } from './create-contact-form'
 
 export function CreateContactSheet({ props }: { props: { row: Client } }) {
   const [open, setOpen] = useState(false)
@@ -24,11 +24,11 @@ export function CreateContactSheet({ props }: { props: { row: Client } }) {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className={buttonVariants({ variant: 'ghost' })}>
+      <SheetTrigger className={buttonVariants({ variant: 'default' })}>
         <span className="pr-2">
           <UserPlus strokeWidth="1" size={28}></UserPlus>{' '}
         </span>
-        <div className="block">Create Contact</div>
+        <div className="block">Add Contact</div>
       </SheetTrigger>
       <SheetContent
         className="flex h-full flex-col"
@@ -40,9 +40,18 @@ export function CreateContactSheet({ props }: { props: { row: Client } }) {
           <SheetTitle>Create New Contact</SheetTitle>
           <SheetDescription>
             Please fill out the form below to add a contact person to{' '}
-            {props.row.clientNickName}
+            <Link href={`/clients/${props.row.uuid}`}>
+              <span className="font-bold underline ">
+                {props.row.clientNickName}
+              </span>
+            </Link>
           </SheetDescription>
         </SheetHeader>
+        <CreateContactForm
+          closeDialog={closeDialog}
+          clientData={props.row}
+        ></CreateContactForm>
+
         {/* <CreateClientForm closeDialog={closeDialog}></CreateClientForm> */}
       </SheetContent>
     </Sheet>

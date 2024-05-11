@@ -1,6 +1,6 @@
 'use client'
 
-import { Client } from '@/server/db/schema-table-types'
+import { Client } from '@/schemas/schema-table-types'
 import { Column, ColumnDef, RowData } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,7 +22,7 @@ import {
   UserPlus,
 } from 'lucide-react'
 import Link from 'next/link'
-import { CreateContactSheet } from './create-contact-sheet'
+import { CreateContactSheet } from '../../_contacts/_components/create-contact-sheet'
 import test from 'node:test'
 
 import '@tanstack/react-table' //or vue, svelte, solid, qwik, etc.
@@ -134,83 +134,83 @@ export const columns: ColumnDef<Client>[] = [
     },
   },
 
-  {
-    id: 'actions',
-    meta: { columnName: 'Actions' },
+  // {
+  //   id: 'actions',
+  //   meta: { columnName: 'Actions' },
 
-    cell: ({ row }) => {
-      const client = row.original
+  //   cell: ({ row }) => {
+  //     const client = row.original
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal strokeWidth={1} size={24} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <CreateContactSheet
-                props={{ row: row.original }}
-              ></CreateContactSheet>
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem
-              className="gap-x-1"
-              onClick={() => {
-                const clientDetails =
-                  client.clientFullName +
-                  '\n' +
-                  (client.gstin != null ? client.gstin! + '\n' : '') +
-                  (client.clientAddressLine1 != null
-                    ? client.clientAddressLine1! + '\n'
-                    : '') +
-                  (client.clientAddressLine2 != null
-                    ? client.clientAddressLine2! + '\n'
-                    : '') +
-                  (client.clientAddressCity != null
-                    ? client.clientAddressCity! + '\n'
-                    : '') +
-                  (client.clientAddressState != null
-                    ? client.clientAddressState! + '\n'
-                    : '') +
-                  (client.clientAddressPincode != null
-                    ? client.clientAddressPincode! + '\n'
-                    : '') +
-                  (client.clientWebsite != null
-                    ? client.clientWebsite! + '\n'
-                    : '')
-                navigator.clipboard.writeText(clientDetails)
-              }}
-            >
-              <span>
-                <ClipboardCopy strokeWidth={1} size={24}></ClipboardCopy>
-              </span>
-              Copy Client Details
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-x-1">
-              {' '}
-              <span>
-                <FolderPlus strokeWidth={1} size={24}></FolderPlus>
-              </span>
-              New Project
-            </DropdownMenuItem> */}
+  //     return (
+  //       <DropdownMenu>
+  //         <DropdownMenuTrigger asChild>
+  //           <Button variant="ghost" className="h-8 w-8 p-0">
+  //             <span className="sr-only">Open menu</span>
+  //             <MoreHorizontal strokeWidth={1} size={24} />
+  //           </Button>
+  //         </DropdownMenuTrigger>
+  //         <DropdownMenuContent align="end">
+  //           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+  //             <CreateContactSheet
+  //               props={{ row: row.original }}
+  //             ></CreateContactSheet>
+  //           </DropdownMenuItem>
+  //           {/* <DropdownMenuItem
+  //             className="gap-x-1"
+  //             onClick={() => {
+  //               const clientDetails =
+  //                 client.clientFullName +
+  //                 '\n' +
+  //                 (client.gstin != null ? client.gstin! + '\n' : '') +
+  //                 (client.clientAddressLine1 != null
+  //                   ? client.clientAddressLine1! + '\n'
+  //                   : '') +
+  //                 (client.clientAddressLine2 != null
+  //                   ? client.clientAddressLine2! + '\n'
+  //                   : '') +
+  //                 (client.clientAddressCity != null
+  //                   ? client.clientAddressCity! + '\n'
+  //                   : '') +
+  //                 (client.clientAddressState != null
+  //                   ? client.clientAddressState! + '\n'
+  //                   : '') +
+  //                 (client.clientAddressPincode != null
+  //                   ? client.clientAddressPincode! + '\n'
+  //                   : '') +
+  //                 (client.clientWebsite != null
+  //                   ? client.clientWebsite! + '\n'
+  //                   : '')
+  //               navigator.clipboard.writeText(clientDetails)
+  //             }}
+  //           >
+  //             <span>
+  //               <ClipboardCopy strokeWidth={1} size={24}></ClipboardCopy>
+  //             </span>
+  //             Copy Client Details
+  //           </DropdownMenuItem>
+  //           <DropdownMenuSeparator />
+  //           <DropdownMenuItem className="gap-x-1">
+  //             {' '}
+  //             <span>
+  //               <FolderPlus strokeWidth={1} size={24}></FolderPlus>
+  //             </span>
+  //             New Project
+  //           </DropdownMenuItem> */}
 
-            {/* <DropdownMenuItem className="">
-              {' '}
-              <Link href={`/clients/${row.original.uuid}`}>
-                <span className="flex flex-row gap-x-1">
-                  <span>
-                    <StickyNote strokeWidth={1} size={24}></StickyNote>
-                  </span>
-                  View Full Page
-                </span>
-              </Link>
-            </DropdownMenuItem> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
+  //           {/* <DropdownMenuItem className="">
+  //             {' '}
+  //             <Link href={`/clients/${row.original.uuid}`}>
+  //               <span className="flex flex-row gap-x-1">
+  //                 <span>
+  //                   <StickyNote strokeWidth={1} size={24}></StickyNote>
+  //                 </span>
+  //                 View Full Page
+  //               </span>
+  //             </Link>
+  //           </DropdownMenuItem> */}
+  //         </DropdownMenuContent>
+  //       </DropdownMenu>
+  //     )
+  //   },
+  // },
 ]

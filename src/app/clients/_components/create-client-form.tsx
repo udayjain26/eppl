@@ -12,7 +12,7 @@ import {
   FormLabel,
 } from '@/components/ui/form'
 
-import { FormState, createClient } from '@/server/actions'
+import { ClientFormState, createClient } from '@/server/clients/actions'
 import { useFormState, useFormStatus } from 'react-dom'
 
 import { ClientFormSchema } from '@/schemas/client-schema'
@@ -79,7 +79,7 @@ function CancelButton({ closeDialog }: { closeDialog: () => void }) {
 }
 
 export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
-  const initialState: FormState = {
+  const initialState: ClientFormState = {
     message: null,
     errors: {},
     actionSuccess: null,
