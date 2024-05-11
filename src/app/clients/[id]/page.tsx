@@ -18,8 +18,9 @@ import {
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { getClientById } from '@/server/clients/queries'
 import { getContactsByClientUuid } from '@/server/contacts/queries'
+import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { Separator } from '@radix-ui/react-dropdown-menu'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Pencil } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function FullClientPage({
@@ -33,6 +34,10 @@ export default async function FullClientPage({
     getClientById(uuid),
     getContactsByClientUuid(uuid),
   ])
+
+  const createdBy = clientData.createdBy
+    ? (await clerkClient.users.getUser(clientData.createdBy)).fullName
+    : 'Unknown'
 
   // const clientData = await getClientById(uuid)
   // const contactsData = await getContactsByClient(uuid)
@@ -53,20 +58,28 @@ export default async function FullClientPage({
           </div>
         </div>
         <div className="mx-4 my-4 flex h-[90%] flex-col gap-x-4 gap-y-4 overflow-scroll scroll-smooth sm:flex-row">
-          <div className="flex w-full flex-col p-2 ">
+          <div className="flex flex-col p-2 sm:min-w-80 ">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="">Client Details</CardTitle>
+                <CardTitle className="">
+                  {' '}
+                  <p>{clientData.clientFullName}</p>
+                </CardTitle>
                 <Button variant={'outline'} className="">
-                  <Link href={`/clients/${clientData.uuid}/edit`}>Edit</Link>
+                  <Link href={`/clients/${clientData.uuid}/edit`}>
+                    {' '}
+                    <span className="flex flex-row items-center gap-1">
+                      <Pencil strokeWidth={1} size={16}></Pencil>
+                      Edit
+                    </span>
+                  </Link>
                 </Button>
               </CardHeader>
               <CardContent className="gap-y-2 ">
                 <h2 className=" text-xl">
-                  <p>{clientData.clientFullName}</p>
                   <p>{clientData.gstin}</p>
                 </h2>
-                <h3 className="text-md">
+                <div className="text-md">
                   <p>
                     {clientData.clientAddressLine1},{' '}
                     {clientData.clientAddressLine2}
@@ -76,11 +89,17 @@ export default async function FullClientPage({
                   <p>{clientData.clientAddressPincode}</p>
                   <p>{clientData.clientWebsite}</p>
                   <p>{clientData.clientIndustry}</p>
-                </h3>
+                </div>
+                <div className="text-sm text-gray-500">
+                  <p>
+                    Created by {createdBy} on{' '}
+                    {clientData.createdAt.toDateString()}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
-          <div className="flex w-full flex-col rounded-xl  p-2 ">
+          <div className="flex w-full flex-col rounded-xl p-2 ">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="">Recent Activity</CardTitle>
@@ -88,14 +107,16 @@ export default async function FullClientPage({
             </Card>
           </div>
 
-          <div className="flex w-full flex-col rounded-xl  p-2">
+          <div className="flex flex-col rounded-xl p-2  sm:min-w-80">
             <Accordion
               type="multiple"
               defaultValue={['contacts', 'quotations', 'projects']}
               className="w-full overflow-scroll scroll-smooth"
             >
               <AccordionItem value="contacts">
-                <AccordionTrigger>Contacts</AccordionTrigger>
+                <AccordionTrigger>
+                  Contacts{'(' + contactsData.length + ')'}
+                </AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col gap-y-2">
                     <div className="flex flex-row items-center justify-between">
@@ -110,23 +131,24 @@ export default async function FullClientPage({
                       return (
                         <Card key={contact.uuid}>
                           <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle className="">
+                            <CardTitle className="text-lg">
                               {contact.contactFirstName}{' '}
                               {contact.contactLastName}
                             </CardTitle>
                             <Button variant={'outline'} className="">
                               <Link href={`/contacts/${contact.uuid}/edit`}>
-                                Edit
+                                <span className="flex flex-row items-center gap-1">
+                                  <Pencil strokeWidth={1} size={16}></Pencil>
+                                  Edit
+                                </span>
                               </Link>
                             </Button>
                           </CardHeader>
-                          <CardContent className="gap-y-2 ">
-                            <h2 className=" text-md">
-                              <p>{contact.contactDesignation}</p>
-                              <p>{contact.contactEmail}</p>
-                              <p>{contact.contactMobile}</p>
-                              <p>{contact.isActive ? 'Active' : 'Inactive'}</p>
-                            </h2>
+                          <CardContent className="text-md gap-y-2">
+                            <p>{contact.contactDesignation}</p>
+                            <p>{contact.contactEmail}</p>
+                            <p>{contact.contactMobile}</p>
+                            <p>{contact.isActive ? 'Active' : 'Inactive'}</p>
                           </CardContent>
                         </Card>
                       )
