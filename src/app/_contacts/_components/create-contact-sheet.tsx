@@ -51,8 +51,6 @@ export function CreateContactSheet({ props }: { props: { row: Client } }) {
           closeDialog={closeDialog}
           clientData={props.row}
         ></CreateContactForm>
-
-        {/* <CreateClientForm closeDialog={closeDialog}></CreateClientForm> */}
       </SheetContent>
     </Sheet>
   )

@@ -17,7 +17,7 @@ function SubmitButton() {
 
   return (
     <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? 'Creating Client...' : 'Create Client'}
+      {pending ? 'Creating Contact...' : 'Create Contact'}
     </Button>
   )
 }
