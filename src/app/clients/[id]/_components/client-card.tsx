@@ -1,5 +1,6 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import {
   Tooltip,
   TooltipContent,
@@ -35,6 +36,8 @@ export default function ClientCard(props: {
           <p>{props.clientData.gstin}</p>
         </div>
 
+        <Separator></Separator>
+
         <div className="font-semibold">Address:</div>
         <div className="text-md text-slate-700">
           <p>
@@ -47,24 +50,14 @@ export default function ClientCard(props: {
           <p>{props.clientData.clientWebsite}</p>
           <p>{props.clientData.clientIndustry}</p>
         </div>
-        <div className="flex flex-row justify-end">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="rounded-lg hover:bg-slate-200" asChild>
-                <Button variant={'ghost'}>
-                  {' '}
-                  <Info strokeWidth={1} size={24}></Info>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {' '}
-                <p>
-                  Created by {props.clientCreatedBy} on{' '}
-                  {props.clientData.createdAt.toDateString()}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <Separator></Separator>
+
+        <div className="mt-2 flex flex-row items-center gap-x-2 text-xs text-slate-700">
+          <Info strokeWidth={1} size={16}></Info>
+          <p>
+            Client created by {props.clientCreatedBy} on{' '}
+            {props.clientData.createdAt.toDateString()}
+          </p>
         </div>
       </CardContent>
     </Card>
