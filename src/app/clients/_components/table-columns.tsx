@@ -47,7 +47,7 @@ function columnHeader(column: Column<Client, unknown>, title: string) {
     <Button
       variant="ghost"
       onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      className="min-w-28 p-0"
+      className="flex min-w-28 flex-row items-center justify-start gap-1 p-0"
     >
       {title}
       {icon}

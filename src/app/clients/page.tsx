@@ -22,14 +22,6 @@ export default async function ClientsDashboard() {
           <DataTable columns={columns} data={clientsData} />
         </div>
       </div>
-
-      {/* <div className=" h-full w-full">
-
-
-        <div className="relative h-full p-4">
-          <DataTable columns={columns} data={clientsData} />
-        </div>
-      </div> */}
     </PageWrapper>
   )
 }

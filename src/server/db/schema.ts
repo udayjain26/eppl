@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
   uuid,
   pgTableCreator,
@@ -8,6 +9,9 @@ import {
   boolean,
   integer,
   smallint,
+  serial,
+  decimal,
+  numeric,
 } from 'drizzle-orm/pg-core'
 
 // ENUMS used in the application
@@ -106,12 +110,16 @@ export const clients = createTable(
     }
   },
 )
+export const clientsRelations = relations(clients, ({ many }) => ({
+  contacts: many(contacts),
+  estimates: many(estimates),
+}))
+
 export const contacts = createTable('contacts', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
   clientUuid: uuid('client_uuid')
     .references(() => clients.uuid)
     .notNull(),
-  // companyName: varchar('company_name', { length: 256 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }),
@@ -123,3 +131,47 @@ export const contacts = createTable('contacts', {
   contactMobile: varchar('contact_mobile', { length: 15 }),
   isActive: boolean('is_active').default(true).notNull(),
 })
+
+export const contactsRelations = relations(contacts, ({ one }) => ({
+  client: one(clients, {
+    fields: [contacts.clientUuid],
+    references: [clients.uuid],
+  }),
+}))
+
+export const estimates = createTable('estimates', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  clientUuid: uuid('client_uuid')
+    .references(() => clients.uuid)
+    .notNull(),
+  contactUuid: uuid('contact_uuid')
+    .references(() => contacts.uuid)
+    .notNull(),
+  estimateNumber: serial('estimate_number').notNull(),
+  estimateTitle: varchar('estimate_title', { length: 256 }).notNull(),
+  estimateDescription: varchar('estimate_description', {
+    length: 256,
+  }).notNull(),
+  estimateDueDate: timestamp('estimate_due_date').notNull(),
+  estimateQuanity: integer('estimate_quantity').notNull(),
+  estimateRate: numeric('estimate_rate', {
+    precision: 25,
+    scale: 2,
+  }).notNull(),
+  estimateTotal: numeric('estimate_total', {
+    precision: 25,
+    scale: 2,
+  }).notNull(),
+
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }),
+  updatedBy: varchar('updated_by', { length: 256 }),
+})
+
+export const estimatesRelations = relations(estimates, ({ one }) => ({
+  client: one(clients, {
+    fields: [estimates.clientUuid],
+    references: [clients.uuid],
+  }),
+}))

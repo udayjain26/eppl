@@ -1,19 +1,10 @@
 import PageWrapper from '@/app/_components/page-wrapper'
-import { CreateContactSheet } from '@/app/_contacts/_components/create-contact-sheet'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import { Button } from '@/components/ui/button'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 
 import { getClientById } from '@/server/clients/queries'
 import { getContactsByClientUuid } from '@/server/contacts/queries'
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
-import { Separator } from '@radix-ui/react-dropdown-menu'
 import { ChevronRight, Info, Pencil } from 'lucide-react'
 import Link from 'next/link'
 import ClientCard from './_components/client-card'
@@ -34,30 +25,6 @@ export default async function FullClientPage({
   const clientCreatedBy = clientData.createdBy
     ? (await clerkClient.users.getUser(clientData.createdBy)).fullName
     : 'Unknown'
-  // const contactsCreatedBy = contactsData.map(async (contact) => {
-  //   return contact.createdBy
-  //     ? (await clerkClient.users.getUser(contact.createdBy)).fullName
-  //     : 'Unknown'
-  // })
-
-  // const [clientCreatedBy, contactsCreatedBy] = await Promise.all([
-  //   clientData.createdBy
-  //     ? (await clerkClient.users.getUser(clientData.createdBy)).fullName
-  //     : 'Unknown',
-  //   Promise.all(
-  //     contactsData.map(async (contact) => {
-  //       return contact.createdBy
-  //         ? (await clerkClient.users.getUser(contact.createdBy)).fullName
-  //         : 'Unknown'
-  //     }),
-  //   ),
-  // ])
-
-  contactsData.map(async (contact) => {
-    contact.createdBy = contact.createdBy
-      ? (await clerkClient.users.getUser(contact.createdBy)).fullName
-      : 'Unknown'
-  })
 
   return (
     <PageWrapper>
@@ -86,6 +53,7 @@ export default async function FullClientPage({
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="">Recent Activity</CardTitle>
               </CardHeader>{' '}
+              <CardContent>Coming Soon!</CardContent>
             </Card>
           </div>
           <ClientAccordion
@@ -93,14 +61,6 @@ export default async function FullClientPage({
             clientData={clientData}
           ></ClientAccordion>
         </div>
-
-        {/* <p className="text-md px-4 text-gray-700">
-          {clientData.clientNickName}
-        </p> */}
-
-        {/* <div className="relative h-[80%]  p-4">
-          <DataTable columns={columns} data={clientsData} />
-        </div> */}
       </div>
     </PageWrapper>
   )

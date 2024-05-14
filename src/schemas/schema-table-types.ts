@@ -31,3 +31,20 @@ export type Contact = {
   createdBy: string | null
   updatedBy: string | null
 }
+
+export type Estimate = {
+  uuid: string
+  clientUuid: string
+  contactUuid: string
+  estimateNumber: number
+  estimateTitle: string
+  estimateDescription: string
+  estimateDueDate: Date
+  estimateQuatity: number
+  estimateRate: number
+  estimateTotal: number
+  createdAt: Date
+  updatedAt: Date
+  createdBy: string | null
+  updatedBy: string | null
+}

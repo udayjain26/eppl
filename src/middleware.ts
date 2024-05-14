@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
-  '/quotations(.*)',
+  '/estimates(.*)',
   '/clients(.*)',
 ])
 

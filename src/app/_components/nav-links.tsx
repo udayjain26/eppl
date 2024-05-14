@@ -12,8 +12,8 @@ const links = [
   { name: 'Clients', href: '/clients', icon: BookUserIcon },
 
   {
-    name: 'Quotations',
-    href: '/quotations',
+    name: 'Estimates',
+    href: '/estimates',
     icon: CalculatorIcon,
   },
 ]
