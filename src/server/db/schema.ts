@@ -153,20 +153,11 @@ export const estimates = createTable('estimates', {
     length: 256,
   }).notNull(),
   estimateDueDate: timestamp('estimate_due_date').notNull(),
-  estimateQuanity: integer('estimate_quantity').notNull(),
-  estimateRate: numeric('estimate_rate', {
-    precision: 25,
-    scale: 2,
-  }).notNull(),
-  estimateTotal: numeric('estimate_total', {
-    precision: 25,
-    scale: 2,
-  }).notNull(),
-
+  currentRevision: smallint('current_revision').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  createdBy: varchar('created_by', { length: 256 }),
-  updatedBy: varchar('updated_by', { length: 256 }),
+  createdBy: varchar('created_by', { length: 256 }).notNull(),
+  updatedBy: varchar('updated_by', { length: 256 }).notNull(),
 })
 
 export const estimatesRelations = relations(estimates, ({ one }) => ({

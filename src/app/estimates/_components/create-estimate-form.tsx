@@ -66,7 +66,6 @@ export function CreateEstimateForm({
       // Fetch your data here
       const data = (await getClientsDataIdAndNameWithContacts()) as ClientData[]
       setData(data)
-      console.log('Data:', data)
     }
 
     fetchData()
@@ -103,12 +102,7 @@ export function CreateEstimateForm({
 
   const form = useForm<z.infer<typeof EstimateFormSchema>>({
     resolver: zodResolver(EstimateFormSchema),
-    // mode: 'all',
   })
-  // const { watch } = form
-
-  // const clientUuidValue = watch('clientUuid')
-  // console.log(clientUuidValue)
 
   return (
     <Form {...form}>
@@ -141,7 +135,7 @@ export function CreateEstimateForm({
                         <input
                           type="hidden"
                           name="clientUuid"
-                          value={field.value}
+                          value={field.value ? field.value : ''}
                         />
                         {field.value
                           ? clientsData !== null
@@ -165,7 +159,6 @@ export function CreateEstimateForm({
                         <CommandList>
                           {clientsData &&
                             clientsData.map((client) => (
-                              // console.log(client),
                               <CommandItem
                                 value={client.nickAndFullName}
                                 key={client.uuid}
@@ -217,7 +210,7 @@ export function CreateEstimateForm({
                         <input
                           type="hidden"
                           name="contactUuid"
-                          value={field.value}
+                          value={field.value ? field.value : ''}
                         />
                         {field.value
                           ? clientsData !== null
@@ -257,10 +250,7 @@ export function CreateEstimateForm({
                                   key={contact.uuid}
                                   onSelect={() => {
                                     form.setValue('contactUuid', contact.uuid)
-                                    console.log(
-                                      'Setting this value:',
-                                      contact.uuid,
-                                    )
+
                                     closeContactPopover()
                                   }}
                                 >

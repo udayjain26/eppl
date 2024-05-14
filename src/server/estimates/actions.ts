@@ -29,9 +29,7 @@ export type EstimateFormState = {
     estimateTitle?: string[] | null
     estimateDescription?: string[] | null
     estimateDueDate?: string[] | null
-    estimateQuatity?: string[] | null
-    estimateRate?: string[] | null
-    estimateTotal?: string[] | null
+    currentRevision?: string[] | null
   }
   message?: string | null
   actionSuccess?: boolean | null

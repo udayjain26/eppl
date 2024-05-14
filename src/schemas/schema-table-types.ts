@@ -40,9 +40,7 @@ export type Estimate = {
   estimateTitle: string
   estimateDescription: string
   estimateDueDate: Date
-  estimateQuatity: number
-  estimateRate: number
-  estimateTotal: number
+  currentRevision: number
   createdAt: Date
   updatedAt: Date
   createdBy: string | null
