@@ -26,12 +26,16 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
 import { Input } from '@/components/ui/input'
 import { CreateClientSheet } from './create-client-sheet'
 import { Button } from '@/components/ui/button'
+import { ChevronDown } from 'lucide-react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -48,6 +52,8 @@ export function ClientDataTable<TData, TValue>({
   )
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
+  const [searchColumn, setSearchColumn] =
+    React.useState<string>('clientNickName')
 
   const table = useReactTable({
     data,
@@ -58,7 +64,6 @@ export function ClientDataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-
     state: {
       sorting,
       columnFilters,
@@ -73,21 +78,56 @@ export function ClientDataTable<TData, TValue>({
           <Input
             placeholder="Search..."
             value={
-              (table.getColumn('clientNickName')?.getFilterValue() as string) ??
-              ''
+              (table.getColumn(searchColumn)?.getFilterValue() as string) ?? ''
             }
             onChange={(event) => {
-              table
-                .getColumn('clientNickName')
-                ?.setFilterValue(event.target.value)
+              table.getColumn(searchColumn)?.setFilterValue(event.target.value)
             }}
             className=""
           />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
+            <Button variant={'outline'}>
+              Searching by:{' '}
+              {table.getColumn(searchColumn)?.columnDef.meta?.columnName}
+              <span>
+                <ChevronDown
+                  className=""
+                  strokeWidth={1}
+                  size={24}
+                ></ChevronDown>
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {table.getAllColumns().map((column) => {
+              return (
+                <DropdownMenuItem
+                  key={column.id}
+                  onSelect={() => {
+                    table.getColumn(searchColumn)?.setFilterValue('')
+
+                    setSearchColumn(column.id)
+                  }}
+                >
+                  {column.columnDef.meta?.columnName}
+                </DropdownMenuItem>
+              )
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Select Columns
+              Select Columns{' '}
+              <span>
+                <ChevronDown
+                  className=""
+                  strokeWidth={1}
+                  size={24}
+                ></ChevronDown>
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

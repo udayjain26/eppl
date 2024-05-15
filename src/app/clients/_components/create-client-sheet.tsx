@@ -20,8 +20,6 @@ export function CreateClientSheet() {
     setOpen(false)
   }
 
-  console.log('CreateClientSheet')
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger className={buttonVariants()}>
