@@ -152,7 +152,6 @@ export const estimates = createTable('estimates', {
   estimateDescription: varchar('estimate_description', {
     length: 256,
   }).notNull(),
-  estimateDueDate: timestamp('estimate_due_date').notNull(),
   currentRevision: smallint('current_revision').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -164,5 +163,9 @@ export const estimatesRelations = relations(estimates, ({ one }) => ({
   client: one(clients, {
     fields: [estimates.clientUuid],
     references: [clients.uuid],
+  }),
+  contact: one(contacts, {
+    fields: [estimates.contactUuid],
+    references: [contacts.uuid],
   }),
 }))

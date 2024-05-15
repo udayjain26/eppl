@@ -102,7 +102,7 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
         action={formAction}
         className=" flex h-full w-full flex-col justify-start space-y-2"
       >
-        <div className="flex h-fit flex-col  gap-y-2 overflow-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
+        <div className="flex h-fit flex-col  gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
           <FormField
             control={form.control}
             name="clientFullName"

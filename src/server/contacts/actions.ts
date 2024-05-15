@@ -47,7 +47,6 @@ export async function createContact(
     throw new Error('User Unauthenitcated')
   }
 
-  console.log(formData)
   //Transforming the form data to remove empty strings
   const transformedData: transformedData = {}
   formData.forEach((value, key) => {

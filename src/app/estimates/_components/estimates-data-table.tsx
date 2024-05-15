@@ -30,15 +30,16 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { Input } from '@/components/ui/input'
-import { CreateClientSheet } from './create-client-sheet'
+
 import { Button } from '@/components/ui/button'
+import { CreateEstimateSheet } from './create-estimate-sheet'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function ClientDataTable<TData, TValue>({
+export function EstimateDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -73,14 +74,14 @@ export function ClientDataTable<TData, TValue>({
           <Input
             placeholder="Search..."
             value={
-              (table.getColumn('clientNickName')?.getFilterValue() as string) ??
+              (table.getColumn('estimateTitle')?.getFilterValue() as string) ??
               ''
             }
-            onChange={(event) => {
+            onChange={(event) =>
               table
-                .getColumn('clientNickName')
+                .getColumn('estimateTitle')
                 ?.setFilterValue(event.target.value)
-            }}
+            }
             className=""
           />
         </div>
@@ -111,8 +112,7 @@ export function ClientDataTable<TData, TValue>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-
-        <CreateClientSheet></CreateClientSheet>
+        <CreateEstimateSheet />
       </div>
 
       <div className="flex max-h-[90%] flex-col rounded-lg border pl-4 pr-4 pt-4">

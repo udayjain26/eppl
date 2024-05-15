@@ -3,9 +3,11 @@
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form'
 import { EstimateFormSchema } from '@/schemas/estimate-schema'
 import { useForm } from 'react-hook-form'
@@ -21,7 +23,7 @@ import {
 } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { CheckIcon, ChevronsUpDown } from 'lucide-react'
+import { CalendarIcon, CheckIcon, ChevronsUpDown } from 'lucide-react'
 import {
   Command,
   CommandEmpty,
@@ -32,6 +34,11 @@ import {
 } from '@/components/ui/command'
 import { useFormStatus, useFormState } from 'react-dom'
 import { EstimateFormState, createEstimate } from '@/server/estimates/actions'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { format } from 'date-fns'
+import { Calendar } from '@/components/ui/calendar'
+import { toast } from 'sonner'
 
 export function CreateEstimateForm({
   closeDialog,
@@ -70,6 +77,7 @@ export function CreateEstimateForm({
 
     fetchData()
   }, [])
+
   function SubmitButton() {
     const { pending } = useFormStatus()
 
@@ -103,19 +111,25 @@ export function CreateEstimateForm({
   const form = useForm<z.infer<typeof EstimateFormSchema>>({
     resolver: zodResolver(EstimateFormSchema),
   })
+  useEffect(() => {
+    if (state.actionSuccess === true) {
+      closeDialog()
+      toast('Estimate Created Succesfully!')
+    }
+  }, [state])
 
   return (
     <Form {...form}>
       <form
         action={formAction}
-        className=" flex h-full w-full flex-col justify-start space-y-2"
+        className=" flex h-full w-full flex-col justify-start gap-y-2"
       >
-        <div className="flex h-fit flex-col  gap-y-2 overflow-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
+        <div className="flex h-fit flex-col  gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl p-2 shadow-inner">
           <FormField
             control={form.control}
             name="clientUuid"
             render={({ field }) => (
-              <FormItem className="flex flex-col space-y-1">
+              <FormItem className="flex flex-col gap-y-1">
                 <FormLabel>Client</FormLabel>
                 <Popover
                   modal={true}
@@ -183,6 +197,14 @@ export function CreateEstimateForm({
                     </Command>
                   </PopoverContent>
                 </Popover>
+                <div>
+                  {state.errors?.clientUuid &&
+                    state.errors.clientUuid.map((error: string) => (
+                      <p className=" text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
               </FormItem>
             )}
           />
@@ -190,7 +212,7 @@ export function CreateEstimateForm({
             control={form.control}
             name="contactUuid"
             render={({ field }) => (
-              <FormItem className="flex flex-col space-y-1">
+              <FormItem className="flex flex-col gap-y-1">
                 <FormLabel>Contact</FormLabel>
                 <Popover
                   modal={true}
@@ -270,9 +292,67 @@ export function CreateEstimateForm({
                     </Command>
                   </PopoverContent>
                 </Popover>
+                <div>
+                  {state.errors?.contactUuid &&
+                    state.errors.contactUuid.map((error: string) => (
+                      <p className=" text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
               </FormItem>
             )}
-          ></FormField>
+          />
+          <FormField
+            control={form.control}
+            name="estimateTitle"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estimate Title</FormLabel>
+                <Input
+                  className={cn('border', {
+                    'border-red-500': state.errors?.estimateTitle,
+                  })}
+                  type="text"
+                  placeholder="Excel Printers Private Limited"
+                  name="estimateTitle"
+                />
+                <div>
+                  {state.errors?.estimateTitle &&
+                    state.errors.estimateTitle.map((error: string) => (
+                      <p className=" text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="estimateDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estimate Description</FormLabel>
+                <Textarea
+                  className={cn('border', {
+                    'border-red-500': state.errors?.estimateDescription,
+                  })}
+                  placeholder="This estimate is for the new visiting cards for Excel. Client is looking for a fresh design with a modern look."
+                  name="estimateDescription"
+                />
+                <div>
+                  {state.errors?.estimateDescription &&
+                    state.errors.estimateDescription.map((error: string) => (
+                      <p className=" text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </FormItem>
+            )}
+          />
         </div>
         <div className="flex h-64 w-full flex-col space-y-2 ">
           {' '}

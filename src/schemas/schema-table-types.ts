@@ -35,11 +35,18 @@ export type Contact = {
 export type Estimate = {
   uuid: string
   clientUuid: string
+  client: { clientNickName: string }
+  contact: {
+    contactFirstName: string
+    contactLastName: string
+    contactEmail: string
+    contactMobile: string
+    contactDesignation: string
+  }
   contactUuid: string
   estimateNumber: number
   estimateTitle: string
   estimateDescription: string
-  estimateDueDate: Date
   currentRevision: number
   createdAt: Date
   updatedAt: Date

@@ -1,7 +1,7 @@
 import { getClientsData } from '@/server/clients/queries'
-import { DataTable } from './_components/client-data-table'
+import { ClientDataTable } from './_components/client-data-table'
 import PageWrapper from '../_components/page-wrapper'
-import { columns } from './_components/table-columns'
+import { clientColumns } from './_components/table-columns'
 import Link from 'next/link'
 
 export default async function ClientsDashboard() {
@@ -19,7 +19,7 @@ export default async function ClientsDashboard() {
         <p className=" text-xs">Total Clients: {clientsData.length}</p>
         <div className="flex max-h-[90%] flex-col">
           {' '}
-          <DataTable columns={columns} data={clientsData} />
+          <ClientDataTable columns={clientColumns} data={clientsData} />
         </div>
       </div>
     </PageWrapper>

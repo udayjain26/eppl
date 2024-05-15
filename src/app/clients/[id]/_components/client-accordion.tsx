@@ -22,9 +22,9 @@ export default function ClientAccordion(props: {
   return (
     <div className="flex flex-col rounded-xl p-2 sm:min-w-[22rem]">
       <Accordion
-        type="multiple"
-        defaultValue={['contacts', 'quotations', 'projects']}
-        className="w-full overflow-scroll scroll-smooth"
+        type="single"
+        defaultValue={'contacts'}
+        className="w-full overflow-y-scroll scroll-smooth"
       >
         <AccordionItem value="contacts">
           <AccordionTrigger>
@@ -32,8 +32,7 @@ export default function ClientAccordion(props: {
           </AccordionTrigger>
           <AccordionContent>
             <div className="flex flex-col gap-y-2">
-              <div className="flex flex-row items-center justify-between">
-                Manage contacts
+              <div className="flex flex-row items-center justify-end">
                 <CreateContactSheet
                   props={{ row: props.clientData }}
                 ></CreateContactSheet>
