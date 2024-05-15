@@ -73,8 +73,8 @@ export function ClientDataTable<TData, TValue>({
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="flex flex-row gap-x-2 py-2">
-        <div className="flex w-64">
+      <div className="flex flex-col gap-x-2 gap-y-2 py-2 sm:flex-row">
+        <div className="flex w-full sm:w-64">
           <Input
             placeholder="Search..."
             value={
@@ -119,7 +119,7 @@ export function ClientDataTable<TData, TValue>({
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="">
               Select Columns{' '}
               <span>
                 <ChevronDown
