@@ -15,6 +15,7 @@ export async function getEstimatesData(): Promise<Estimate[]> {
             contactEmail: true,
             contactMobile: true,
             contactDesignation: true,
+            isActive: true,
           },
         },
       },

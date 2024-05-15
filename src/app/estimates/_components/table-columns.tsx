@@ -17,17 +17,22 @@ import columnHeader from '@/app/_components/column-headers'
 import Link from 'next/link'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 export const estimatesColumns: ColumnDef<Estimate>[] = [
   {
     accessorKey: 'estimateNumber',
-    header: ({ column }) => columnHeader(column, 'Estimate #'),
-    meta: { columnName: 'Estimate Number' },
+    header: ({ column }) => columnHeader(column, 'Estimate No.'),
+    meta: { columnName: 'Estimate No.' },
   },
   {
     accessorKey: 'currentRevision',
-    header: ({ column }) => columnHeader(column, 'Current Revision #'),
-    meta: { columnName: 'Current Revision' },
+    header: ({ column }) => columnHeader(column, 'Revision No.'),
+    meta: { columnName: 'Revision No.' },
   },
   {
     accessorKey: 'estimateTitle',
@@ -77,16 +82,16 @@ export const estimatesColumns: ColumnDef<Estimate>[] = [
         row.original.contact.contactLastName
 
       return (
-        <Dialog>
-          <DialogTrigger asChild>
+        <Popover>
+          <PopoverTrigger asChild>
             <Button variant="outline">
               <p className=" hover:underline hover:underline-offset-2">
                 {fullName}
               </p>
             </Button>
-          </DialogTrigger>
-          <DialogContent className="flex flex-col gap-1">
-            <DialogTitle>{fullName}</DialogTitle>
+          </PopoverTrigger>
+          <PopoverContent className="flex w-fit flex-col gap-1">
+            <div className="mb-2 text-xl">{fullName}</div>
             <p>Designation: {row.original.contact.contactDesignation}</p>
             <div className="flex flex-row items-center ">
               <Link href={`mailto:${row.original.contact.contactEmail}`}>
@@ -102,8 +107,11 @@ export const estimatesColumns: ColumnDef<Estimate>[] = [
                 </p>
               </Link>
             </div>
-          </DialogContent>
-        </Dialog>
+            <p>
+              Status: {row.original.contact.isActive ? 'Active' : 'Inactive'}
+            </p>
+          </PopoverContent>
+        </Popover>
       )
     },
   },

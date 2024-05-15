@@ -33,21 +33,20 @@ export async function ContactCard(props: { contact: Contact }) {
       </CardHeader>
       <CardContent className="text-md gap-y-2">
         <p>{props.contact.contactDesignation}</p>
-        <Link href={`mailto:${props.contact.contactEmail}`}>
-          <div className="flex flex-row items-center gap-x-1">
+        <div className="flex flex-row items-center gap-x-1">
+          <Link href={`mailto:${props.contact.contactEmail}`}>
             <p className="text-blue-900 underline underline-offset-1">
               {props.contact.contactEmail}
             </p>
-          </div>
-        </Link>
-        <Link href={`tel:${props.contact.contactMobile}`}>
-          <div className="flex flex-row items-center gap-x-1">
+          </Link>
+        </div>
+        <div className="flex flex-row items-center gap-x-1">
+          <Link href={`tel:${props.contact.contactMobile}`}>
             <p className="text-blue-900 underline underline-offset-1">
               {props.contact.contactMobile}
             </p>
-          </div>{' '}
-        </Link>
-
+          </Link>
+        </div>
         <p>Status: {props.contact.isActive ? 'Active' : 'Inactive'}</p>
         <Separator></Separator>
         <div className=" mt-2 flex flex-row items-center gap-x-2 text-xs text-slate-700">

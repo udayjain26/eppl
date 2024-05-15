@@ -42,6 +42,7 @@ export type Estimate = {
     contactEmail: string
     contactMobile: string
     contactDesignation: string
+    isActive: boolean
   }
   contactUuid: string
   estimateNumber: number

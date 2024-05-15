@@ -16,7 +16,7 @@ export default async function QuotationsPage() {
             <p className="text-2xl">Estimates</p>
           </Link>
         </div>
-        {/* <p className=" text-xs">Total Clients: {estimatesData.length}</p> */}
+        <p className=" text-xs">Total Estimates: {estimatesData.length}</p>
 
         <div className="flex max-h-[90%] flex-col ">
           <EstimateDataTable columns={estimatesColumns} data={estimatesData} />
