@@ -66,13 +66,13 @@ export function CreateEstimateForm({
   const closeContactPopover = () => {
     setOpenContact(false)
   }
-  const [clientsData, setData] = useState<ClientData[] | null>(null)
+  const [clientsData, setClientsData] = useState<ClientData[] | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       // Fetch your data here
       const data = (await getClientsDataIdAndNameWithContacts()) as ClientData[]
-      setData(data)
+      setClientsData(data)
     }
 
     fetchData()

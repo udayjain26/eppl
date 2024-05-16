@@ -12,7 +12,11 @@ import {
   FormLabel,
 } from '@/components/ui/form'
 
-import { ClientFormState, createClient } from '@/server/clients/actions'
+import {
+  ClientFormState,
+  createClient,
+  updateClient,
+} from '@/server/clients/actions'
 import { useFormState, useFormStatus } from 'react-dom'
 
 import { ClientFormSchema } from '@/schemas/client-form-schema'
@@ -42,6 +46,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { Client } from '@/schemas/schema-table-types'
 
 const states = Object.entries(stateEnum.enumValues).map(([key, value]) => ({
   label: value,
@@ -65,6 +70,16 @@ function SubmitButton() {
   )
 }
 
+function UpdateButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? 'Updating Client...' : 'Update Client'}
+    </Button>
+  )
+}
+
 function CancelButton({ closeDialog }: { closeDialog: () => void }) {
   return (
     <Button
@@ -78,13 +93,22 @@ function CancelButton({ closeDialog }: { closeDialog: () => void }) {
   )
 }
 
-export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
+export function CreateClientForm({
+  closeDialog,
+  clientData,
+}: {
+  closeDialog: () => void
+  clientData?: Client
+}) {
   const initialState: ClientFormState = {
     message: null,
     errors: {},
     actionSuccess: null,
   }
-  const [state, formAction] = useFormState(createClient, initialState)
+  const [state, formAction] = clientData
+    ? useFormState(updateClient, initialState)
+    : useFormState(createClient, initialState)
+
   const form = useForm<z.infer<typeof ClientFormSchema>>({
     resolver: zodResolver(ClientFormSchema),
   })
@@ -92,7 +116,10 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
   useEffect(() => {
     if (state.actionSuccess === true) {
       closeDialog()
-      toast('Client Created Succesfully!')
+
+      clientData
+        ? toast('Client Updated Succesfully!')
+        : toast('Client Created Succesfully!')
     }
   }, [state])
 
@@ -102,6 +129,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
         action={formAction}
         className=" flex h-full w-full flex-col justify-start space-y-2"
       >
+        <input
+          hidden
+          value={clientData ? clientData.uuid : undefined}
+          name="uuid"
+        ></input>
         <div className="flex h-fit flex-col  gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
           <FormField
             control={form.control}
@@ -116,6 +148,7 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                   type="text"
                   placeholder="Excel Printers Private Limited"
                   name="clientFullName"
+                  defaultValue={clientData?.clientFullName}
                 />
                 <div>
                   {state.errors?.clientFullName &&
@@ -141,6 +174,7 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                   type="text"
                   placeholder="Excel"
                   name="clientNickName"
+                  defaultValue={clientData?.clientNickName}
                 />
                 <div>
                   {state.errors?.clientNickName &&
@@ -153,10 +187,18 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
               </FormItem>
             )}
           />
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            defaultValue={clientData ? 'additional fields' : undefined}
+          >
             <AccordionItem value="additional fields">
               <AccordionTrigger>Optional Fields</AccordionTrigger>
-              <AccordionContent className="flex flex-col gap-y-2 p-1">
+              <AccordionContent
+                forceMount={clientData ? true : undefined}
+                className="flex flex-col gap-y-2 p-1"
+              >
                 <FormField
                   control={form.control}
                   name="gstin"
@@ -170,6 +212,9 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                         type="text"
                         placeholder="22AAAAA0000A1Z5"
                         name="gstin"
+                        defaultValue={
+                          clientData?.gstin ? clientData?.gstin : ''
+                        }
                       />
                       <div>
                         {state.errors?.gstin &&
@@ -195,6 +240,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                         type="text"
                         placeholder="A-82, Third Floor"
                         name="clientAddressLine1"
+                        defaultValue={
+                          clientData?.clientAddressLine1
+                            ? clientData?.clientAddressLine1
+                            : ''
+                        }
                       />
                       <div>
                         {state.errors?.clientAddressLine1 &&
@@ -222,6 +272,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                         type="text"
                         placeholder="Narania Inustrial Area Phase 1"
                         name="clientAddressLine2"
+                        defaultValue={
+                          clientData?.clientAddressLine2
+                            ? clientData?.clientAddressLine2
+                            : ''
+                        }
                       />
                       <div>
                         {state.errors?.clientAddressLine2 &&
@@ -250,6 +305,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                         type="text"
                         placeholder="New Delhi"
                         name="clientAddressCity"
+                        defaultValue={
+                          clientData?.clientAddressCity
+                            ? clientData?.clientAddressCity
+                            : ''
+                        }
                       />
                       <div>
                         {state.errors?.clientAddressCity &&
@@ -265,6 +325,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                   )}
                 />
                 <FormField
+                  defaultValue={
+                    states.find(
+                      (state) => state.value === clientData?.clientAddressState,
+                    )?.label
+                  }
                   control={form.control}
                   name="clientAddressState"
                   render={({ field }) => (
@@ -285,6 +350,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                               <input
                                 type="hidden"
                                 name="clientAddressState"
+                                defaultValue={
+                                  clientData?.clientAddressState
+                                    ? clientData?.clientAddressState
+                                    : ''
+                                }
                                 value={
                                   field.value
                                     ? states.find(
@@ -352,11 +422,16 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                       <FormLabel>Pincode</FormLabel>
                       <Input
                         className={cn('border', {
-                          'border-red-500': state.errors?.gstin,
+                          'border-red-500': state.errors?.clientAddressPincode,
                         })}
                         type="text"
                         placeholder="110028"
                         name="clientAddressPincode"
+                        defaultValue={
+                          clientData?.clientAddressPincode
+                            ? clientData?.clientAddressPincode
+                            : ''
+                        }
                       />
                       <div>
                         {state.errors?.clientAddressPincode &&
@@ -384,6 +459,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                         type="text"
                         placeholder="www.excelprinters.com"
                         name="clientWebsite"
+                        defaultValue={
+                          clientData?.clientWebsite
+                            ? clientData?.clientWebsite
+                            : ''
+                        }
                       />
                       <div>
                         {state.errors?.clientWebsite &&
@@ -397,6 +477,12 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                   )}
                 />
                 <FormField
+                  defaultValue={
+                    industries.find(
+                      (industry) =>
+                        industry.value === clientData?.clientIndustry,
+                    )?.label
+                  }
                   control={form.control}
                   name="clientIndustry"
                   render={({ field }) => (
@@ -423,6 +509,11 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
                                         (industry) =>
                                           industry.value === field.value,
                                       )?.label
+                                    : ''
+                                }
+                                defaultValue={
+                                  clientData?.clientIndustry
+                                    ? clientData?.clientIndustry
                                     : ''
                                 }
                               />
@@ -493,7 +584,7 @@ export function CreateClientForm({ closeDialog }: { closeDialog: () => void }) {
               </p>
             }
           </div>
-          <SubmitButton />
+          {clientData ? <UpdateButton /> : <SubmitButton />}
           <CancelButton closeDialog={closeDialog} />
         </div>
       </form>

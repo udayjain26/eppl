@@ -1,7 +1,15 @@
 //Importing use client to see what current tab the user is on. The nav-links will style themselves based on that.
 'use client'
 import { cn } from '@/lib/utils'
-import { BookUserIcon, CalculatorIcon, HomeIcon } from 'lucide-react'
+import {
+  BookUserIcon,
+  CalculatorIcon,
+  FileCog,
+  HandCoins,
+  HomeIcon,
+  IndianRupee,
+  Truck,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -10,11 +18,30 @@ import { usePathname } from 'next/navigation'
 const links = [
   { name: 'Home', href: '/dashboard', icon: HomeIcon },
   { name: 'Clients', href: '/clients', icon: BookUserIcon },
-
   {
     name: 'Estimates',
     href: '/estimates',
     icon: CalculatorIcon,
+  },
+  {
+    name: 'Production',
+    href: '/production',
+    icon: FileCog,
+  },
+  {
+    name: 'Logistics',
+    href: '/logistics',
+    icon: Truck,
+  },
+  {
+    name: 'Finance',
+    href: '/finance',
+    icon: HandCoins,
+  },
+  {
+    name: 'Invoices',
+    href: '/invoices',
+    icon: IndianRupee,
   },
 ]
 
