@@ -81,6 +81,21 @@ export const industryEnum = pgEnum('industries', [
   'Utilities',
 ])
 
+export const estimateStatusEnum = pgEnum('estimate_status', [
+  'Not Started',
+  'In Progress',
+  'Completed',
+])
+
+export const estimateRevisionStageEnum = pgEnum('estimate_stage', [
+  'New',
+  'Drafting',
+  'Estimator Approval',
+  'Client Approval',
+  'Won',
+  'Lost',
+])
+
 export const createTable = pgTableCreator((name) => `eppl_${name}`)
 
 export const clients = createTable(
@@ -152,6 +167,7 @@ export const estimates = createTable('estimates', {
   estimateDescription: varchar('estimate_description', {
     length: 256,
   }).notNull(),
+  estimateStatus: estimateStatusEnum('estimate_status').default('Not Started'),
   currentRevision: smallint('current_revision').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

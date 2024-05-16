@@ -21,7 +21,6 @@ export async function getEstimatesData(): Promise<Estimate[]> {
       },
     })) as Estimate[]
 
-    console.log(data)
     return data
   } catch (error) {
     throw new Error('Failed to fetch estimates data')

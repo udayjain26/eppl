@@ -1,3 +1,5 @@
+import { EnumValues } from 'zod'
+
 export type Client = {
   uuid: string
   clientFullName: string
@@ -48,6 +50,7 @@ export type Estimate = {
   estimateNumber: number
   estimateTitle: string
   estimateDescription: string
+  estimateStatus: string
   currentRevision: number
   createdAt: Date
   updatedAt: Date

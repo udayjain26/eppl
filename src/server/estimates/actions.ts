@@ -11,6 +11,7 @@ const CreateEstimate = EstimateFormSchema.omit({
   uuid: true,
   estimateNumber: true,
   currentRevision: true,
+  estimateStatus: true,
   createdAt: true,
   updatedAt: true,
   createdBy: true,

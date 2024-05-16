@@ -1,5 +1,9 @@
 'use client'
-import { formatDistance } from 'date-fns'
+import {
+  formatDistance,
+  formatDistanceStrict,
+  formatDistanceToNowStrict,
+} from 'date-fns'
 
 import { Estimate } from '@/schemas/schema-table-types'
 import { ColumnDef } from '@tanstack/react-table'
@@ -22,6 +26,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
+import { FileWarning } from 'lucide-react'
 
 export const estimatesColumns: ColumnDef<Estimate>[] = [
   {
@@ -34,6 +40,28 @@ export const estimatesColumns: ColumnDef<Estimate>[] = [
     header: ({ column }) => columnHeader(column, 'Revision No.'),
     meta: { columnName: 'Revision No.' },
   },
+  {
+    accessorKey: 'revisionStage',
+    header: ({ column }) => columnHeader(column, 'Revision Stage'),
+    meta: { columnName: 'Revision Stage' },
+    cell: ({ row }) => {
+      return (
+        // <div className="w-fit rounded-lg border border-slate-300 p-2 shadow-md"></div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant={'ghost'}>
+              <FileWarning strokeWidth={1} size={32} color="red"></FileWarning>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            No revisions found yet. Please create the first revision on the
+            estimates page.
+          </PopoverContent>
+        </Popover>
+      )
+    },
+  },
+
   {
     accessorKey: 'estimateTitle',
     header: ({ column }) => columnHeader(column, 'Estimate Name'),
@@ -90,8 +118,8 @@ export const estimatesColumns: ColumnDef<Estimate>[] = [
               </p>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="flex w-fit flex-col gap-1">
-            <div className="mb-2 text-xl">{fullName}</div>
+          <PopoverContent className="gap-1border flex w-fit flex-col border border-slate-300">
+            <div className="mb-2   text-xl">{fullName}</div>
             <p>Designation: {row.original.contact.contactDesignation}</p>
             <div className="flex flex-row items-center ">
               <Link href={`mailto:${row.original.contact.contactEmail}`}>
@@ -115,17 +143,37 @@ export const estimatesColumns: ColumnDef<Estimate>[] = [
       )
     },
   },
+
+  {
+    accessorKey: 'estimateStatus',
+    header: ({ column }) => columnHeader(column, 'Status'),
+    meta: { columnName: 'Status' },
+    cell: ({ row }) => {
+      return (
+        <div
+          className={cn(
+            'w-fit rounded-lg border border-slate-300 p-2 shadow-md',
+            {
+              'bg-red-500': row.original.estimateStatus === 'Not Started',
+              'bg-yellow-500': row.original.estimateStatus === 'In Progress',
+              'bg-green-500': row.original.estimateStatus === 'Completed',
+            },
+          )}
+        >
+          {row.original.estimateStatus}
+        </div>
+      )
+    },
+  },
+
   {
     accessorKey: 'createdAt',
     header: ({ column }) => columnHeader(column, 'Created'),
     meta: { columnName: 'Created' },
     cell: ({ row }) => {
-      const dateDistance = formatDistance(
+      const dateDistance = formatDistanceToNowStrict(
         new Date(row.original.createdAt),
-        new Date(),
-        {
-          addSuffix: true,
-        },
+        { addSuffix: true },
       )
       return <div className="">{dateDistance}</div>
     },
