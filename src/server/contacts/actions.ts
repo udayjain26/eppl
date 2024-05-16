@@ -1,6 +1,6 @@
 'use server'
 
-import { ContactFormSchema } from '@/schemas/contact-schema'
+import { ContactFormSchema } from '@/schemas/contact-form-schema'
 import { auth } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '../db'

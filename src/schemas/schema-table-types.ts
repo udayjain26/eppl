@@ -1,5 +1,3 @@
-import { EnumValues } from 'zod'
-
 export type Client = {
   uuid: string
   clientFullName: string
@@ -47,10 +45,13 @@ export type Estimate = {
     isActive: boolean
   }
   contactUuid: string
+  estimateProductUuid: string
+  product: { productName: string }
   estimateNumber: number
   estimateTitle: string
   estimateDescription: string
   estimateStatus: string
+  estimateRevisionStage: string
   currentRevision: number
   createdAt: Date
   updatedAt: Date

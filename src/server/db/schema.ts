@@ -1,3 +1,4 @@
+import { sub } from 'date-fns'
 import { relations } from 'drizzle-orm'
 import {
   uuid,
@@ -90,7 +91,8 @@ export const estimateStatusEnum = pgEnum('estimate_status', [
 export const estimateRevisionStageEnum = pgEnum('estimate_stage', [
   'New',
   'Drafting',
-  'Estimator Approval',
+  'Estimation',
+  'Estimation Approval',
   'Client Approval',
   'Won',
   'Lost',
@@ -154,6 +156,40 @@ export const contactsRelations = relations(contacts, ({ one }) => ({
   }),
 }))
 
+export const productsCategory = createTable('products_category', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  productsCategoryName: varchar('product_category_name', {
+    length: 256,
+  }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }).notNull(),
+})
+
+export const productsCategoryRelations = relations(
+  productsCategory,
+  ({ many }) => ({
+    products: many(products),
+  }),
+)
+
+export const products = createTable('products', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  productUuid: uuid('product_uuid')
+    .references(() => productsCategory.uuid)
+    .notNull(),
+  productName: varchar('product_name', { length: 256 }).notNull(),
+  productDescription: varchar('product_description', { length: 256 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }).notNull(),
+})
+
+export const productsRelations = relations(products, ({ one }) => ({
+  productsCategory: one(productsCategory, {
+    fields: [products.productUuid],
+    references: [productsCategory.uuid],
+  }),
+}))
+
 export const estimates = createTable('estimates', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
   clientUuid: uuid('client_uuid')
@@ -161,6 +197,9 @@ export const estimates = createTable('estimates', {
     .notNull(),
   contactUuid: uuid('contact_uuid')
     .references(() => contacts.uuid)
+    .notNull(),
+  estimateProductUuid: uuid('estimate_product_uuid')
+    .references(() => products.uuid)
     .notNull(),
   estimateNumber: serial('estimate_number').notNull(),
   estimateTitle: varchar('estimate_title', { length: 256 }).notNull(),
@@ -183,5 +222,9 @@ export const estimatesRelations = relations(estimates, ({ one }) => ({
   contact: one(contacts, {
     fields: [estimates.contactUuid],
     references: [contacts.uuid],
+  }),
+  product: one(products, {
+    fields: [estimates.estimateProductUuid],
+    references: [products.uuid],
   }),
 }))

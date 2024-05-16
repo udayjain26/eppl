@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server'
 import { db } from '../db'
 import { clients } from '../db/schema'
 
-import { ClientFormSchema } from '@/schemas/client-schema'
+import { ClientFormSchema } from '@/schemas/client-form-schema'
 import { revalidatePath } from 'next/cache'
 
 //Form Schema for creating a client in the database

@@ -3,7 +3,8 @@
 import { Estimate } from '@/schemas/schema-table-types'
 import { db } from '../db'
 
-export async function getEstimatesData(): Promise<Estimate[]> {
+//This function is being used to populate data for the estimates main table!
+export async function getEstimatesDataForTable(): Promise<Estimate[]> {
   try {
     const data = (await db.query.estimates.findMany({
       with: {
@@ -17,6 +18,9 @@ export async function getEstimatesData(): Promise<Estimate[]> {
             contactDesignation: true,
             isActive: true,
           },
+        },
+        product: {
+          columns: { productName: true },
         },
       },
     })) as Estimate[]

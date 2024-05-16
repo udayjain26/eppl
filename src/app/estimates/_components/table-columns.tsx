@@ -80,6 +80,18 @@ export const estimatesColumns: ColumnDef<Estimate>[] = [
     },
   },
   {
+    accessorKey: 'estimateProductUuid',
+    header: ({ column }) => columnHeader(column, 'Product'),
+    meta: { columnName: 'Product' },
+    cell: ({ row }) => {
+      return (
+        <div>
+          <p className="">{row.original.product.productName}</p>
+        </div>
+      )
+    },
+  },
+  {
     accessorKey: 'clientUuid',
     header: ({ column }) => columnHeader(column, 'Client'),
     meta: { columnName: 'Client' },

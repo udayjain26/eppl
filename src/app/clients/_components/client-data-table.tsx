@@ -73,8 +73,8 @@ export function ClientDataTable<TData, TValue>({
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="flex flex-col gap-x-2 gap-y-2 py-2 sm:flex-row">
-        <div className="flex w-full sm:w-64">
+      <div className="flex flex-col justify-between gap-x-2 gap-y-2 py-2 sm:flex-row">
+        <div className="flex flex-col gap-x-2 gap-y-2 sm:w-fit sm:flex-row">
           <Input
             placeholder="Search..."
             value={
@@ -83,40 +83,42 @@ export function ClientDataTable<TData, TValue>({
             onChange={(event) => {
               table.getColumn(searchColumn)?.setFilterValue(event.target.value)
             }}
-            className=""
+            className="w-full max-w-full"
           />
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant={'outline'}>
-              Searching by:{' '}
-              {table.getColumn(searchColumn)?.columnDef.meta?.columnName}
-              <span>
-                <ChevronDown
-                  className=""
-                  strokeWidth={1}
-                  size={24}
-                ></ChevronDown>
-              </span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {table.getAllColumns().map((column) => {
-              return (
-                <DropdownMenuItem
-                  key={column.id}
-                  onSelect={() => {
-                    table.getColumn(searchColumn)?.setFilterValue('')
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant={'outline'}>
+                Searching by:{' '}
+                {table.getColumn(searchColumn)?.columnDef.meta?.columnName}
+                <span>
+                  <ChevronDown
+                    className=""
+                    strokeWidth={1}
+                    size={24}
+                  ></ChevronDown>
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {table.getAllColumns().map((column) => {
+                return (
+                  <DropdownMenuItem
+                    key={column.id}
+                    onSelect={() => {
+                      table.getColumn(searchColumn)?.setFilterValue('')
 
-                    setSearchColumn(column.id)
-                  }}
-                >
-                  {column.columnDef.meta?.columnName}
-                </DropdownMenuItem>
-              )
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                      setSearchColumn(column.id)
+                    }}
+                  >
+                    {column.columnDef.meta?.columnName}
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="flex grow"></div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="">

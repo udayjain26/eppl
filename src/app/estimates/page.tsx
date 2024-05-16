@@ -3,10 +3,10 @@ import PageWrapper from '../_components/page-wrapper'
 import { CreateEstimateSheet } from './_components/create-estimate-sheet'
 import { EstimateDataTable } from './_components/estimates-data-table'
 import { estimatesColumns } from './_components/table-columns'
-import { getEstimatesData } from '@/server/estimates/queries'
+import { getEstimatesDataForTable } from '@/server/estimates/queries'
 
 export default async function QuotationsPage() {
-  const estimatesData = await getEstimatesData()
+  const estimatesData = await getEstimatesDataForTable()
 
   return (
     <PageWrapper>

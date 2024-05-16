@@ -15,7 +15,7 @@ import {
 import { ClientFormState, createClient } from '@/server/clients/actions'
 import { useFormState, useFormStatus } from 'react-dom'
 
-import { ClientFormSchema } from '@/schemas/client-schema'
+import { ClientFormSchema } from '@/schemas/client-form-schema'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { CheckIcon, ChevronsUpDown } from 'lucide-react'

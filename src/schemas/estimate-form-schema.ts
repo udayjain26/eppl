@@ -1,4 +1,7 @@
-import { estimateStatusEnum } from '@/server/db/schema'
+import {
+  estimateRevisionStageEnum,
+  estimateStatusEnum,
+} from '@/server/db/schema'
 import { z } from 'zod'
 
 export const EstimateFormSchema = z.object({
@@ -9,11 +12,20 @@ export const EstimateFormSchema = z.object({
   contactUuid: z
     .string({ message: 'Please select a contact to create the estimate for' })
     .uuid(),
+  estimateProductCategoryUuid: z
+    .string({
+      message: 'Please select a product category to create the estimate for',
+    })
+    .uuid(),
+  estimateProductUuid: z
+    .string({ message: 'Please select a product to create the estimate for' })
+    .uuid(),
   estimateNumber: z.number(),
   estimateTitle: z.string({ message: 'Give a title to your estimate' }).trim(),
   estimateDescription: z
     .string({ message: 'Give a description to your estimate' })
     .trim(),
+  estimateRevisionStage: z.enum(estimateRevisionStageEnum.enumValues),
   estimateStatus: z.enum(estimateStatusEnum.enumValues),
   currentRevision: z.number(),
   createdAt: z.date(),
