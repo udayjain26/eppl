@@ -146,7 +146,6 @@ export async function updateClient(
       // Add createdBy and updatedBy fields to the validated data
       const dataWithUserIds = {
         ...validatedFields.data,
-        createdBy: user.userId,
         updatedBy: user.userId,
         updatedAt: new Date(),
       }
@@ -157,6 +156,7 @@ export async function updateClient(
         .set(dataWithUserIds)
         .where(eq(clients.uuid, formData.get('uuid') as string))
     } catch (error) {
+      console.log(error)
       return {
         message: 'Database Error: Failed to Update Client.',
       } as ClientFormState
