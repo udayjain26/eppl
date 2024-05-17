@@ -5,7 +5,7 @@ import {
   formatDistanceToNowStrict,
 } from 'date-fns'
 
-import { Estimate } from '@/schemas/schema-table-types'
+// import { Estimate } from '@/schemas/schema-table-types'
 import { ColumnDef } from '@tanstack/react-table'
 import {
   Dialog,
@@ -28,8 +28,9 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { FileWarning } from 'lucide-react'
+import { EstimateTableRow } from '@/schemas/schema-table-types'
 
-export const estimatesColumns: ColumnDef<Estimate>[] = [
+export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
   {
     accessorKey: 'estimateNumber',
     header: ({ column }) => columnHeader(column, 'Estimate No.'),
@@ -84,6 +85,7 @@ export const estimatesColumns: ColumnDef<Estimate>[] = [
     header: ({ column }) => columnHeader(column, 'Product'),
     meta: { columnName: 'Product' },
     cell: ({ row }) => {
+      console.log(row.original)
       return (
         <div>
           <p className="">{row.original.product.productName}</p>

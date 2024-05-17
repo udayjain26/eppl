@@ -1,4 +1,3 @@
-import { sub } from 'date-fns'
 import { relations } from 'drizzle-orm'
 import {
   uuid,
@@ -13,6 +12,7 @@ import {
   serial,
   decimal,
   numeric,
+  foreignKey,
 } from 'drizzle-orm/pg-core'
 
 // ENUMS used in the application
@@ -156,37 +156,39 @@ export const contactsRelations = relations(contacts, ({ one }) => ({
   }),
 }))
 
-export const productsCategory = createTable('products_category', {
+export const productsType = createTable('products_type', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
-  productsCategoryName: varchar('product_category_name', {
+  productsTypeName: varchar('products_type_name', {
     length: 256,
-  }).notNull(),
+  })
+    .notNull()
+    .unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  createdBy: varchar('created_by', { length: 256 }).notNull(),
+  createdBy: varchar('created_by', { length: 256 })
+    .default('user_2fdHwaoM6ctXwzacF7sfDpbLsFN')
+    .notNull(),
 })
 
-export const productsCategoryRelations = relations(
-  productsCategory,
-  ({ many }) => ({
-    products: many(products),
-  }),
-)
+export const productsTypeRelations = relations(productsType, ({ many }) => ({
+  products: many(products),
+}))
 
 export const products = createTable('products', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
-  productUuid: uuid('product_uuid')
-    .references(() => productsCategory.uuid)
+  productsTypeUuid: uuid('products_type_uuid')
+    .references(() => productsType.uuid)
     .notNull(),
-  productName: varchar('product_name', { length: 256 }).notNull(),
-  productDescription: varchar('product_description', { length: 256 }),
+  productName: varchar('product_name', { length: 256 }).notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  createdBy: varchar('created_by', { length: 256 }).notNull(),
+  createdBy: varchar('created_by', { length: 256 })
+    .default('user_2fdHwaoM6ctXwzacF7sfDpbLsFN')
+    .notNull(),
 })
 
 export const productsRelations = relations(products, ({ one }) => ({
-  productsCategory: one(productsCategory, {
-    fields: [products.productUuid],
-    references: [productsCategory.uuid],
+  productsCategory: one(productsType, {
+    fields: [products.productsTypeUuid],
+    references: [productsType.uuid],
   }),
 }))
 
@@ -201,12 +203,17 @@ export const estimates = createTable('estimates', {
   estimateProductUuid: uuid('estimate_product_uuid')
     .references(() => products.uuid)
     .notNull(),
+  estimateProductTypeUuid: uuid('estimate_product_type_uuid')
+    .references(() => productsType.uuid)
+    .notNull(),
   estimateNumber: serial('estimate_number').notNull(),
   estimateTitle: varchar('estimate_title', { length: 256 }).notNull(),
   estimateDescription: varchar('estimate_description', {
     length: 256,
   }).notNull(),
   estimateStatus: estimateStatusEnum('estimate_status').default('Not Started'),
+  estimateRevisionStage:
+    estimateRevisionStageEnum('estimate_stage').default('New'),
   currentRevision: smallint('current_revision').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -222,6 +229,10 @@ export const estimatesRelations = relations(estimates, ({ one }) => ({
   contact: one(contacts, {
     fields: [estimates.contactUuid],
     references: [contacts.uuid],
+  }),
+  productType: one(productsType, {
+    fields: [estimates.estimateProductTypeUuid],
+    references: [productsType.uuid],
   }),
   product: one(products, {
     fields: [estimates.estimateProductUuid],

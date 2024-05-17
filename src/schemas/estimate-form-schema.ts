@@ -12,7 +12,7 @@ export const EstimateFormSchema = z.object({
   contactUuid: z
     .string({ message: 'Please select a contact to create the estimate for' })
     .uuid(),
-  estimateProductCategoryUuid: z
+  estimateProductTypeUuid: z
     .string({
       message: 'Please select a product category to create the estimate for',
     })

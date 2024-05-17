@@ -39,6 +39,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
 import { toast } from 'sonner'
+import { getProductTypesWithProducts } from '@/server/products/queries'
 
 export function CreateEstimateForm({
   closeDialog,
@@ -57,6 +58,21 @@ export function CreateEstimateForm({
       fullName: string
     }[]
   }
+
+  interface ProductsData {
+    uuid: string
+    createdAt: Date
+    createdBy: string
+    productsTypeName: string
+    products: {
+      uuid: string
+      createdAt: Date
+      createdBy: string
+      productsTypeUuid: string
+      productName: string
+    }[]
+  }
+  ;[]
   const [openClient, setOpenClient] = useState(false)
   const closeClientPopover = () => {
     setOpenClient(false)
@@ -66,13 +82,30 @@ export function CreateEstimateForm({
   const closeContactPopover = () => {
     setOpenContact(false)
   }
+
+  const [openProductType, setOpenProductType] = useState(false)
+  const closeProductTypePopover = () => {
+    setOpenProductType(false)
+  }
+
+  const [openProduct, setOpenProduct] = useState(false)
+  const closeProductPopover = () => {
+    setOpenProduct(false)
+  }
   const [clientsData, setClientsData] = useState<ClientData[] | null>(null)
+  const [productsData, setProductsData] = useState<ProductsData[] | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       // Fetch your data here
-      const data = (await getClientsDataIdAndNameWithContacts()) as ClientData[]
-      setClientsData(data)
+      const [fetchedClientsData, fetchedProductsData] = await Promise.all([
+        getClientsDataIdAndNameWithContacts(),
+        getProductTypesWithProducts(),
+      ])
+      // const data = (await getClientsDataIdAndNameWithContacts()) as ClientData[]
+      // setClientsData(data)
+      setClientsData(fetchedClientsData as ClientData[])
+      setProductsData(fetchedProductsData as ProductsData[])
     }
 
     fetchData()
@@ -345,6 +378,194 @@ export function CreateEstimateForm({
                 <div>
                   {state.errors?.estimateDescription &&
                     state.errors.estimateDescription.map((error: string) => (
+                      <p className=" text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="estimateProductTypeUuid"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-y-1">
+                <FormLabel>Product Type</FormLabel>
+                <Popover
+                  modal={true}
+                  open={openProductType}
+                  onOpenChange={setOpenProductType}
+                >
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          ' justify-between',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        <input
+                          type="hidden"
+                          name="estimateProductTypeUuid"
+                          value={field.value ? field.value : ''}
+                        />
+                        {field.value
+                          ? productsData !== null
+                            ? productsData.find(
+                                (productType) =>
+                                  productType.uuid === field.value,
+                              )?.productsTypeName
+                            : 'Loading...'
+                          : 'Choose Product Type'}
+                        <ChevronsUpDown size={24} strokeWidth={1} />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className=" p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search Product Types..."
+                        className="h-10"
+                      />
+                      <CommandEmpty>No type found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandList>
+                          {productsData &&
+                            productsData.map((productType) => (
+                              <CommandItem
+                                value={productType.productsTypeName}
+                                key={productType.uuid}
+                                onSelect={() => {
+                                  form.setValue(
+                                    'estimateProductTypeUuid',
+                                    productType.uuid,
+                                  )
+                                  closeProductTypePopover()
+                                }}
+                              >
+                                {productType.productsTypeName}
+                                <CheckIcon
+                                  className={cn(
+                                    'ml-auto h-4 w-4',
+                                    productType.uuid === field.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                        </CommandList>
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <div>
+                  {state.errors?.estimateProductTypeUuid &&
+                    state.errors.estimateProductTypeUuid.map(
+                      (error: string) => (
+                        <p className=" text-sm text-red-500" key={error}>
+                          {error}
+                        </p>
+                      ),
+                    )}
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="estimateProductUuid"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-y-1">
+                <FormLabel>Product</FormLabel>
+                <Popover
+                  modal={true}
+                  open={openProduct}
+                  onOpenChange={setOpenProduct}
+                >
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          ' justify-between',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        <input
+                          type="hidden"
+                          name="estimateProductUuid"
+                          value={field.value ? field.value : ''}
+                        />
+                        {field.value
+                          ? productsData !== null
+                            ? productsData
+                                .find(
+                                  (productType) =>
+                                    productType.uuid ===
+                                    form.getValues('estimateProductTypeUuid'),
+                                )
+                                ?.products.find(
+                                  (product) => product.uuid === field.value,
+                                )?.productName
+                            : 'Loading...'
+                          : 'Choose Product'}
+                        <ChevronsUpDown size={24} strokeWidth={1} />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className=" p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search Products..."
+                        className="h-10"
+                      />
+                      <CommandEmpty>No products found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandList>
+                          {productsData &&
+                            productsData
+                              ?.find(
+                                (productType) =>
+                                  productType.uuid ===
+                                  form.getValues('estimateProductTypeUuid'),
+                              )
+                              ?.products.map((product) => (
+                                <CommandItem
+                                  value={product.productName}
+                                  key={product.uuid}
+                                  onSelect={() => {
+                                    form.setValue(
+                                      'estimateProductUuid',
+                                      product.uuid,
+                                    )
+
+                                    closeProductPopover()
+                                  }}
+                                >
+                                  {product.productName}
+                                  <CheckIcon
+                                    className={cn(
+                                      'ml-auto h-4 w-4',
+                                      product.uuid === field.value
+                                        ? 'opacity-100'
+                                        : 'opacity-0',
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                        </CommandList>
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <div>
+                  {state.errors?.estimateProductUuid &&
+                    state.errors.estimateProductUuid.map((error: string) => (
                       <p className=" text-sm text-red-500" key={error}>
                         {error}
                       </p>

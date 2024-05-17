@@ -3,7 +3,7 @@
 import { EstimateFormSchema } from '@/schemas/estimate-form-schema'
 import { auth } from '@clerk/nextjs/server'
 import { db } from '../db'
-import { estimates } from '../db/schema'
+import { estimateRevisionStageEnum, estimates } from '../db/schema'
 import { date } from 'drizzle-orm/mysql-core'
 import { revalidatePath } from 'next/cache'
 
@@ -12,6 +12,7 @@ const CreateEstimate = EstimateFormSchema.omit({
   estimateNumber: true,
   currentRevision: true,
   estimateStatus: true,
+  estimateRevisionStage: true,
   createdAt: true,
   updatedAt: true,
   createdBy: true,
@@ -34,6 +35,8 @@ export type EstimateFormState = {
     contactUuid?: string[] | null
     estimateTitle?: string[] | null
     estimateDescription?: string[] | null
+    estimateProductTypeUuid?: string[] | null
+    estimateProductUuid?: string[] | null
   }
   message?: string | null
   actionSuccess?: boolean | null
@@ -67,6 +70,11 @@ export async function createEstimate(
       const dataWithUserIds = {
         ...validatedFields.data,
         // clientUuid: previousState.clientUuid,
+        estimateRevisionStage: estimateRevisionStageEnum.enumValues.find(
+          (value) => {
+            value === 'New'
+          },
+        ),
         createdBy: user.userId,
         updatedBy: user.userId,
       }

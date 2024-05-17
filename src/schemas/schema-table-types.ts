@@ -32,21 +32,12 @@ export type Contact = {
   updatedBy: string | null
 }
 
-export type Estimate = {
+export type EstimateTableRow = {
   uuid: string
   clientUuid: string
-  client: { clientNickName: string }
-  contact: {
-    contactFirstName: string
-    contactLastName: string
-    contactEmail: string
-    contactMobile: string
-    contactDesignation: string
-    isActive: boolean
-  }
   contactUuid: string
   estimateProductUuid: string
-  product: { productName: string }
+  estimateProductTypeUuid: string
   estimateNumber: number
   estimateTitle: string
   estimateDescription: string
@@ -55,6 +46,17 @@ export type Estimate = {
   currentRevision: number
   createdAt: Date
   updatedAt: Date
-  createdBy: string | null
-  updatedBy: string | null
+  createdBy: string
+  updatedBy: string
+  client: { clientNickName: string }
+  contact: {
+    contactFirstName: string
+    contactLastName: string
+    contactEmail: string
+    contactMobile: string
+    contactDesignation: string
+    isActive: true
+  }
+  productType: { productsTypeName: string }
+  product: { productName: string }
 }

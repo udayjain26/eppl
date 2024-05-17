@@ -12,7 +12,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { Client } from '@/schemas/schema-table-types'
 
 export function CreateClientSheet() {
   const [open, setOpen] = useState(false)

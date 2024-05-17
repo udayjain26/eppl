@@ -1,10 +1,10 @@
 'use server'
 
-import { Estimate } from '@/schemas/schema-table-types'
+import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { db } from '../db'
 
 //This function is being used to populate data for the estimates main table!
-export async function getEstimatesDataForTable(): Promise<Estimate[]> {
+export async function getEstimatesDataForTable(): Promise<EstimateTableRow[]> {
   try {
     const data = (await db.query.estimates.findMany({
       with: {
@@ -19,15 +19,13 @@ export async function getEstimatesDataForTable(): Promise<Estimate[]> {
             isActive: true,
           },
         },
-        product: {
-          columns: { productName: true },
-        },
+        productType: { columns: { productsTypeName: true } },
+        product: { columns: { productName: true } },
       },
-    })) as Estimate[]
+    })) as EstimateTableRow[]
 
     return data
   } catch (error) {
     throw new Error('Failed to fetch estimates data')
   }
-  return []
 }
