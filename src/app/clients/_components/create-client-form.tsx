@@ -129,11 +129,13 @@ export function CreateClientForm({
         action={formAction}
         className=" flex h-full w-full flex-col justify-start space-y-2"
       >
-        <input
-          hidden
-          value={clientData?.uuid ? clientData.uuid : undefined}
-          name="uuid"
-        ></input>
+        {clientData ? (
+          <input
+            hidden
+            value={clientData?.uuid ? clientData.uuid : undefined}
+            name="uuid"
+          ></input>
+        ) : null}
 
         <div className="flex h-fit flex-col  gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
           <FormField

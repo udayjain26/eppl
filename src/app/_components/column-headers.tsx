@@ -19,13 +19,7 @@ export default function columnHeader(
     <Button
       variant="ghost"
       onClick={() => {
-        if (column.getIsSorted() === 'asc') {
-          column.toggleSorting(true)
-        } else if (column.getIsSorted() === 'desc') {
-          column.toggleSorting(undefined)
-        } else {
-          column.toggleSorting(false)
-        }
+        column.toggleSorting()
       }}
       className="flex min-w-28 flex-row items-center justify-start gap-1 p-0"
     >

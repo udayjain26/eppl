@@ -33,12 +33,12 @@ import { EstimateTableRow } from '@/schemas/schema-table-types'
 export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
   {
     accessorKey: 'estimateNumber',
-    header: ({ column }) => columnHeader(column, 'Estimate No.'),
+    header: ({ column }) => columnHeader(column, 'Est ID'),
     meta: { columnName: 'Estimate No.' },
   },
   {
     accessorKey: 'currentRevision',
-    header: ({ column }) => columnHeader(column, 'Revision No.'),
+    header: ({ column }) => columnHeader(column, 'Rev No.'),
     meta: { columnName: 'Revision No.' },
   },
   {
@@ -73,7 +73,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
           className={buttonVariants({ variant: 'outline' })}
           href={`/estimates/${row.original.uuid}`}
         >
-          <p className=" hover:underline hover:underline-offset-2">
+          <p className=" max-w-48 overflow-clip hover:underline hover:underline-offset-2">
             {row.original.estimateTitle}
           </p>
         </Link>
@@ -81,20 +81,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     },
   },
   {
-    accessorKey: 'estimateProductUuid',
-    header: ({ column }) => columnHeader(column, 'Product'),
-    meta: { columnName: 'Product' },
-    cell: ({ row }) => {
-      console.log(row.original)
-      return (
-        <div>
-          <p className="">{row.original.product.productName}</p>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'clientUuid',
+    accessorKey: 'client.clientNickName',
     header: ({ column }) => columnHeader(column, 'Client'),
     meta: { columnName: 'Client' },
     cell: ({ row }) => {
@@ -114,7 +101,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     },
   },
   {
-    accessorKey: 'contactUuid',
+    accessorKey: 'contact.contactFullName',
     header: ({ column }) => columnHeader(column, 'Contact'),
     meta: { columnName: 'Contact' },
     cell: ({ row }) => {
@@ -154,6 +141,30 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
             </p>
           </PopoverContent>
         </Popover>
+      )
+    },
+  },
+  {
+    accessorKey: 'estimateProductTypeUuid',
+    header: ({ column }) => columnHeader(column, 'Product Type'),
+    meta: { columnName: 'Product Type' },
+    cell: ({ row }) => {
+      return (
+        <div>
+          <p className="">{row.original.productType.productsTypeName}</p>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: 'estimateProductUuid',
+    header: ({ column }) => columnHeader(column, 'Product'),
+    meta: { columnName: 'Product' },
+    cell: ({ row }) => {
+      return (
+        <div>
+          <p className="">{row.original.product.productName}</p>
+        </div>
       )
     },
   },

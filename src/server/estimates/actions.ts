@@ -55,10 +55,8 @@ export async function createEstimate(
   formData.forEach((value, key) => {
     transformedData[key] = emptyStringToNullTransformer(value)
   })
-  console.log(transformedData)
   const validatedFields = CreateEstimate.safeParse(transformedData)
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       actionSuccess: false,

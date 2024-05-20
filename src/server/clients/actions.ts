@@ -78,6 +78,7 @@ export async function createClient(
     numFields += 1
     transformedData[key] = emptyStringToNullTransformer(value)
   })
+  console.log(transformedData, numFields)
   //BANDAID solution to getting only first 2 fields
   const validatedFields =
     numFields === 2
@@ -85,7 +86,6 @@ export async function createClient(
       : CreateClient.safeParse(transformedData)
 
   if (!validatedFields.success) {
-    console.log(validatedFields)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message:
@@ -120,7 +120,6 @@ export async function updateClient(
   if (!user.userId) {
     throw new Error('User Unauthenitcated')
   }
-  console.log(formData)
   //Transforming the form data to remove empty strings
   const transformedData: transformedData = {}
   var numFields = 0
@@ -135,7 +134,7 @@ export async function updateClient(
       : CreateClient.safeParse(transformedData)
 
   if (!validatedFields.success) {
-    console.log(validatedFields)
+    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message:
@@ -150,13 +149,11 @@ export async function updateClient(
         updatedAt: new Date(),
       }
       // await db.insert(clients).values(dataWithUserIds)
-      console.log(dataWithUserIds)
       const result = await db
         .update(clients)
         .set(dataWithUserIds)
         .where(eq(clients.uuid, formData.get('uuid') as string))
     } catch (error) {
-      console.log(error)
       return {
         message: 'Database Error: Failed to Update Client.',
       } as ClientFormState

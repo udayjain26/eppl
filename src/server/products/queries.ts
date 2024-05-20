@@ -8,6 +8,5 @@ export async function getProductTypesWithProducts() {
       products: true,
     },
   })
-  console.log(data)
   return data
 }

@@ -8,7 +8,7 @@ export const ClientFormSchema = z.object({
   gstin: z.coerce
     .string()
     .trim()
-    .regex(new RegExp('^\\d{2}[A-Z]{5}\\d{4}[A-Z]\\dZ\\d$'), {
+    .regex(new RegExp('^\\d{2}[A-Z]{5}\\d{4}[A-Z]\\dZ.$'), {
       message: 'Incorrectly formatted GSTIN',
     })
     .length(15, { message: 'The GSTIN must be exactly 15 characters' })

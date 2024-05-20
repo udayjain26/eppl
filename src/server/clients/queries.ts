@@ -46,7 +46,7 @@ export async function getClientsDataIdAndNameWithContacts(): Promise<{}[]> {
         contacts: {
           extras: {
             fullName:
-              sql`${contacts.contactFirstName} || ' ' || ${contacts.contactLastName}`.as(
+              sql`TRIM(${contacts.contactFirstName} || ' ' || COALESCE(${contacts.contactLastName}, ''))`.as(
                 'full_name',
               ),
           },

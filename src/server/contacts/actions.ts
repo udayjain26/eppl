@@ -52,12 +52,10 @@ export async function createContact(
   formData.forEach((value, key) => {
     transformedData[key] = emptyStringToNullTransformer(value)
   })
-  console.log(transformedData)
 
   const validatedFields = CreateContact.safeParse(transformedData)
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message:
@@ -72,7 +70,6 @@ export async function createContact(
         createdBy: user.userId,
         updatedBy: user.userId,
       }
-      console.log(dataWithUserIds)
       await db.insert(contacts).values(dataWithUserIds)
     } catch (error) {
       console.error(error)

@@ -52,6 +52,7 @@ export type EstimateTableRow = {
   contact: {
     contactFirstName: string
     contactLastName: string
+    contactFullName: string
     contactEmail: string
     contactMobile: string
     contactDesignation: string

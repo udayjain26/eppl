@@ -2,6 +2,8 @@
 
 import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { db } from '../db'
+import { contacts } from '../db/schema'
+import { sql } from 'drizzle-orm'
 
 //This function is being used to populate data for the estimates main table!
 export async function getEstimatesDataForTable(): Promise<EstimateTableRow[]> {
@@ -10,6 +12,12 @@ export async function getEstimatesDataForTable(): Promise<EstimateTableRow[]> {
       with: {
         client: { columns: { clientNickName: true } },
         contact: {
+          extras: {
+            contactFullName:
+              sql`TRIM(${contacts.contactFirstName} || ' ' || COALESCE(${contacts.contactLastName}, ''))`.as(
+                'full_name',
+              ),
+          },
           columns: {
             contactFirstName: true,
             contactLastName: true,
