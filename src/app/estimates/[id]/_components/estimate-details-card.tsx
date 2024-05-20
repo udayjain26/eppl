@@ -8,14 +8,7 @@ import {
 import { EstimateTableRow } from '@/schemas/schema-table-types'
 import Link from 'next/link'
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
-  MoreVertical,
-  Truck,
-} from 'lucide-react'
+import { MoreVertical } from 'lucide-react'
 
 import { CardDescription, CardFooter } from '@/components/ui/card'
 import {
@@ -25,17 +18,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-// import {
-//   Pagination,
-//   PaginationContent,
-//   PaginationItem,
-// } from '@/components/ui/pagination'
+
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { formatDistanceToNowStrict } from 'date-fns'
 
 export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
+  const dateDistance = formatDistanceToNowStrict(
+    new Date(props.estimateData.createdAt),
+    { addSuffix: true },
+  )
   return (
-    //
     <Card className="">
       <CardHeader className="flex flex-row items-start bg-muted/50">
         <div className="grid gap-0.5">
@@ -51,15 +44,13 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
         <div className="ml-auto flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="outline" className="h-8 w-8">
-                <MoreVertical className="h-3.5 w-3.5" />
+              <Button size="icon" variant="outline">
+                <MoreVertical strokeWidth={1} size={24} />
                 <span className="sr-only">More</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Create New Revision</DropdownMenuItem>
-              <DropdownMenuItem>Option 2</DropdownMenuItem>
-              <DropdownMenuItem>Option 3</DropdownMenuItem>
+              <DropdownMenuItem>Clone Estimate</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -107,7 +98,9 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
                   className={buttonVariants({ variant: 'ghost' })}
                   href={`/clients/${props.estimateData.clientUuid}`}
                 >
-                  {props.estimateData.client.clientNickName}
+                  <p className=" hover:underline hover:underline-offset-2">
+                    {props.estimateData.client.clientNickName}
+                  </p>
                 </Link>
               </span>
             </li>
@@ -122,31 +115,47 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
                       </p>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="flex w-fit flex-col gap-1  border border-slate-300">
-                    <p>{props.estimateData.contact.contactDesignation}</p>
-                    <div className="flex flex-row items-center ">
-                      <Link
-                        href={`mailto:${props.estimateData.contact.contactEmail}`}
-                      >
-                        <p className="text-blue-900 underline underline-offset-1">
-                          {props.estimateData.contact.contactEmail}
-                        </p>
-                      </Link>
-                    </div>
-                    <div className="flex flex-row items-center ">
-                      <Link
-                        href={`tel:${props.estimateData.contact.contactMobile}`}
-                      >
-                        <p className="text-blue-900 underline underline-offset-1">
-                          {props.estimateData.contact.contactMobile}
-                        </p>
-                      </Link>
-                    </div>
-                    <p>
-                      {props.estimateData.contact.isActive
-                        ? 'Active'
-                        : 'Inactive'}
-                    </p>
+                  <PopoverContent className="flex flex-col gap-1 border border-slate-300 p-4">
+                    <div className="font-semibold">Contact Details</div>
+                    <ul className="grid gap-2">
+                      <li className="flex items-center justify-between">
+                        <span className="text-muted-foreground">
+                          Designation
+                        </span>
+                        <span>
+                          {props.estimateData.contact.contactDesignation}
+                        </span>
+                      </li>
+
+                      <li className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Mobile</span>
+                        <Link
+                          href={`tel:${props.estimateData.contact.contactMobile}`}
+                        >
+                          <p className="text-blue-900 underline underline-offset-1">
+                            {props.estimateData.contact.contactMobile}
+                          </p>
+                        </Link>{' '}
+                      </li>
+                      <li className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Email</span>
+                        <Link
+                          href={`mailto:${props.estimateData.contact.contactEmail}`}
+                        >
+                          <p className="text-blue-900 underline underline-offset-1">
+                            {props.estimateData.contact.contactEmail}
+                          </p>
+                        </Link>
+                      </li>
+                      <li className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Active</span>
+                        <span>
+                          {props.estimateData.contact.isActive
+                            ? 'Active'
+                            : 'Inactive'}
+                        </span>
+                      </li>
+                    </ul>
                   </PopoverContent>
                 </Popover>
               </span>
@@ -164,6 +173,10 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
                 Current Revision Stage
               </span>
               <span>{props.estimateData.estimateRevisionStage}</span>
+            </li>
+            <li className="flex items-center justify-between ">
+              <span className="text-muted-foreground">Estimate Created</span>
+              <div className="">{dateDistance}</div>
             </li>
           </ul>
         </div>

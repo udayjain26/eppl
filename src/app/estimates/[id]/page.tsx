@@ -5,6 +5,7 @@ import { EstimateDetailsCard } from './_components/estimate-details-card'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { getEstimateDataById } from '@/server/estimates/queries'
 import { ChevronRight } from 'lucide-react'
+import { RevisionSelectCard } from './_components/revision-select-card'
 
 export default async function FullEstimatePage({
   params,
@@ -33,10 +34,11 @@ export default async function FullEstimatePage({
           </div>
         </div>
         <div className="mx-4 my-4 flex h-[90%] flex-col gap-x-4 gap-y-4  lg:flex-row">
-          <div className="flex flex-col p-2 sm:min-w-[22rem]">
+          <div className="flex flex-col gap-y-4 p-2 sm:min-w-[22rem]">
             <EstimateDetailsCard
               estimateData={estimateData}
             ></EstimateDetailsCard>
+            <RevisionSelectCard></RevisionSelectCard>
           </div>
           <div className="flex w-full flex-col rounded-xl p-2 "></div>
         </div>{' '}

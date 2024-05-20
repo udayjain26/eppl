@@ -29,7 +29,14 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     meta: { columnName: 'Estimate No.' },
     cell: ({ row }) => {
       return (
-        <div>{row.original.estimateNumber.toString().padStart(6, '0')}</div>
+        <Link
+          className={buttonVariants({ variant: 'ghost' })}
+          href={`/estimates/${row.original.uuid}`}
+        >
+          <p className=" max-w-48 overflow-clip hover:underline hover:underline-offset-2">
+            {row.original.estimateNumber.toString().padStart(6, '0')}
+          </p>
+        </Link>
       )
     },
   },
@@ -100,26 +107,38 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
               </p>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="flex w-fit flex-col gap-1  border border-slate-300">
-            <div className="mb-2   text-xl">{fullName}</div>
-            <p>Designation: {row.original.contact.contactDesignation}</p>
-            <div className="flex flex-row items-center ">
-              <Link href={`mailto:${row.original.contact.contactEmail}`}>
-                <p className="text-blue-900 underline underline-offset-1">
-                  {row.original.contact.contactEmail}
-                </p>
-              </Link>
-            </div>
-            <div className="flex flex-row items-center ">
-              <Link href={`tel:${row.original.contact.contactMobile}`}>
-                <p className="text-blue-900 underline underline-offset-1">
-                  {row.original.contact.contactMobile}
-                </p>
-              </Link>
-            </div>
-            <p>
-              Status: {row.original.contact.isActive ? 'Active' : 'Inactive'}
-            </p>
+
+          <PopoverContent className="flex flex-col gap-1 border border-slate-300 p-4">
+            <div className="font-semibold">Contact Details</div>
+            <ul className="grid gap-2">
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Designation</span>
+                <span>{row.original.contact.contactDesignation}</span>
+              </li>
+
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Mobile</span>
+                <Link href={`tel:${row.original.contact.contactMobile}`}>
+                  <p className="text-blue-900 underline underline-offset-1">
+                    {row.original.contact.contactMobile}
+                  </p>
+                </Link>{' '}
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Email</span>
+                <Link href={`mailto:${row.original.contact.contactEmail}`}>
+                  <p className="text-blue-900 underline underline-offset-1">
+                    {row.original.contact.contactEmail}
+                  </p>
+                </Link>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Active</span>
+                <span>
+                  {row.original.contact.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </li>
+            </ul>
           </PopoverContent>
         </Popover>
       )

@@ -1,6 +1,12 @@
 import PageWrapper from '@/app/_components/page-wrapper'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 import { getClientById } from '@/server/clients/queries'
 import { getContactsByClientUuid } from '@/server/contacts/queries'
@@ -49,10 +55,16 @@ export default async function FullClientPage({
             ></ClientCard>
           </div>
           <div className="flex w-full flex-col rounded-xl p-2 ">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="">Recent Activity</CardTitle>
-              </CardHeader>{' '}
+            <Card className="">
+              <CardHeader className="flex flex-row items-start bg-muted/50">
+                <CardTitle className="group flex items-center gap-2 text-lg">
+                  <p>Activity Logs</p>
+                </CardTitle>
+                <CardDescription>
+                  {/* Date Created: {props.clientData.createdAt.toDateString()} */}
+                </CardDescription>
+              </CardHeader>
+
               <CardContent>Coming Soon!</CardContent>
             </Card>
           </div>
