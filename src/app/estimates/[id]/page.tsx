@@ -5,7 +5,10 @@ import { EstimateDetailsCard } from './_components/estimate-details-card'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { getEstimateDataById } from '@/server/estimates/queries'
 import { ChevronRight } from 'lucide-react'
-import { RevisionSelectCard } from './_components/revision-select-card'
+import { RevisionDetailsCard } from './_components/revision-details-card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card } from '@/components/ui/card'
+import RevisionView from './_components/revision-view'
 
 export default async function FullEstimatePage({
   params,
@@ -20,7 +23,7 @@ export default async function FullEstimatePage({
 
   return (
     <PageWrapper>
-      <div className="h-full w-full ">
+      <div className="flex h-full w-full flex-col ">
         <div className="flex flex-row justify-evenly ">
           <div className="flex grow items-center px-4">
             {' '}
@@ -33,14 +36,33 @@ export default async function FullEstimatePage({
             </Link>
           </div>
         </div>
-        <div className="mx-4 my-4 flex h-[90%] flex-col gap-x-4 gap-y-4  lg:flex-row">
-          <div className="flex flex-col gap-y-4 p-2 sm:min-w-[22rem]">
-            <EstimateDetailsCard
-              estimateData={estimateData}
-            ></EstimateDetailsCard>
-            <RevisionSelectCard></RevisionSelectCard>
+        <div className="mx-4 my-4 flex h-[90%] flex-col gap-x-4 gap-y-4 overflow-auto lg:flex-row">
+          <div className="flex max-h-[94%] flex-col p-2 sm:min-w-[22rem]">
+            <Tabs
+              defaultValue="estimate"
+              className="flex max-h-full w-full flex-col"
+            >
+              <TabsList className="flex w-full justify-between">
+                <TabsTrigger className="flex grow" value="estimate">
+                  Estimate Details
+                </TabsTrigger>
+                <TabsTrigger className="flex grow" value="revisions">
+                  Revision Details
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent className="max-h-full" value="estimate">
+                <EstimateDetailsCard
+                  estimateData={estimateData}
+                ></EstimateDetailsCard>
+              </TabsContent>
+              <TabsContent value="revisions">
+                <RevisionDetailsCard></RevisionDetailsCard>
+              </TabsContent>
+            </Tabs>
           </div>
-          <div className="flex w-full flex-col rounded-xl p-2 "></div>
+          <div className="flex h-full min-h-96 w-full flex-col rounded-xl p-2 ">
+            <RevisionView></RevisionView>
+          </div>
         </div>{' '}
       </div>
     </PageWrapper>

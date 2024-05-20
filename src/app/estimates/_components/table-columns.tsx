@@ -177,7 +177,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
       return (
         <div
           className={cn(
-            'w-fit rounded-lg border border-slate-300 p-1 shadow-md',
+            'w-fit rounded-lg border border-slate-300 p-1 px-2 shadow-md',
             {
               'bg-red-500': row.original.estimateStatus === 'Not Started',
               'bg-yellow-500': row.original.estimateStatus === 'In Progress',

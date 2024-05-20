@@ -15,7 +15,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
@@ -29,7 +28,7 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
     { addSuffix: true },
   )
   return (
-    <Card className="">
+    <Card className="max-h-full overflow-y-auto">
       <CardHeader className="flex flex-row items-start bg-muted/50">
         <div className="grid gap-0.5">
           <CardTitle className="group flex items-center gap-2 text-lg">
@@ -37,7 +36,6 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             {props.estimateData.estimateNumber.toString().padStart(6, '0')}
           </CardTitle>
           <CardDescription>
-            <p>{props.estimateData.estimateDescription}</p>
             Date Created: {props.estimateData.createdAt.toDateString()}
           </CardDescription>
         </div>
@@ -51,11 +49,16 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Clone Estimate</DropdownMenuItem>
+              <DropdownMenuItem>Create Revision</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent className="p-4 text-sm">
+        <div className="flex flex-row items-center justify-center ">
+          {' '}
+          {props.estimateData.estimateDescription}
+        </div>
         <div className="grid gap-3">
           <div className="font-semibold">Estimate Details</div>
           <ul className="grid gap-3">
@@ -73,7 +76,7 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
                 {' '}
                 <div
                   className={cn(
-                    'w-fit rounded-lg border border-slate-300 p-1 shadow-md',
+                    'w-fit rounded-lg border border-slate-300 p-1 px-2 shadow-md',
                     {
                       'bg-red-500':
                         props.estimateData.estimateStatus === 'Not Started',
@@ -161,7 +164,6 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
               </span>
             </li>
             <Separator className="my-1" />
-
             <li className="flex items-center justify-between ">
               <span className="text-muted-foreground">
                 Current Revision Number

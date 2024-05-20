@@ -34,7 +34,7 @@ export default async function FullClientPage({
 
   return (
     <PageWrapper>
-      <div className="h-full w-full ">
+      <div className="h-full w-full">
         <div className="flex flex-row justify-evenly ">
           <div className="flex grow items-center px-4">
             {' '}
@@ -47,7 +47,7 @@ export default async function FullClientPage({
             </Link>
           </div>
         </div>
-        <div className="mx-4 my-4 flex h-[90%] flex-col gap-x-4 gap-y-4  lg:flex-row">
+        <div className="mx-4 my-4 flex h-[90%] flex-col gap-x-4 gap-y-4 overflow-auto lg:flex-row">
           <div className="flex flex-col p-2 sm:min-w-[22rem]">
             <ClientCard
               clientData={clientData}
