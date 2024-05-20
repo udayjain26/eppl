@@ -3,8 +3,12 @@ import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { ContactFormSchema } from '@/schemas/contact-form-schema'
-import { Client } from '@/schemas/schema-table-types'
-import { ContactFormState, createContact } from '@/server/contacts/actions'
+import { Contact } from '@/schemas/schema-table-types'
+import {
+  ContactFormState,
+  createContact,
+  updateContact,
+} from '@/server/contacts/actions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
@@ -18,6 +22,16 @@ function SubmitButton() {
   return (
     <Button type="submit" className="w-full" disabled={pending}>
       {pending ? 'Creating Contact...' : 'Create Contact'}
+    </Button>
+  )
+}
+
+function UpdateButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? 'Updating Contact...' : 'Update Contact'}
     </Button>
   )
 }
@@ -36,10 +50,12 @@ function CancelButton({ closeDialog }: { closeDialog: () => void }) {
 }
 export function CreateContactForm({
   closeDialog,
-  clientData,
+  clientUuid,
+  contactData,
 }: {
   closeDialog: () => void
-  clientData: Client
+  clientUuid: string
+  contactData?: Contact
 }) {
   const initialState: ContactFormState = {
     message: null,
@@ -47,14 +63,20 @@ export function CreateContactForm({
     actionSuccess: null,
   }
 
-  const [state, formAction] = useFormState(createContact, initialState)
+  const [state, formAction] = contactData
+    ? useFormState(updateContact, initialState)
+    : useFormState(createContact, initialState)
+
   const form = useForm<z.infer<typeof ContactFormSchema>>({
     resolver: zodResolver(ContactFormSchema),
   })
+
   useEffect(() => {
     if (state.actionSuccess === true) {
       closeDialog()
-      toast('Contact Created Succesfully!')
+      contactData
+        ? toast('Contact Updated Succesfully!')
+        : toast('Contact Created Succesfully!')
     }
   }, [state])
 
@@ -64,8 +86,16 @@ export function CreateContactForm({
         action={formAction}
         className=" flex h-full w-full flex-col justify-start gap-y-2"
       >
+        {contactData ? (
+          <input
+            hidden
+            value={contactData?.uuid ? contactData.uuid : undefined}
+            name="uuid"
+          ></input>
+        ) : null}
+
         <div className="flex h-fit flex-col gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl p-1 shadow-inner">
-          <input hidden type="text" name="clientUuid" value={clientData.uuid} />
+          <input hidden type="text" name="clientUuid" value={clientUuid} />
 
           <FormField
             control={form.control}
@@ -80,6 +110,7 @@ export function CreateContactForm({
                   type="text"
                   placeholder="Uday"
                   name="contactFirstName"
+                  defaultValue={contactData?.contactFirstName}
                 />
                 <div>
                   {state.errors?.contactFirstName &&
@@ -105,6 +136,7 @@ export function CreateContactForm({
                   type="text"
                   placeholder="Jain"
                   name="contactLastName"
+                  defaultValue={contactData?.contactLastName}
                 />
                 <div>
                   {state.errors?.contactLastName &&
@@ -130,6 +162,7 @@ export function CreateContactForm({
                   type="text"
                   placeholder="uday@excelprinters.com"
                   name="contactEmail"
+                  defaultValue={contactData?.contactEmail}
                 />
                 <div>
                   {state.errors?.contactEmail &&
@@ -155,6 +188,7 @@ export function CreateContactForm({
                   type="text"
                   placeholder="8588835451"
                   name="contactMobile"
+                  defaultValue={contactData?.contactMobile}
                 />
                 <div>
                   {state.errors?.contactMobile &&
@@ -180,6 +214,7 @@ export function CreateContactForm({
                   type="text"
                   placeholder="Software Developer"
                   name="contactDesignation"
+                  defaultValue={contactData?.contactDesignation}
                 />
                 <div>
                   {state.errors?.contactDesignation &&
@@ -203,7 +238,7 @@ export function CreateContactForm({
               </p>
             }
           </div>
-          <SubmitButton />
+          {contactData ? <UpdateButton /> : <SubmitButton />}
           <CancelButton closeDialog={closeDialog} />
         </div>
       </form>

@@ -38,12 +38,12 @@ export type EstimateTableRow = {
   contactUuid: string
   estimateProductUuid: string
   estimateProductTypeUuid: string
-  estimateNumber: number
+  estimateNumber: string | number
   estimateTitle: string
   estimateDescription: string
   estimateStatus: string
   estimateRevisionStage: string
-  currentRevision: number
+  currentRevision: string | number
   createdAt: Date
   updatedAt: Date
   createdBy: string

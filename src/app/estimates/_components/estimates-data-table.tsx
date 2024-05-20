@@ -35,6 +35,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { CreateEstimateSheet } from './create-estimate-sheet'
 import { ChevronDown } from 'lucide-react'
+import { EstimateTableRow } from '@/schemas/schema-table-types'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -54,6 +55,10 @@ export function EstimateDataTable<TData, TValue>({
   const [searchColumn, setSearchColumn] =
     React.useState<string>('estimateNumber')
 
+  // data.forEach((row) => {
+  //   row.estimateNumber = row.estimateNumber.toString()
+  //   console.log(row)
+  // })
   const table = useReactTable({
     data,
     columns,
@@ -137,7 +142,6 @@ export function EstimateDataTable<TData, TValue>({
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
-              .filter((column) => column.id !== 'actions')
               .map((column) => {
                 return (
                   <DropdownMenuCheckboxItem

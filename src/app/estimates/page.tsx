@@ -4,6 +4,7 @@ import { CreateEstimateSheet } from './_components/create-estimate-sheet'
 import { EstimateDataTable } from './_components/estimates-data-table'
 import { estimatesColumns } from './_components/table-columns'
 import { getEstimatesDataForTable } from '@/server/estimates/queries'
+import { estimates } from '@/server/db/schema'
 
 export default async function QuotationsPage() {
   const estimatesData = await getEstimatesDataForTable()

@@ -70,7 +70,7 @@ export async function createEstimate(
         // clientUuid: previousState.clientUuid,
         estimateRevisionStage: estimateRevisionStageEnum.enumValues.find(
           (value) => {
-            value === 'New'
+            value === 'No Revision'
           },
         ),
         createdBy: user.userId,
@@ -84,7 +84,6 @@ export async function createEstimate(
         message: 'Failed to create estimate. Please try again later.',
       } as EstimateFormState
     }
-    // Add createdBy and updatedBy fields to the validated data
   }
 
   revalidatePath('/estimate')

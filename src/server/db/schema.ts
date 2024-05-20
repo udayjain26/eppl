@@ -89,9 +89,9 @@ export const estimateStatusEnum = pgEnum('estimate_status', [
 ])
 
 export const estimateRevisionStageEnum = pgEnum('estimate_stage', [
-  'New',
+  'No Revision',
   'Drafting',
-  'Estimation',
+  'Pending Rates',
   'Estimation Approval',
   'Client Approval',
   'Won',
@@ -213,7 +213,7 @@ export const estimates = createTable('estimates', {
   }).notNull(),
   estimateStatus: estimateStatusEnum('estimate_status').default('Not Started'),
   estimateRevisionStage:
-    estimateRevisionStageEnum('estimate_stage').default('New'),
+    estimateRevisionStageEnum('estimate_stage').default('No Revision'),
   currentRevision: smallint('current_revision').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

@@ -26,7 +26,7 @@ export function CreateEstimateSheet() {
         <span className="pr-1">
           <Plus strokeWidth="1" size={28}></Plus>{' '}
         </span>
-        <div className="hidden sm:block">Create Estimate</div>
+        <div className="">Create Estimate</div>
       </SheetTrigger>
       <SheetContent
         className="flex h-full flex-col"

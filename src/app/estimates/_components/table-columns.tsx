@@ -7,14 +7,6 @@ import {
 
 // import { Estimate } from '@/schemas/schema-table-types'
 import { ColumnDef } from '@tanstack/react-table'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 
 import '@tanstack/react-table' //or vue, svelte, solid, qwik, etc.
 import columnHeader from '@/app/_components/column-headers'
@@ -35,6 +27,11 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     accessorKey: 'estimateNumber',
     header: ({ column }) => columnHeader(column, 'Est ID'),
     meta: { columnName: 'Estimate No.' },
+    cell: ({ row }) => {
+      return (
+        <div>{row.original.estimateNumber.toString().padStart(6, '0')}</div>
+      )
+    },
   },
   {
     accessorKey: 'currentRevision',
@@ -42,25 +39,9 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     meta: { columnName: 'Revision No.' },
   },
   {
-    accessorKey: 'revisionStage',
+    accessorKey: 'estimateRevisionStage',
     header: ({ column }) => columnHeader(column, 'Revision Stage'),
     meta: { columnName: 'Revision Stage' },
-    cell: ({ row }) => {
-      return (
-        // <div className="w-fit rounded-lg border border-slate-300 p-2 shadow-md"></div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant={'ghost'}>
-              <FileWarning strokeWidth={1} size={32} color="red"></FileWarning>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            No revisions found yet. Please create the first revision on the
-            estimates page.
-          </PopoverContent>
-        </Popover>
-      )
-    },
   },
 
   {
@@ -119,7 +100,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
               </p>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="gap-1border flex w-fit flex-col border border-slate-300">
+          <PopoverContent className="flex w-fit flex-col gap-1  border border-slate-300">
             <div className="mb-2   text-xl">{fullName}</div>
             <p>Designation: {row.original.contact.contactDesignation}</p>
             <div className="flex flex-row items-center ">
@@ -145,7 +126,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     },
   },
   {
-    accessorKey: 'estimateProductTypeUuid',
+    accessorKey: 'productType.productsTypeName',
     header: ({ column }) => columnHeader(column, 'Product Type'),
     meta: { columnName: 'Product Type' },
     cell: ({ row }) => {
@@ -157,7 +138,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     },
   },
   {
-    accessorKey: 'estimateProductUuid',
+    accessorKey: 'product.productName',
     header: ({ column }) => columnHeader(column, 'Product'),
     meta: { columnName: 'Product' },
     cell: ({ row }) => {
@@ -177,7 +158,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
       return (
         <div
           className={cn(
-            'w-fit rounded-lg border border-slate-300 p-2 shadow-md',
+            'w-fit rounded-lg border border-slate-300 p-1 shadow-md',
             {
               'bg-red-500': row.original.estimateStatus === 'Not Started',
               'bg-yellow-500': row.original.estimateStatus === 'In Progress',

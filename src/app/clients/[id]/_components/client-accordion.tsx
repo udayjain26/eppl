@@ -24,6 +24,7 @@ export default function ClientAccordion(props: {
       <Accordion
         type="single"
         defaultValue={'contacts'}
+        collapsible
         className="w-full overflow-y-scroll scroll-smooth"
       >
         <AccordionItem value="contacts">
@@ -50,7 +51,7 @@ export default function ClientAccordion(props: {
             </div>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="quotations">
+        <AccordionItem value="estimates">
           <AccordionTrigger>Estimates</AccordionTrigger>
           <AccordionContent></AccordionContent>
         </AccordionItem>

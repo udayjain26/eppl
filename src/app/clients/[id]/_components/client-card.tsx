@@ -1,7 +1,13 @@
 'use client'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
@@ -11,18 +17,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+
 import { Client } from '@/schemas/schema-table-types'
 
-import { Pencil, Info } from 'lucide-react'
-import Link from 'next/link'
+import { Pencil, Info, MoreVertical } from 'lucide-react'
 import { CreateClientForm } from '../../_components/create-client-form'
 import { useState } from 'react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import Link from 'next/link'
 
 export default function ClientCard(props: {
   clientData: Client
@@ -34,76 +40,89 @@ export default function ClientCard(props: {
     setOpen(false)
   }
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-md">
-          {props.clientData.clientFullName}
-        </CardTitle>
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger className={buttonVariants({ variant: 'outline' })}>
-            <span className="">
-              <Pencil strokeWidth={1} size={16}></Pencil>
-            </span>
-          </SheetTrigger>
-          <SheetContent
-            className="flex h-full flex-col"
-            onInteractOutside={(event) => {
-              event.preventDefault()
-            }}
-          >
-            <SheetHeader>
-              <SheetTitle>Edit Client</SheetTitle>
-              <SheetDescription>
-                Edit Details for {props.clientData.clientFullName}
-              </SheetDescription>
-            </SheetHeader>
-            <CreateClientForm
-              closeDialog={closeDialog}
-              clientData={props.clientData}
-            ></CreateClientForm>
-          </SheetContent>
-        </Sheet>
-
-        {/* <Link href={`/contacts/${props.clientData.uuid}/edit`}> */}
-
-        {/* </Link> */}
+    <Card className="">
+      <CardHeader className="flex flex-row items-start bg-muted/50">
+        <div className="grid gap-0.5">
+          <CardTitle className="group flex items-center gap-2 text-lg">
+            <p>{props.clientData.clientFullName}</p>
+          </CardTitle>
+          <CardDescription>
+            Date Created: {props.clientData.createdAt.toDateString()}
+          </CardDescription>
+        </div>
+        <div className="ml-auto flex items-center gap-1">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger className={buttonVariants({ variant: 'outline' })}>
+              <span className="">
+                <Pencil strokeWidth={1} size={16}></Pencil>
+              </span>
+            </SheetTrigger>
+            <SheetContent
+              className="flex h-full flex-col"
+              onInteractOutside={(event) => {
+                event.preventDefault()
+              }}
+            >
+              <SheetHeader>
+                <SheetTitle>Edit Client</SheetTitle>
+                <SheetDescription>
+                  Edit Details for {props.clientData.clientFullName}
+                </SheetDescription>
+              </SheetHeader>
+              <CreateClientForm
+                closeDialog={closeDialog}
+                clientData={props.clientData}
+              ></CreateClientForm>
+            </SheetContent>
+          </Sheet>
+        </div>
       </CardHeader>
-      <CardContent className="gap-y-2 text-sm ">
-        <div className=" font-semibold">GSTIN:</div>
-        <div className="text-slate-700">
-          <p>{props.clientData.gstin}</p>
-        </div>
+      <CardContent className="p-4 text-sm">
+        <div className="grid gap-3">
+          <div className="font-semibold">Client Details</div>
+          <ul className="grid gap-2">
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">GSTIN</span>
+              <span>{props.clientData.gstin}</span>
+            </li>
+            <Separator className="" />
 
-        <Separator></Separator>
-
-        <div className="text-md text-slate-700">
-          <div>
-            <p>
-              <span className="font-semibold">Address: </span>
-              {props.clientData.clientAddressLine1}{' '}
-              {props.clientData.clientAddressLine2}
-            </p>
-          </div>
-
-          <p>{props.clientData.clientAddressCity}</p>
-          <p>{props.clientData.clientAddressState}</p>
-          <p>{props.clientData.clientAddressPincode}</p>
-          <p>{props.clientData.clientWebsite}</p>
-          <div>
-            <p>
-              <span className="font-semibold">Industry: </span>
-              {props.clientData.clientIndustry}
-            </p>
-          </div>
-        </div>
-        <Separator></Separator>
-
-        <div className="mt-2 flex flex-row items-center gap-x-2 text-xs text-slate-700">
-          <Info strokeWidth={1} size={16}></Info>
-          <p>
-            Client created by {props.clientCreatedBy} on{' '}
-            {props.clientData.createdAt.toDateString()}
-          </p>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">Address</span>
+              <span>{props.clientData.clientAddressLine1}</span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground"></span>
+              <span>{props.clientData.clientAddressLine2}</span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">City</span>
+              <span>{props.clientData.clientAddressCity}</span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">State</span>
+              <span>{props.clientData.clientAddressState}</span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">Pincode</span>
+              <span>{props.clientData.clientAddressPincode}</span>
+            </li>
+          </ul>
+          <Separator className="" />
+          <ul className="grid gap-2">
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">Industry</span>
+              <span>{props.clientData.clientIndustry}</span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">Website</span>
+              {props.clientData.clientWebsite && (
+                <Link href={props.clientData.clientWebsite}>
+                  {props.clientData.clientWebsite}
+                </Link>
+              )}
+            </li>
+          </ul>
         </div>
       </CardContent>
     </Card>

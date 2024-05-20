@@ -49,7 +49,8 @@ export function CreateContactSheet({ props }: { props: { row: Client } }) {
         </SheetHeader>
         <CreateContactForm
           closeDialog={closeDialog}
-          clientData={props.row}
+          //pass client uuid to the form
+          clientUuid={props.row.uuid}
         ></CreateContactForm>
       </SheetContent>
     </Sheet>
