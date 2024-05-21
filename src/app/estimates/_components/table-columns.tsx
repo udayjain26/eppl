@@ -19,8 +19,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { FileWarning } from 'lucide-react'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
+import { estimateRevisionStageColors, estimateStatusColors } from './constants'
 
 export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
   {
@@ -48,7 +48,29 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
   {
     accessorKey: 'estimateRevisionStage',
     header: ({ column }) => columnHeader(column, 'Revision Stage'),
-    meta: { columnName: 'Revision Stage' },
+    meta: {
+      columnName: 'Revision Stage',
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (typeof filterValue === 'string') {
+        return row.original.estimateRevisionStage.includes(filterValue)
+      }
+      return (
+        filterValue.length === 0 ||
+        filterValue.includes(row.original.estimateRevisionStage)
+      )
+    },
+    cell: ({ row }) => {
+      return (
+        <div
+          className={estimateRevisionStageColors(
+            row.original.estimateRevisionStage,
+          )}
+        >
+          {row.original.estimateRevisionStage}
+        </div>
+      )
+    },
   },
 
   {
@@ -58,7 +80,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     cell: ({ row }) => {
       return (
         <Link
-          className={buttonVariants({ variant: 'outline' })}
+          className={buttonVariants({ variant: 'ghost' })}
           href={`/estimates/${row.original.uuid}`}
         >
           <p className=" max-w-48 overflow-clip hover:underline hover:underline-offset-2">
@@ -77,7 +99,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
 
       return (
         <Link
-          className={buttonVariants({ variant: 'outline' })}
+          className={buttonVariants({ variant: 'ghost' })}
           href={`/clients/${row.original.clientUuid}`}
         >
           <p className=" hover:underline hover:underline-offset-2">
@@ -101,7 +123,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
       return (
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline">
+            <Button variant="ghost">
               <p className=" hover:underline hover:underline-offset-2">
                 {fullName}
               </p>
@@ -175,16 +197,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     meta: { columnName: 'Status' },
     cell: ({ row }) => {
       return (
-        <div
-          className={cn(
-            'w-fit rounded-lg border border-slate-300 p-1 px-2 shadow-md',
-            {
-              'bg-red-500': row.original.estimateStatus === 'Not Started',
-              'bg-yellow-500': row.original.estimateStatus === 'In Progress',
-              'bg-green-500': row.original.estimateStatus === 'Completed',
-            },
-          )}
-        >
+        <div className={estimateStatusColors(row.original.estimateStatus)}>
           {row.original.estimateStatus}
         </div>
       )

@@ -92,7 +92,7 @@ export const estimateRevisionStageEnum = pgEnum('estimate_stage', [
   'No Revision',
   'Drafting',
   'Pending Rates',
-  'Estimation Approval',
+  'Rates Approval',
   'Client Approval',
   'Won',
   'Lost',
@@ -221,7 +221,29 @@ export const estimates = createTable('estimates', {
   updatedBy: varchar('updated_by', { length: 256 }).notNull(),
 })
 
-export const estimatesRelations = relations(estimates, ({ one }) => ({
+export const revisions = createTable('revisions', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  estimateUuid: uuid('estimate_uuid')
+    .references(() => estimates.uuid)
+    .notNull(),
+  revisionStage:
+    estimateRevisionStageEnum('revision_stage').default('Drafting'),
+  revisionNumber: smallint('revision_number').notNull(),
+
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }).notNull(),
+  updatedBy: varchar('updated_by', { length: 256 }).notNull(),
+})
+
+export const revisionsRelations = relations(revisions, ({ one }) => ({
+  estimate: one(estimates, {
+    fields: [revisions.estimateUuid],
+    references: [estimates.uuid],
+  }),
+}))
+
+export const estimatesRelations = relations(estimates, ({ one, many }) => ({
   client: one(clients, {
     fields: [estimates.clientUuid],
     references: [clients.uuid],
@@ -238,4 +260,5 @@ export const estimatesRelations = relations(estimates, ({ one }) => ({
     fields: [estimates.estimateProductUuid],
     references: [products.uuid],
   }),
+  revisions: many(revisions),
 }))

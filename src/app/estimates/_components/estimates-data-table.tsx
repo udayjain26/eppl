@@ -35,7 +35,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { CreateEstimateSheet } from './create-estimate-sheet'
 import { ChevronDown } from 'lucide-react'
-import { EstimateTableRow } from '@/schemas/schema-table-types'
+import { estimateRevisionStageEnum } from '@/server/db/schema'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -55,10 +55,8 @@ export function EstimateDataTable<TData, TValue>({
   const [searchColumn, setSearchColumn] =
     React.useState<string>('estimateNumber')
 
-  // data.forEach((row) => {
-  //   row.estimateNumber = row.estimateNumber.toString()
-  //   console.log(row)
-  // })
+  const [selectedValues, setSelectedValues] = React.useState<string[]>([])
+
   const table = useReactTable({
     data,
     columns,
@@ -76,6 +74,18 @@ export function EstimateDataTable<TData, TValue>({
       columnVisibility,
     },
   })
+  const handleCheckboxChange = (value: string, checked: boolean) => {
+    setSelectedValues((prev) => {
+      const updatedValues = checked
+        ? [...prev, value]
+        : prev.filter((v) => v !== value)
+      return updatedValues
+    })
+  }
+
+  React.useEffect(() => {
+    table.getColumn('estimateRevisionStage')?.setFilterValue(selectedValues)
+  }, [selectedValues])
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -122,7 +132,29 @@ export function EstimateDataTable<TData, TValue>({
               })}
             </DropdownMenuContent>
           </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant={'outline'}>
+                Revision Stage{' '}
+                <ChevronDown className="" strokeWidth={1} size={24} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {estimateRevisionStageEnum.enumValues.map((value) => (
+                <DropdownMenuCheckboxItem
+                  key={value}
+                  checked={selectedValues.includes(value)}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange(value, checked)
+                  }
+                >
+                  {value}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+        <div></div>
 
         <div className="flex grow"></div>
         <DropdownMenu>

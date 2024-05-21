@@ -67,12 +67,7 @@ export async function createEstimate(
     try {
       const dataWithUserIds = {
         ...validatedFields.data,
-        // clientUuid: previousState.clientUuid,
-        estimateRevisionStage: estimateRevisionStageEnum.enumValues.find(
-          (value) => {
-            value === 'No Revision'
-          },
-        ),
+
         createdBy: user.userId,
         updatedBy: user.userId,
       }

@@ -21,6 +21,10 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNowStrict } from 'date-fns'
+import {
+  estimateRevisionStageColors,
+  estimateStatusColors,
+} from '../../_components/constants'
 
 export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
   const dateDistance = formatDistanceToNowStrict(
@@ -34,6 +38,16 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
           <CardTitle className="group flex items-center gap-2 text-lg">
             Estimate:{' '}
             {props.estimateData.estimateNumber.toString().padStart(6, '0')}
+            <span>
+              {' '}
+              <div
+                className={estimateStatusColors(
+                  props.estimateData.estimateStatus,
+                )}
+              >
+                {props.estimateData.estimateStatus}
+              </div>
+            </span>
           </CardTitle>
           <CardDescription>
             Date Created: {props.estimateData.createdAt.toDateString()}
@@ -69,27 +83,6 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Product</span>
               <span>{props.estimateData.product.productName}</span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">Estimate Status</span>
-              <span>
-                {' '}
-                <div
-                  className={cn(
-                    'w-fit rounded-lg border border-slate-300 p-1 px-2 shadow-md',
-                    {
-                      'bg-red-500':
-                        props.estimateData.estimateStatus === 'Not Started',
-                      'bg-yellow-500':
-                        props.estimateData.estimateStatus === 'In Progress',
-                      'bg-green-500':
-                        props.estimateData.estimateStatus === 'Completed',
-                    },
-                  )}
-                >
-                  {props.estimateData.estimateStatus}
-                </div>
-              </span>
             </li>
           </ul>
           <Separator className="" />
@@ -174,7 +167,16 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
               <span className="text-muted-foreground">
                 Current Revision Stage
               </span>
-              <span>{props.estimateData.estimateRevisionStage}</span>
+              <span>
+                {' '}
+                <div
+                  className={estimateRevisionStageColors(
+                    props.estimateData.estimateRevisionStage,
+                  )}
+                >
+                  {props.estimateData.estimateRevisionStage}
+                </div>
+              </span>
             </li>
             <li className="flex items-center justify-between ">
               <span className="text-muted-foreground">Estimate Created</span>

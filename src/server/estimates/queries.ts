@@ -45,7 +45,7 @@ export async function getEstimatesDataForTable(): Promise<EstimateTableRow[]> {
   }
 }
 
-export async function getEstimateDataById(
+export async function getEstimateDataByIdForFullPage(
   id: string,
 ): Promise<EstimateTableRow> {
   try {
@@ -75,7 +75,17 @@ export async function getEstimateDataById(
 
       where: (estimate, { eq }) => eq(estimate.uuid, id),
     })) as EstimateTableRow
-    console.log(data)
+    return data
+  } catch (error) {
+    throw new Error('Failed to fetch estimate data')
+  }
+}
+
+export async function getEstimateById(id: string) {
+  try {
+    const data = await db.query.estimates.findFirst({
+      where: (estimate, { eq }) => eq(estimate.uuid, id),
+    })
     return data
   } catch (error) {
     throw new Error('Failed to fetch estimate data')

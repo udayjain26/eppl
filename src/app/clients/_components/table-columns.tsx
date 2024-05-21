@@ -23,7 +23,7 @@ export const clientColumns: ColumnDef<Client>[] = [
 
       return (
         <Link
-          className={buttonVariants({ variant: 'outline' })}
+          className={buttonVariants({ variant: 'ghost' })}
           href={`/clients/${row.original.uuid}`}
         >
           <p className=" hover:underline hover:underline-offset-2">

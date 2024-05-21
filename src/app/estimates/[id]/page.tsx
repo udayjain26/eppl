@@ -3,7 +3,7 @@ import { getClientsData } from '@/server/clients/queries'
 import Link from 'next/link'
 import { EstimateDetailsCard } from './_components/estimate-details-card'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
-import { getEstimateDataById } from '@/server/estimates/queries'
+import { getEstimateDataByIdForFullPage } from '@/server/estimates/queries'
 import { ChevronRight } from 'lucide-react'
 import { RevisionDetailsCard } from './_components/revision-details-card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -15,7 +15,7 @@ export default async function FullEstimatePage({
 }: {
   params: { id: string }
 }) {
-  const estimateData = (await getEstimateDataById(
+  const estimateData = (await getEstimateDataByIdForFullPage(
     params.id,
   )) as EstimateTableRow
 
@@ -61,7 +61,7 @@ export default async function FullEstimatePage({
             </Tabs>
           </div>
           <div className="flex h-full min-h-96 w-full flex-col rounded-xl p-2 ">
-            <RevisionView></RevisionView>
+            <RevisionView estimateData={estimateData}></RevisionView>
           </div>
         </div>{' '}
       </div>

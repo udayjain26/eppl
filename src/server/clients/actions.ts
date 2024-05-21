@@ -68,7 +68,7 @@ export async function createClient(
   //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
   const user = auth()
   if (!user.userId) {
-    throw new Error('User Unauthenitcated')
+    throw new Error('User Unauthenticated')
   }
 
   //Transforming the form data to remove empty strings
@@ -78,7 +78,6 @@ export async function createClient(
     numFields += 1
     transformedData[key] = emptyStringToNullTransformer(value)
   })
-  console.log(transformedData, numFields)
   //BANDAID solution to getting only first 2 fields
   const validatedFields =
     numFields === 2
@@ -134,7 +133,6 @@ export async function updateClient(
       : Client.safeParse(transformedData)
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message:
