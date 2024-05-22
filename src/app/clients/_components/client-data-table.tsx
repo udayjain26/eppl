@@ -36,6 +36,7 @@ import { Input } from '@/components/ui/input'
 import { CreateClientSheet } from './create-client-sheet'
 import { Button } from '@/components/ui/button'
 import { ChevronDown } from 'lucide-react'
+import { redirect } from 'next/navigation'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

@@ -109,6 +109,14 @@ export function CreateClientForm({
     ? useFormState(updateClient, initialState)
     : useFormState(createClient, initialState)
 
+  // const [accordionValue, setAccordionValue] = useState(
+  //   clientData ? 'additional fields' : undefined,
+  // )
+
+  // const handleAccordionChange = (value: any) => {
+  //   setAccordionValue(value)
+  // }
+
   const form = useForm<z.infer<typeof ClientFormSchema>>({
     resolver: zodResolver(ClientFormSchema),
   })
@@ -195,12 +203,14 @@ export function CreateClientForm({
             collapsible
             className="w-full"
             defaultValue={clientData ? 'additional fields' : undefined}
+            // onValueChange={handleAccordionChange}
           >
             <AccordionItem value="additional fields">
               <AccordionTrigger>Optional Fields</AccordionTrigger>
               <AccordionContent
                 forceMount={clientData ? true : undefined}
                 className="flex flex-col gap-y-2 p-1"
+                // hidden={accordionValue !== 'additional fields'}
               >
                 <FormField
                   control={form.control}

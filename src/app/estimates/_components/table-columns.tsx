@@ -195,6 +195,11 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
       )
     },
   },
+  {
+    accessorKey: 'salesRep.salesRepName',
+    header: ({ column }) => columnHeader(column, 'Sales Rep'),
+    meta: { columnName: 'Sales Rep' },
+  },
 
   {
     accessorKey: 'createdAt',

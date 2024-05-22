@@ -53,7 +53,7 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             Date Created: {props.estimateData.createdAt.toDateString()}
           </CardDescription>
         </div>
-        <div className="ml-auto flex items-center gap-1">
+        {/* <div className="ml-auto flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="icon" variant="outline">
@@ -65,7 +65,7 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
               <DropdownMenuItem>Clone Estimate</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </div> */}
       </CardHeader>
       <CardContent className="p-4 text-sm">
         <div className="flex flex-row items-center justify-center ">
@@ -153,6 +153,12 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
                     </ul>
                   </PopoverContent>
                 </Popover>
+              </span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">Sales Rep</span>
+              <span className={buttonVariants({ variant: 'ghost' })}>
+                {props.estimateData.salesRep.salesRepName}
               </span>
             </li>
             <Separator className="my-1" />

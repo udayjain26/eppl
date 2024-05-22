@@ -31,6 +31,7 @@ export async function getEstimatesDataForTable(): Promise<EstimateTableRow[]> {
           },
           productType: { columns: { productsTypeName: true } },
           product: { columns: { productName: true } },
+          salesRep: { columns: { salesRepName: true } },
         },
       })
     ).map((row) => ({
@@ -70,6 +71,7 @@ export async function getEstimateDataByIdForFullPage(
         },
         productType: { columns: { productsTypeName: true } },
         product: { columns: { productName: true } },
+        salesRep: { columns: { salesRepName: true } },
       },
 
       where: (estimate, { eq }) => eq(estimate.uuid, id),

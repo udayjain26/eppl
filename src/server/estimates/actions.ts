@@ -32,6 +32,7 @@ export type EstimateFormState = {
   errors?: {
     clientUuid?: string[] | null
     contactUuid?: string[] | null
+    salesRepUuid?: string[] | null
     estimateTitle?: string[] | null
     estimateDescription?: string[] | null
     estimateProductTypeUuid?: string[] | null

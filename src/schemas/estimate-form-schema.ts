@@ -17,6 +17,9 @@ export const EstimateFormSchema = z.object({
   estimateProductUuid: z
     .string({ message: 'Please select a product to create the estimate for' })
     .uuid(),
+  estimateSalesRepUuid: z
+    .string({ message: 'Please select a sales representative' })
+    .uuid(),
   estimateNumber: z.number(),
   estimateTitle: z.string({ message: 'Give a title to your estimate' }).trim(),
   estimateDescription: z

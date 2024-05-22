@@ -206,11 +206,15 @@ export const estimates = createTable('estimates', {
   estimateProductTypeUuid: uuid('estimate_product_type_uuid')
     .references(() => productsType.uuid)
     .notNull(),
+  estimateSalesRepUuid: uuid('estimate_sales_rep_uuid')
+    .references(() => salesReps.uuid)
+    .notNull(),
   estimateNumber: serial('estimate_number').notNull(),
   estimateTitle: varchar('estimate_title', { length: 256 }).notNull(),
   estimateDescription: varchar('estimate_description', {
     length: 256,
   }).notNull(),
+
   estimateStatus: estimateStatusEnum('estimate_status').default('Not Started'),
   estimateStage: estimateStageEnum('estimate_stage').default('Empty'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -218,6 +222,40 @@ export const estimates = createTable('estimates', {
   createdBy: varchar('created_by', { length: 256 }).notNull(),
   updatedBy: varchar('updated_by', { length: 256 }).notNull(),
 })
+
+export const salesReps = createTable('sales_reps', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  salesRepName: varchar('sales_rep_name', { length: 256 }).notNull().unique(),
+  salesRepMobile: varchar('sales_rep_mobile', { length: 15 })
+    .notNull()
+    .unique(),
+  salesRepEmail: varchar('sales_rep_email', { length: 256 }).notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }).notNull(),
+})
+
+export const salesRepsRelations = relations(salesReps, ({ many }) => ({
+  estimates: many(estimates),
+}))
+
+export const variations = createTable('variations', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  estimateUuid: uuid('estimate_uuid')
+    .references(() => estimates.uuid)
+    .notNull(),
+  variationTitle: varchar('variation_title', { length: 256 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }).notNull(),
+  updatedBy: varchar('updated_by', { length: 256 }).notNull(),
+})
+
+export const variationsRelations = relations(variations, ({ one }) => ({
+  estimate: one(estimates, {
+    fields: [variations.estimateUuid],
+    references: [estimates.uuid],
+  }),
+}))
 
 export const estimatesRelations = relations(estimates, ({ one, many }) => ({
   client: one(clients, {
@@ -236,4 +274,9 @@ export const estimatesRelations = relations(estimates, ({ one, many }) => ({
     fields: [estimates.estimateProductUuid],
     references: [products.uuid],
   }),
+  salesRep: one(salesReps, {
+    fields: [estimates.estimateSalesRepUuid],
+    references: [salesReps.uuid],
+  }),
+  variations: many(variations),
 }))

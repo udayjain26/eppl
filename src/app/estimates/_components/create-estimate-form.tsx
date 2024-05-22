@@ -3,14 +3,12 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 import { EstimateFormSchema } from '@/schemas/estimate-form-schema'
-import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -40,6 +38,9 @@ import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
 import { toast } from 'sonner'
 import { getProductTypesWithProducts } from '@/server/products/queries'
+import { useForm } from 'react-hook-form'
+import { get } from 'http'
+import { getSalesRepsData } from '@/server/salesReps/queries'
 
 export function CreateEstimateForm({
   closeDialog,
@@ -72,7 +73,16 @@ export function CreateEstimateForm({
       productName: string
     }[]
   }
-  ;[]
+
+  interface SalesRepsData {
+    uuid: string
+    createdAt: Date
+    createdBy: string
+    salesRepName: string
+    salesRepMobile: string
+    salesRepEmail: string
+  }
+
   const [openClient, setOpenClient] = useState(false)
   const closeClientPopover = () => {
     setOpenClient(false)
@@ -92,20 +102,31 @@ export function CreateEstimateForm({
   const closeProductPopover = () => {
     setOpenProduct(false)
   }
+
+  const [openSalesRep, setOpenSalesRep] = useState(false)
+  const closeSalesRepPopover = () => {
+    setOpenSalesRep(false)
+  }
   const [clientsData, setClientsData] = useState<ClientData[] | null>(null)
   const [productsData, setProductsData] = useState<ProductsData[] | null>(null)
+  const [salesRepsData, setSalesRepsData] = useState<SalesRepsData[] | null>(
+    null,
+  )
 
   useEffect(() => {
     const fetchData = async () => {
       // Fetch your data here
-      const [fetchedClientsData, fetchedProductsData] = await Promise.all([
-        getClientsDataIdAndNameWithContacts(),
-        getProductTypesWithProducts(),
-      ])
+      const [fetchedClientsData, fetchedProductsData, fetchedSalesRepsData] =
+        await Promise.all([
+          getClientsDataIdAndNameWithContacts(),
+          getProductTypesWithProducts(),
+          getSalesRepsData(),
+        ])
       // const data = (await getClientsDataIdAndNameWithContacts()) as ClientData[]
       // setClientsData(data)
       setClientsData(fetchedClientsData as ClientData[])
       setProductsData(fetchedProductsData as ProductsData[])
+      setSalesRepsData(fetchedSalesRepsData as SalesRepsData[])
     }
 
     fetchData()
@@ -144,6 +165,7 @@ export function CreateEstimateForm({
   const form = useForm<z.infer<typeof EstimateFormSchema>>({
     resolver: zodResolver(EstimateFormSchema),
   })
+
   useEffect(() => {
     if (state.actionSuccess === true) {
       closeDialog()
@@ -566,6 +588,92 @@ export function CreateEstimateForm({
                 <div>
                   {state.errors?.estimateProductUuid &&
                     state.errors.estimateProductUuid.map((error: string) => (
+                      <p className=" text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="estimateSalesRepUuid"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-y-1">
+                <FormLabel>Sales Rep</FormLabel>
+                <Popover
+                  modal={true}
+                  open={openSalesRep}
+                  onOpenChange={setOpenSalesRep}
+                >
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          ' justify-between',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        <input
+                          type="hidden"
+                          name="estimateSalesRepUuid"
+                          value={field.value ? field.value : ''}
+                        />
+                        {field.value
+                          ? salesRepsData !== null
+                            ? salesRepsData.find(
+                                (rep) => rep.uuid === field.value,
+                              )?.salesRepName
+                            : 'Loading...'
+                          : 'Choose Sales Rep'}
+                        <ChevronsUpDown size={24} strokeWidth={1} />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className=" p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search Sales Reps..."
+                        className="h-10"
+                      />
+                      <CommandEmpty>No Sales Reps found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandList>
+                          {salesRepsData &&
+                            salesRepsData.map((rep) => (
+                              <CommandItem
+                                value={rep.salesRepName}
+                                key={rep.uuid}
+                                onSelect={() => {
+                                  form.setValue(
+                                    'estimateSalesRepUuid',
+                                    rep.uuid,
+                                  )
+                                  closeSalesRepPopover()
+                                }}
+                              >
+                                {rep.salesRepName}
+                                <CheckIcon
+                                  className={cn(
+                                    'ml-auto h-4 w-4',
+                                    rep.uuid === field.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                        </CommandList>
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <div>
+                  {state.errors?.salesRepUuid &&
+                    state.errors.salesRepUuid.map((error: string) => (
                       <p className=" text-sm text-red-500" key={error}>
                         {error}
                       </p>

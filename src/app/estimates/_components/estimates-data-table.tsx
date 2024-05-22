@@ -57,9 +57,23 @@ export function EstimateDataTable<TData, TValue>({
 
   const [selectedValues, setSelectedValues] = React.useState<string[]>([])
 
+  // Restore state from localStorage when the component mounts
+  React.useEffect(() => {
+    const storedFilters = localStorage.getItem('tableFilters')
+    if (storedFilters) {
+      setColumnFilters(JSON.parse(storedFilters))
+    }
+  }, [])
+
+  // Update localStorage whenever columnFilters change
+  React.useEffect(() => {
+    localStorage.setItem('tableFilters', JSON.stringify(columnFilters))
+  }, [columnFilters])
+
   const table = useReactTable({
     data,
     columns,
+
     enableSortingRemoval: true,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -67,6 +81,7 @@ export function EstimateDataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    // autoResetAll: false,
 
     state: {
       sorting,

@@ -59,4 +59,5 @@ export type EstimateTableRow = {
   }
   productType: { productsTypeName: string }
   product: { productName: string }
+  salesRep: { salesRepName: string }
 }
