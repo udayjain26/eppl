@@ -5,10 +5,8 @@ import { EstimateDetailsCard } from './_components/estimate-details-card'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { getEstimateDataByIdForFullPage } from '@/server/estimates/queries'
 import { ChevronRight } from 'lucide-react'
-import { RevisionDetailsCard } from './_components/revision-details-card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card } from '@/components/ui/card'
-import RevisionView from './_components/revision-view'
+import DraftingView from './_components/drafting-view'
 
 export default async function FullEstimatePage({
   params,
@@ -46,8 +44,8 @@ export default async function FullEstimatePage({
                 <TabsTrigger className="flex grow" value="estimate">
                   Estimate Details
                 </TabsTrigger>
-                <TabsTrigger className="flex grow" value="revisions">
-                  Revision Details
+                <TabsTrigger className="flex grow" value="history">
+                  Estimate History
                 </TabsTrigger>
               </TabsList>
               <TabsContent className="max-h-full" value="estimate">
@@ -55,13 +53,11 @@ export default async function FullEstimatePage({
                   estimateData={estimateData}
                 ></EstimateDetailsCard>
               </TabsContent>
-              <TabsContent value="revisions">
-                <RevisionDetailsCard></RevisionDetailsCard>
-              </TabsContent>
+              <TabsContent value="history"></TabsContent>
             </Tabs>
           </div>
           <div className="flex h-full min-h-96 w-full flex-col rounded-xl p-2 ">
-            <RevisionView estimateData={estimateData}></RevisionView>
+            <DraftingView estimateData={estimateData}></DraftingView>
           </div>
         </div>{' '}
       </div>

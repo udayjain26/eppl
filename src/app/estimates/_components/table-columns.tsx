@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
-import { estimateRevisionStageColors, estimateStatusColors } from './constants'
+import { estimateStageColors, estimateStatusColors } from './constants'
 
 export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
   {
@@ -40,34 +40,26 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
       )
     },
   },
+
   {
-    accessorKey: 'currentRevision',
-    header: ({ column }) => columnHeader(column, 'Rev No.'),
-    meta: { columnName: 'Revision No.' },
-  },
-  {
-    accessorKey: 'estimateRevisionStage',
-    header: ({ column }) => columnHeader(column, 'Revision Stage'),
+    accessorKey: 'estimateStage',
+    header: ({ column }) => columnHeader(column, 'Estimate Stage'),
     meta: {
-      columnName: 'Revision Stage',
+      columnName: 'Estimate Stage',
     },
     filterFn: (row, columnId, filterValue) => {
       if (typeof filterValue === 'string') {
-        return row.original.estimateRevisionStage.includes(filterValue)
+        return row.original.estimateStage.includes(filterValue)
       }
       return (
         filterValue.length === 0 ||
-        filterValue.includes(row.original.estimateRevisionStage)
+        filterValue.includes(row.original.estimateStage)
       )
     },
     cell: ({ row }) => {
       return (
-        <div
-          className={estimateRevisionStageColors(
-            row.original.estimateRevisionStage,
-          )}
-        >
-          {row.original.estimateRevisionStage}
+        <div className={estimateStageColors(row.original.estimateStage)}>
+          {row.original.estimateStage}
         </div>
       )
     },

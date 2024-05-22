@@ -36,7 +36,6 @@ export async function getEstimatesDataForTable(): Promise<EstimateTableRow[]> {
     ).map((row) => ({
       ...row,
       estimateNumber: row.estimateNumber.toString(),
-      currentRevision: row.currentRevision.toString(),
     })) as EstimateTableRow[]
 
     return data

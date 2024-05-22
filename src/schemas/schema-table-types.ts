@@ -42,8 +42,7 @@ export type EstimateTableRow = {
   estimateTitle: string
   estimateDescription: string
   estimateStatus: string
-  estimateRevisionStage: string
-  currentRevision: string | number
+  estimateStage: string
   createdAt: Date
   updatedAt: Date
   createdBy: string

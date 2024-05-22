@@ -35,7 +35,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { CreateEstimateSheet } from './create-estimate-sheet'
 import { ChevronDown } from 'lucide-react'
-import { estimateRevisionStageEnum } from '@/server/db/schema'
+import { estimateStageEnum } from '@/server/db/schema'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -84,7 +84,7 @@ export function EstimateDataTable<TData, TValue>({
   }
 
   React.useEffect(() => {
-    table.getColumn('estimateRevisionStage')?.setFilterValue(selectedValues)
+    table.getColumn('estimateStage')?.setFilterValue(selectedValues)
   }, [selectedValues])
 
   return (
@@ -135,12 +135,12 @@ export function EstimateDataTable<TData, TValue>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'}>
-                Revision Stage{' '}
+                Estimate Stage{' '}
                 <ChevronDown className="" strokeWidth={1} size={24} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {estimateRevisionStageEnum.enumValues.map((value) => (
+              {estimateStageEnum.enumValues.map((value) => (
                 <DropdownMenuCheckboxItem
                   key={value}
                   checked={selectedValues.includes(value)}

@@ -3,16 +3,15 @@
 import { EstimateFormSchema } from '@/schemas/estimate-form-schema'
 import { auth } from '@clerk/nextjs/server'
 import { db } from '../db'
-import { estimateRevisionStageEnum, estimates } from '../db/schema'
+import { estimateStageEnum, estimates } from '../db/schema'
 import { date } from 'drizzle-orm/mysql-core'
 import { revalidatePath } from 'next/cache'
 
 const CreateEstimate = EstimateFormSchema.omit({
   uuid: true,
   estimateNumber: true,
-  currentRevision: true,
   estimateStatus: true,
-  estimateRevisionStage: true,
+  estimateStage: true,
   createdAt: true,
   updatedAt: true,
   createdBy: true,

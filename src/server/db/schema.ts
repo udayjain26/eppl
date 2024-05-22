@@ -88,8 +88,8 @@ export const estimateStatusEnum = pgEnum('estimate_status', [
   'Completed',
 ])
 
-export const estimateRevisionStageEnum = pgEnum('estimate_stage', [
-  'No Revision',
+export const estimateStageEnum = pgEnum('estimate_stage', [
+  'Empty',
   'Drafting',
   'Pending Rates',
   'Rates Approval',
@@ -212,36 +212,12 @@ export const estimates = createTable('estimates', {
     length: 256,
   }).notNull(),
   estimateStatus: estimateStatusEnum('estimate_status').default('Not Started'),
-  estimateRevisionStage:
-    estimateRevisionStageEnum('estimate_stage').default('No Revision'),
-  currentRevision: smallint('current_revision').default(0).notNull(),
+  estimateStage: estimateStageEnum('estimate_stage').default('Empty'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }).notNull(),
   updatedBy: varchar('updated_by', { length: 256 }).notNull(),
 })
-
-export const revisions = createTable('revisions', {
-  uuid: uuid('uuid').defaultRandom().primaryKey(),
-  estimateUuid: uuid('estimate_uuid')
-    .references(() => estimates.uuid)
-    .notNull(),
-  revisionStage:
-    estimateRevisionStageEnum('revision_stage').default('Drafting'),
-  revisionNumber: smallint('revision_number').notNull(),
-
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  createdBy: varchar('created_by', { length: 256 }).notNull(),
-  updatedBy: varchar('updated_by', { length: 256 }).notNull(),
-})
-
-export const revisionsRelations = relations(revisions, ({ one }) => ({
-  estimate: one(estimates, {
-    fields: [revisions.estimateUuid],
-    references: [estimates.uuid],
-  }),
-}))
 
 export const estimatesRelations = relations(estimates, ({ one, many }) => ({
   client: one(clients, {
@@ -260,5 +236,4 @@ export const estimatesRelations = relations(estimates, ({ one, many }) => ({
     fields: [estimates.estimateProductUuid],
     references: [products.uuid],
   }),
-  revisions: many(revisions),
 }))

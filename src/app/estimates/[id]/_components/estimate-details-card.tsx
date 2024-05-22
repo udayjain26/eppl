@@ -22,7 +22,7 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { formatDistanceToNowStrict } from 'date-fns'
 import {
-  estimateRevisionStageColors,
+  estimateStageColors,
   estimateStatusColors,
 } from '../../_components/constants'
 
@@ -63,7 +63,6 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Clone Estimate</DropdownMenuItem>
-              <DropdownMenuItem>Create Revision</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -158,23 +157,15 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             </li>
             <Separator className="my-1" />
             <li className="flex items-center justify-between ">
-              <span className="text-muted-foreground">
-                Current Revision Number
-              </span>
-              <span>{props.estimateData.currentRevision}</span>
-            </li>
-            <li className="flex items-center justify-between ">
-              <span className="text-muted-foreground">
-                Current Revision Stage
-              </span>
+              <span className="text-muted-foreground">Estimate Stage</span>
               <span>
                 {' '}
                 <div
-                  className={estimateRevisionStageColors(
-                    props.estimateData.estimateRevisionStage,
+                  className={estimateStageColors(
+                    props.estimateData.estimateStage,
                   )}
                 >
-                  {props.estimateData.estimateRevisionStage}
+                  {props.estimateData.estimateStage}
                 </div>
               </span>
             </li>

@@ -1,7 +1,4 @@
-import {
-  estimateRevisionStageEnum,
-  estimateStatusEnum,
-} from '@/server/db/schema'
+import { estimateStageEnum, estimateStatusEnum } from '@/server/db/schema'
 import { z } from 'zod'
 
 export const EstimateFormSchema = z.object({
@@ -25,9 +22,8 @@ export const EstimateFormSchema = z.object({
   estimateDescription: z
     .string({ message: 'Give a description to your estimate' })
     .trim(),
-  estimateRevisionStage: z.enum(estimateRevisionStageEnum.enumValues),
+  estimateStage: z.enum(estimateStageEnum.enumValues),
   estimateStatus: z.enum(estimateStatusEnum.enumValues),
-  currentRevision: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().trim().nullable(),
