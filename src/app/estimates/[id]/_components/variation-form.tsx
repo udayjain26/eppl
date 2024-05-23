@@ -64,8 +64,10 @@ export default function VariationForm(props: { variationData: VariationData }) {
         state.message === 'Variation Saved Successfully!'
       ) {
         toast('Variation Saved Successfully!')
+        state.actionSuccess = null
+        state.message = null
       }
-    }, [state])
+    }, [state.actionSuccess, state.message])
     return (
       <Button type="submit" className="w-32" disabled={pending || !isChanged}>
         {pending ? 'Saving...' : 'Save Variation'}
