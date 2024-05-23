@@ -34,40 +34,51 @@ export default async function FullClientPage({
 
   return (
     <PageWrapper>
-      <div className="h-full w-full">
-        <div className="flex flex-row justify-evenly ">
-          <div className="flex grow items-center px-4">
-            {' '}
-            <Link href={'/clients'}>
-              <p className="text-2xl">Clients</p>
-            </Link>
-            <ChevronRight size={28} strokeWidth="1" />
-            <Link href={`/clients/${uuid}`}>
-              <p className="text-2xl ">{clientData.clientNickName}</p>
-            </Link>
+      <div className="flex h-full w-full flex-row">
+        <div className="flex min-w-[25%] max-w-[25%] flex-col justify-start ">
+          <div className=" flex  justify-start gap-x-1 ">
+            <div className="flex h-8 flex-col justify-center ">
+              {' '}
+              <Link href={'/clients'}>
+                <p className="  text-base">Clients</p>
+              </Link>
+            </div>
+            <div>
+              <div className="flex h-8 flex-col justify-center">
+                <ChevronRight className="" size={20} strokeWidth="1" />
+              </div>
+            </div>
+            <div className="flex h-8 flex-col justify-center ">
+              {' '}
+              <Link href={`/clients${clientData.uuid}`}>
+                <p className="overflow-hidden text-ellipsis  text-base">
+                  {clientData.clientNickName}
+                </p>
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="mx-4 my-4 flex h-[90%] flex-col gap-x-4 gap-y-4 overflow-auto lg:flex-row">
-          <div className="flex flex-col p-2 sm:min-w-[22rem]">
+          <div>
             <ClientCard
               clientData={clientData}
               clientCreatedBy={clientCreatedBy}
             ></ClientCard>
           </div>
+        </div>
+        <div className="flex h-[98%] w-full flex-col gap-x-4 gap-y-4 overflow-auto pt-6 ">
           <div className="flex w-full flex-col rounded-xl p-2 ">
             <Card className="">
               <CardHeader className="flex flex-row items-start bg-muted/50">
                 <CardTitle className="group flex items-center gap-2 text-lg">
                   <p>Activity Logs</p>
                 </CardTitle>
-                <CardDescription>
-                  {/* Date Created: {props.clientData.createdAt.toDateString()} */}
-                </CardDescription>
+                <CardDescription></CardDescription>
               </CardHeader>
 
               <CardContent>Coming Soon!</CardContent>
             </Card>
           </div>
+        </div>
+        <div className="overflow-aut2 flex h-[98%] min-w-[25%] max-w-[25%] flex-col gap-x-4 gap-y-4 pt-2 ">
           <ClientAccordion
             contactsData={contactsData}
             clientData={clientData}

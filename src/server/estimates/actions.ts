@@ -4,10 +4,11 @@ import { EstimateFormSchema } from '@/schemas/estimate-form-schema'
 import { auth } from '@clerk/nextjs/server'
 import { db } from '../db'
 import { estimateStageEnum, estimates } from '../db/schema'
-import { date } from 'drizzle-orm/mysql-core'
 import { revalidatePath } from 'next/cache'
+import { EstimateFormState } from './types'
+import { eq } from 'drizzle-orm'
 
-const CreateEstimate = EstimateFormSchema.omit({
+const Estimate = EstimateFormSchema.omit({
   uuid: true,
   estimateNumber: true,
   estimateStatus: true,
@@ -28,19 +29,6 @@ function emptyStringToNullTransformer(data: any) {
 interface transformedData {
   [key: string]: any
 }
-export type EstimateFormState = {
-  errors?: {
-    clientUuid?: string[] | null
-    contactUuid?: string[] | null
-    salesRepUuid?: string[] | null
-    estimateTitle?: string[] | null
-    estimateDescription?: string[] | null
-    estimateProductTypeUuid?: string[] | null
-    estimateProductUuid?: string[] | null
-  }
-  message?: string | null
-  actionSuccess?: boolean | null
-}
 
 export async function createEstimate(
   previousState: EstimateFormState,
@@ -55,7 +43,7 @@ export async function createEstimate(
   formData.forEach((value, key) => {
     transformedData[key] = emptyStringToNullTransformer(value)
   })
-  const validatedFields = CreateEstimate.safeParse(transformedData)
+  const validatedFields = Estimate.safeParse(transformedData)
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -73,7 +61,6 @@ export async function createEstimate(
       }
       await db.insert(estimates).values(dataWithUserIds)
     } catch (error) {
-      console.error(error)
       return {
         actionSuccess: false,
         message: 'Failed to create estimate. Please try again later.',
@@ -84,4 +71,35 @@ export async function createEstimate(
   revalidatePath('/estimate')
 
   return { actionSuccess: true } as EstimateFormState
+}
+
+export async function updateEstimateStage(estimateUuid: string) {
+  // Fetch the estimate and its variations from the database
+  const estimate = await db.query.estimates.findFirst({
+    where: (estimate, { eq }) => eq(estimate.uuid, estimateUuid),
+    with: { variations: true },
+  })
+
+  // If the estimate is not found, throw an error
+  if (!estimate) {
+    throw new Error('Estimate not found')
+  }
+
+  // Get the number of variations
+  const variationsLength = estimate.variations.length
+
+  // Check the current estimate stage and estimate status and update it if necessary
+  if (
+    estimate.estimateStage === 'Empty' &&
+    estimate.estimateStatus === 'Not Started' &&
+    variationsLength > 0
+  ) {
+    await db
+      .update(estimates)
+      .set({
+        estimateStage: 'Drafting',
+        estimateStatus: 'In Progress',
+      })
+      .where(eq(estimates.uuid, estimateUuid))
+  }
 }

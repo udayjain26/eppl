@@ -31,7 +31,7 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import { useFormStatus, useFormState } from 'react-dom'
-import { EstimateFormState, createEstimate } from '@/server/estimates/actions'
+import { createEstimate } from '@/server/estimates/actions'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { format } from 'date-fns'
@@ -41,6 +41,7 @@ import { getProductTypesWithProducts } from '@/server/products/queries'
 import { useForm } from 'react-hook-form'
 import { get } from 'http'
 import { getSalesRepsData } from '@/server/salesReps/queries'
+import { EstimateFormState } from '@/server/estimates/types'
 
 export function CreateEstimateForm({
   closeDialog,
@@ -122,8 +123,7 @@ export function CreateEstimateForm({
           getProductTypesWithProducts(),
           getSalesRepsData(),
         ])
-      // const data = (await getClientsDataIdAndNameWithContacts()) as ClientData[]
-      // setClientsData(data)
+
       setClientsData(fetchedClientsData as ClientData[])
       setProductsData(fetchedProductsData as ProductsData[])
       setSalesRepsData(fetchedSalesRepsData as SalesRepsData[])
@@ -672,8 +672,8 @@ export function CreateEstimateForm({
                   </PopoverContent>
                 </Popover>
                 <div>
-                  {state.errors?.salesRepUuid &&
-                    state.errors.salesRepUuid.map((error: string) => (
+                  {state.errors?.estimateSalesRepUuid &&
+                    state.errors.estimateSalesRepUuid.map((error: string) => (
                       <p className=" text-sm text-red-500" key={error}>
                         {error}
                       </p>

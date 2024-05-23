@@ -13,6 +13,7 @@ import {
   decimal,
   numeric,
   foreignKey,
+  text,
 } from 'drizzle-orm/pg-core'
 
 // ENUMS used in the application
@@ -243,18 +244,39 @@ export const variations = createTable('variations', {
   estimateUuid: uuid('estimate_uuid')
     .references(() => estimates.uuid)
     .notNull(),
-  variationTitle: varchar('variation_title', { length: 256 }).notNull(),
+  variationTitle: varchar('variation_title', { length: 256 }),
+  variationNotes: text('variation_notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }).notNull(),
   updatedBy: varchar('updated_by', { length: 256 }).notNull(),
 })
 
-export const variationsRelations = relations(variations, ({ one }) => ({
+export const variationQtysRates = createTable('variation_qtys_rates', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  variationUuid: uuid('variation_uuid')
+    .references(() => variations.uuid)
+    .notNull(),
+  quantity: numeric('quantity').notNull(),
+  rate: numeric('rate').notNull(),
+})
+
+export const variationQtysRatesRelations = relations(
+  variationQtysRates,
+  ({ one }) => ({
+    variation: one(variations, {
+      fields: [variationQtysRates.variationUuid],
+      references: [variations.uuid],
+    }),
+  }),
+)
+
+export const variationsRelations = relations(variations, ({ one, many }) => ({
   estimate: one(estimates, {
     fields: [variations.estimateUuid],
     references: [estimates.uuid],
   }),
+  variationQtysRates: many(variationQtysRates),
 }))
 
 export const estimatesRelations = relations(estimates, ({ one, many }) => ({

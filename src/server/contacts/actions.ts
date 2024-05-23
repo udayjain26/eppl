@@ -72,7 +72,6 @@ export async function createContact(
       }
       await db.insert(contacts).values(dataWithUserIds)
     } catch (error) {
-      console.error(error)
       return {
         message: 'Database Error: Failed to Create Client.',
       } as ContactFormState
@@ -120,7 +119,6 @@ export async function updateContact(
         .set(dataWithUserIds)
         .where(eq(contacts.uuid, formData.get('uuid') as string))
     } catch (error) {
-      console.error(error)
       return {
         message: 'Database Error: Failed to Update Client.',
       } as ContactFormState

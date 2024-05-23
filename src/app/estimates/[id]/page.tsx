@@ -18,6 +18,7 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar'
 import { getEstimateVariationsData } from '@/server/variations/queries'
+import { VariationData } from '@/server/variations/types'
 
 export default async function FullEstimatePage({
   params,
@@ -29,24 +30,36 @@ export default async function FullEstimatePage({
   )) as EstimateTableRow
   const uuid = params.id
 
-  const variationsData = await getEstimateVariationsData(uuid)
+  const variationsData = (await getEstimateVariationsData(
+    uuid,
+  )) as VariationData[]
 
   return (
     <PageWrapper>
       <div className="flex h-full w-full flex-col overflow-y-auto sm:flex-row">
-        <div className="flex h-full max-h-[97%] flex-col  sm:max-w-[25%]">
-          <div className="flex w-full flex-row gap-x-4">
-            <div className="flex items-center px-4 ">
+        <div className="flex h-full max-h-[97%] min-w-[20%] max-w-[20%] flex-col">
+          <div className=" flex grow justify-start gap-x-1 ">
+            <div className="flex h-8 flex-col justify-center ">
               {' '}
               <Link href={'/estimates'}>
-                <p className="text-2xl">Estimates</p>
+                <p className="  text-base">Estimates</p>
               </Link>
-              <ChevronRight size={28} strokeWidth="1" />
-              <Link href={`/estimates/${uuid}`}>
-                <p className="text-2xl ">{estimateData.estimateTitle}</p>
+            </div>
+            <div>
+              <div className="flex h-8 flex-col justify-center">
+                <ChevronRight className="" size={20} strokeWidth="1" />
+              </div>
+            </div>
+            <div className="flex h-8 flex-col justify-center ">
+              {' '}
+              <Link href={`/estimates/${estimateData.uuid}`}>
+                <p className="overflow-hidden text-ellipsis  text-base">
+                  {estimateData.estimateTitle}
+                </p>
               </Link>
             </div>
           </div>
+
           <Tabs defaultValue="estimate" className=" h-full flex-col px-1 pt-5">
             <TabsList className="flex flex-row justify-start overflow-x-auto ">
               <TabsTrigger className="min-w-fit" value="estimate">
