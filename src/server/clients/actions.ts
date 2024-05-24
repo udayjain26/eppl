@@ -89,6 +89,7 @@ export async function createClient(
       errors: validatedFields.error.flatten().fieldErrors,
       message:
         'Failed to Create Client. Make sure fields are filled out properly!',
+      actionSuccess: false,
     } as ClientFormState
   } else {
     try {
@@ -102,6 +103,7 @@ export async function createClient(
     } catch (error) {
       return {
         message: 'Database Error: Failed to Create Client.',
+        actionSuccess: false,
       } as ClientFormState
     }
   }
@@ -137,6 +139,7 @@ export async function updateClient(
       errors: validatedFields.error.flatten().fieldErrors,
       message:
         'Failed to Update Client. Make sure fields are filled out properly!',
+      actionSuccess: false,
     } as ClientFormState
   } else {
     try {
@@ -154,6 +157,7 @@ export async function updateClient(
     } catch (error) {
       return {
         message: 'Database Error: Failed to Update Client.',
+        actionSuccess: false,
       } as ClientFormState
     }
   }

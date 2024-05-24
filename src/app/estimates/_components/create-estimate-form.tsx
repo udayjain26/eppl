@@ -43,47 +43,44 @@ import { get } from 'http'
 import { getSalesRepsData } from '@/server/salesReps/queries'
 import { EstimateFormState } from '@/server/estimates/types'
 
+interface ClientData {
+  uuid: string
+  clientNickName: string
+  clientFullName: string
+  nickAndFullName: string
+  contacts: {
+    uuid: string
+    contactFirstName: string
+    contactLastName: string
+    fullName: string
+  }[]
+}
+interface ProductsData {
+  uuid: string
+  createdAt: Date
+  createdBy: string
+  productsTypeName: string
+  products: {
+    uuid: string
+    createdAt: Date
+    createdBy: string
+    productsTypeUuid: string
+    productName: string
+  }[]
+}
+interface SalesRepsData {
+  uuid: string
+  createdAt: Date
+  createdBy: string
+  salesRepName: string
+  salesRepMobile: string
+  salesRepEmail: string
+}
 export function CreateEstimateForm({
   closeDialog,
 }: {
   closeDialog: () => void
 }) {
-  interface ClientData {
-    uuid: string
-    clientNickName: string
-    clientFullName: string
-    nickAndFullName: string
-    contacts: {
-      uuid: string
-      contactFirstName: string
-      contactLastName: string
-      fullName: string
-    }[]
-  }
-
-  interface ProductsData {
-    uuid: string
-    createdAt: Date
-    createdBy: string
-    productsTypeName: string
-    products: {
-      uuid: string
-      createdAt: Date
-      createdBy: string
-      productsTypeUuid: string
-      productName: string
-    }[]
-  }
-
-  interface SalesRepsData {
-    uuid: string
-    createdAt: Date
-    createdBy: string
-    salesRepName: string
-    salesRepMobile: string
-    salesRepEmail: string
-  }
-
   const [openClient, setOpenClient] = useState(false)
   const closeClientPopover = () => {
     setOpenClient(false)
@@ -169,7 +166,9 @@ export function CreateEstimateForm({
   useEffect(() => {
     if (state.actionSuccess === true) {
       closeDialog()
-      toast('Estimate Created Succesfully!')
+      toast.success('Estimate Created Succesfully!')
+    } else if (state.actionSuccess === false) {
+      toast.error('Failed to Create Estimate')
     }
   }, [state])
 

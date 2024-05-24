@@ -61,6 +61,7 @@ export async function createContact(
       errors: validatedFields.error.flatten().fieldErrors,
       message:
         'Failed to Create Contact. Make sure fields are filled out properly!',
+      actionSuccess: false,
     } as ContactFormState
   } else {
     try {
@@ -74,6 +75,7 @@ export async function createContact(
     } catch (error) {
       return {
         message: 'Database Error: Failed to Create Client.',
+        actionSuccess: false,
       } as ContactFormState
     }
   }
@@ -105,6 +107,7 @@ export async function updateContact(
       errors: validatedFields.error.flatten().fieldErrors,
       message:
         'Failed to Update Contact. Make sure fields are filled out properly!',
+      actionSuccess: false,
     } as ContactFormState
   } else {
     try {
@@ -121,6 +124,7 @@ export async function updateContact(
     } catch (error) {
       return {
         message: 'Database Error: Failed to Update Client.',
+        actionSuccess: false,
       } as ContactFormState
     }
   }

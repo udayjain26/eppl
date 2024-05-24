@@ -14,8 +14,11 @@ import { VariationFormSchema } from '@/schemas/variation-form-schema'
 import { saveVariation } from '@/server/variations/actions'
 import { VariationData, VariationFormState } from '@/server/variations/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
+import { useFormState as useFormStateReactHookForm } from 'react-hook-form'
+
+import { useEffect, useRef } from 'react'
+
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -28,82 +31,69 @@ const initialState: VariationFormState = {
 
 export default function VariationForm(props: { variationData: VariationData }) {
   const [state, formAction] = useFormState(saveVariation, initialState)
-  const [isChanged, setIsChanged] = useState(false)
-
   const form = useForm<z.infer<typeof VariationFormSchema>>({
     resolver: zodResolver(VariationFormSchema),
     defaultValues: {
-      variationTitle: props.variationData.variationTitle!,
-      variationNotes: props.variationData.variationNotes!,
+      variationTitle: props.variationData.variationTitle
+        ? props.variationData.variationTitle
+        : '',
+      variationNotes: props.variationData.variationNotes
+        ? props.variationData.variationNotes
+        : '',
     },
   })
-  const { watch, reset } = form
+
+  // const { control } = form
+  const { errors } = useFormStateReactHookForm(form)
 
   useEffect(() => {
-    reset()
-  }, [])
-  useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
-      const isFormChanged = Object.keys(props.variationData).some(
-        (key) =>
-          (value as VariationData)[key as keyof VariationData] !==
-          props.variationData[key as keyof VariationData],
-      )
-      setIsChanged(isFormChanged)
-    })
-    return () => subscription.unsubscribe()
-  }, [watch, props.variationData])
+    if (
+      state.actionSuccess === true &&
+      state.message === 'Variation Saved Successfully!'
+    ) {
+      toast.success('Variation Saved Successfully!')
+    }
+  }, [state])
 
-  const SaveButton = () => {
+  function SaveButton() {
     const { pending } = useFormStatus()
 
-    useEffect(() => {
-      console.log('Ran ')
-      if (
-        state.actionSuccess === true &&
-        state.message === 'Variation Saved Successfully!'
-      ) {
-        toast('Variation Saved Successfully!')
-        state.actionSuccess = null
-        state.message = null
-      }
-    }, [state.actionSuccess, state.message])
     return (
-      <Button type="submit" className="w-32" disabled={pending || !isChanged}>
+      <Button type="submit" className="w-32" disabled={pending}>
         {pending ? 'Saving...' : 'Save Variation'}
       </Button>
     )
   }
 
+  console.log(errors)
+
   return (
     <Form {...form}>
       <form action={formAction}>
-        <input
-          type="hidden"
-          value={props.variationData.uuid}
-          {...form.register('uuid')}
-        />
-        <input
-          type="hidden"
-          value={props.variationData.estimateUuid}
-          {...form.register('estimateUuid')}
-        />
+        <div className="hidden">
+          <input
+            type="hidden"
+            value={props.variationData.uuid}
+            {...form.register('uuid')}
+          />
+          <input
+            type="hidden"
+            value={props.variationData.estimateUuid}
+            {...form.register('estimateUuid')}
+          />
+        </div>
 
         <div className="flex flex-row justify-between">
           <div className="flex w-64 flex-col">
             <FormField
               control={form.control}
               name="variationTitle"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Variation Title</FormLabel>
 
                   <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Variation Title"
-                      {...form.register('variationTitle')}
-                    />
+                    <Input placeholder="Variation Title" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -111,16 +101,12 @@ export default function VariationForm(props: { variationData: VariationData }) {
             <FormField
               control={form.control}
               name="variationNotes"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
 
                   <FormControl>
-                    <Textarea
-                      placeholder="Notes"
-                      // defaultValue={props.variationData!.variationNotes!}
-                      {...form.register('variationNotes')}
-                    />
+                    <Textarea placeholder="Notes" {...field}></Textarea>
                   </FormControl>
                 </FormItem>
               )}

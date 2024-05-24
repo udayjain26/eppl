@@ -75,8 +75,12 @@ export function CreateContactForm({
     if (state.actionSuccess === true) {
       closeDialog()
       contactData
-        ? toast('Contact Updated Succesfully!')
-        : toast('Contact Created Succesfully!')
+        ? toast.success('Contact Updated Succesfully!')
+        : toast.success('Contact Created Succesfully!')
+    } else if (state.actionSuccess === false) {
+      contactData
+        ? toast.error('Contact Update Failed!')
+        : toast.error('Contact Creation Failed!')
     }
   }, [state])
 

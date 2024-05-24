@@ -126,8 +126,12 @@ export function CreateClientForm({
       closeDialog()
 
       clientData
-        ? toast('Client Updated Succesfully!')
-        : toast('Client Created Succesfully!')
+        ? toast.success('Client Updated Succesfully!')
+        : toast.success('Client Created Succesfully!')
+    } else if (state.actionSuccess === false) {
+      clientData
+        ? toast.error('Client Update Failed')
+        : toast.error('Client Creation Failed')
     }
   }, [state])
 

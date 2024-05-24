@@ -35,7 +35,7 @@ export default function RootLayout({
 
           {children}
           {/* Footer goes here */}
-          <Toaster />
+          <Toaster richColors theme="light" />
 
           <SpeedInsights />
         </body>

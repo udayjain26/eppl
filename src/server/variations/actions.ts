@@ -10,11 +10,7 @@ import { eq } from 'drizzle-orm'
 import { VariationFormSchema } from '@/schemas/variation-form-schema'
 
 const Variation = VariationFormSchema.omit({
-  uuid: true,
-  createdAt: true,
-  createdBy: true,
-  updatedAt: true,
-  updatedBy: true,
+  // uuid: true,
 })
 export async function createVariation(estimateUuid: string) {
   //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
@@ -38,6 +34,7 @@ export async function saveVariation(
   previousState: VariationFormState,
   formData: FormData,
 ) {
+  console.log('formData', formData)
   //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
   const user = auth()
   if (!user.userId) {
