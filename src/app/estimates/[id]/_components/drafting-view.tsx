@@ -14,11 +14,14 @@ import { createVariation } from '@/server/variations/actions'
 import { ChevronDown, Copy, Plus, Trash } from 'lucide-react'
 import VariationForm from './variation-form'
 import { VariationData } from '@/server/variations/types'
+import { useState } from 'react'
 
 export default function DraftingView(props: {
   estimateData: EstimateTableRow
   variationsData: VariationData[]
 }) {
+  const [loading, setLoading] = useState(false)
+
   return (
     <div className="flex h-full w-full flex-col gap-y-2 rounded-xl">
       <div className="flex flex-row">
@@ -33,7 +36,10 @@ export default function DraftingView(props: {
             <MenubarContent>
               <MenubarItem
                 onClick={async () => {
-                  createVariation(props.estimateData.uuid)
+                  setLoading(true)
+                  await createVariation(props.estimateData.uuid)
+
+                  setLoading(false)
                 }}
               >
                 <span>
@@ -80,6 +86,7 @@ export default function DraftingView(props: {
         </Menubar>
       </div>
       <div className="w-ful flex h-full flex-col gap-y-2 overflow-scroll rounded-xl border border-slate-300 p-1 shadow-md">
+        {loading ? <div>Loading...</div> : null}
         {props.variationsData.map((variation: any) => {
           return (
             <Card key={variation.uuid}>
