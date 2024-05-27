@@ -15,7 +15,7 @@ const Variation = VariationFormSchema.omit({
 
 function emptyStringToNullTransformer(data: any) {
   if (typeof data === 'string' && data === '') {
-    return null
+    return undefined
   }
   return data
 }
@@ -27,8 +27,8 @@ interface transformedData {
 type variationQtyRate = {
   // uuid: string | undefined
   variationUuid: string
-  quantity: number
-  rate: number
+  quantity: string
+  rate: string
 }
 
 export async function createVariation(estimateUuid: string) {
@@ -61,9 +61,15 @@ export async function saveVariation(
   }
 
   //Extract the variationQtysRates from the formData
+  try {
+  } catch (e) {
+    return {
+      actionSuccess: false,
+      message:
+        'Failed to save Variation. Make sure fields are filled out properly!',
+    } as VariationFormState
+  }
   const variationQtysRatesData: variationQtyRate[] = []
-
-  console.log('RAW FORM DATA', formData)
 
   formData.forEach((value, key) => {
     if (key.startsWith('variationQtysRates')) {
@@ -72,16 +78,16 @@ export async function saveVariation(
       if (!variationQtysRatesData[indexKey]) {
         variationQtysRatesData[indexKey] = {
           variationUuid: formData.get(`uuid`) as string,
-          quantity: 0,
-          rate: 0,
+          quantity: '',
+          rate: '',
         }
       }
 
       if (field === 'quantity') {
-        variationQtysRatesData[indexKey].quantity = parseInt(value as string)
+        variationQtysRatesData[indexKey].quantity = value as string
       }
       if (field === 'rate') {
-        variationQtysRatesData[indexKey].rate = parseFloat(value as string)
+        variationQtysRatesData[indexKey].rate = value as string
       }
     }
   })
@@ -153,4 +159,31 @@ export async function saveVariation(
     actionSuccess: true,
     message: 'Variation Saved Successfully!',
   } as VariationFormState
+}
+
+export async function deleteVariation(variationUuid: string) {
+  //Check if user is authenticated: Throws an uncaught error. App Breaking Throw
+  const user = auth()
+  if (!user.userId) {
+    throw new Error('User Unauthenitcated')
+  }
+
+  const deletedVariation = await db
+    .delete(variations)
+    .where(eq(variations.uuid, variationUuid))
+    .returning()
+
+  revalidatePath(`/estimates/${deletedVariation[0].estimateUuid}`)
+
+  if (deletedVariation.length === 0) {
+    return {
+      actionSuccess: false,
+      message: 'Failed to delete Variation. Variation not found!',
+    } as VariationFormState
+  } else {
+    return {
+      actionSuccess: true,
+      message: `Deleted ${deletedVariation[0].variationTitle} Variation Successfully!`,
+    } as VariationFormState
+  }
 }

@@ -73,8 +73,6 @@ export default function VariationForm(props: { variationData: VariationData }) {
     },
   )
 
-  console.log('Handle Submit Errors', errors)
-
   const { isDirty } = useFormStateReactHookForm(form)
 
   useEffect(() => {
@@ -84,6 +82,10 @@ export default function VariationForm(props: { variationData: VariationData }) {
     ) {
       toast.success('Variation Saved Successfully!')
       form.reset(form.getValues())
+    } else {
+      if (state.message) {
+        toast.error(state.message)
+      }
     }
   }, [state])
 
@@ -132,7 +134,6 @@ export default function VariationForm(props: { variationData: VariationData }) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
-
                   <FormControl>
                     <Textarea
                       className="min-h-32"
@@ -190,13 +191,13 @@ export default function VariationForm(props: { variationData: VariationData }) {
                         <Input
                           className="w-20"
                           {...register(`variationQtysRates.${index}.quantity`, {
-                            valueAsNumber: true,
+                            // valueAsNumber: true,
                           })}
                         />
                         <Input
                           className="w-20"
                           {...register(`variationQtysRates.${index}.rate`, {
-                            valueAsNumber: true,
+                            // valueAsNumber: true,
                           })}
                         />
 

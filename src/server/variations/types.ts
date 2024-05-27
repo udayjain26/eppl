@@ -1,8 +1,8 @@
 export type VariationData = {
   uuid: string
   estimateUuid: string
-  variationTitle: string | null
-  variationNotes: string | null
+  variationTitle: string | undefined
+  variationNotes: string | undefined
   variationQtysRates: {
     uuid: string
     variationUuid: string
