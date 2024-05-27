@@ -7,7 +7,7 @@ export function estimateStageColors(stage: string) {
       'bg-gray-500': stage === 'Empty',
       'bg-blue-500': stage === 'Drafting',
       'bg-yellow-500': stage === 'Pending Rates',
-      'bg-indigo-500': stage === 'Rates Approval',
+      'bg-indigo-500': stage === 'Rates Approved',
       'bg-orange-500': stage === 'Client Approval',
       'bg-emerald-500': stage === 'Won',
       'bg-red-500': stage === 'Lost',

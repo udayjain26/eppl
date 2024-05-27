@@ -6,8 +6,8 @@ export type VariationData = {
   variationQtysRates: {
     uuid: string
     variationUuid: string
-    quantity: string
-    rate: string
+    quantity: number
+    rate: number
   }[]
   createdAt: Date
   updatedAt: Date
@@ -19,6 +19,7 @@ export type VariationFormState = {
   errors?: {
     variationTitle?: string[] | null
     variationNotes?: string[] | null
+    variationQtysRates?: string[] | null
   }
   message?: string | null
   actionSuccess?: boolean | null

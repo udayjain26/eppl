@@ -16,25 +16,23 @@ import { VariationData, VariationFormState } from '@/server/variations/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFormState, useFormStatus } from 'react-dom'
 import {
-  Controller,
   useFieldArray,
   useFormState as useFormStateReactHookForm,
 } from 'react-hook-form'
 
-import { useEffect, useRef } from 'react'
-
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Delete, Plus, Trash } from 'lucide-react'
-import { Card } from '@/components/ui/card'
+import { Plus, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { useEffect } from 'react'
 
 const initialState: VariationFormState = {
   message: null,
   errors: {},
   actionSuccess: null,
 }
+
 function SaveButton(props: { isDirty: boolean }) {
   const { pending } = useFormStatus()
 
@@ -50,6 +48,7 @@ export default function VariationForm(props: { variationData: VariationData }) {
 
   const form = useForm<z.infer<typeof VariationFormSchema>>({
     resolver: zodResolver(VariationFormSchema),
+
     defaultValues: {
       variationTitle: props.variationData.variationTitle
         ? props.variationData.variationTitle
@@ -57,16 +56,24 @@ export default function VariationForm(props: { variationData: VariationData }) {
       variationNotes: props.variationData.variationNotes
         ? props.variationData.variationNotes
         : '',
+      variationQtysRates: props.variationData.variationQtysRates,
     },
   })
 
-  const { control, register } = form
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
     {
       control,
       name: 'variationQtysRates',
     },
   )
+
+  console.log('Handle Submit Errors', errors)
 
   const { isDirty } = useFormStateReactHookForm(form)
 
@@ -111,6 +118,14 @@ export default function VariationForm(props: { variationData: VariationData }) {
                 </FormItem>
               )}
             />
+            <div>
+              {state.errors?.variationTitle &&
+                state.errors.variationTitle.map((error: string) => (
+                  <p className=" text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
             <FormField
               control={form.control}
               name="variationNotes"
@@ -129,7 +144,7 @@ export default function VariationForm(props: { variationData: VariationData }) {
               )}
             />
           </div>
-          <div className="flex min-w-56 flex-col justify-end gap-y-2">
+          <div className="flex w-56 flex-col justify-end gap-y-2">
             <div className="flex h-full w-full flex-col pt-2 ">
               <div className="h-full min-h-48 min-w-24">
                 <div className="flex flex-row items-center justify-between px-2 py-2">
@@ -143,6 +158,7 @@ export default function VariationForm(props: { variationData: VariationData }) {
                     type="button"
                     onClick={() =>
                       append({
+                        uuid: undefined,
                         variationUuid: props.variationData.uuid,
                         quantity: 0,
                         rate: 0,
@@ -173,11 +189,15 @@ export default function VariationForm(props: { variationData: VariationData }) {
                       <div className="flex flex-row gap-x-1 px-2 py-1">
                         <Input
                           className="w-20"
-                          {...register(`variationQtysRates.${index}.quantity`)}
+                          {...register(`variationQtysRates.${index}.quantity`, {
+                            valueAsNumber: true,
+                          })}
                         />
                         <Input
                           className="w-20"
-                          {...register(`variationQtysRates.${index}.rate`)}
+                          {...register(`variationQtysRates.${index}.rate`, {
+                            valueAsNumber: true,
+                          })}
                         />
 
                         <Button
@@ -199,7 +219,18 @@ export default function VariationForm(props: { variationData: VariationData }) {
             <div className="flex flex-row justify-end">
               <SaveButton isDirty={isDirty} />
             </div>
+            <div>
+              {state.errors?.variationQtysRates &&
+                state.errors.variationQtysRates.map((error: string) => (
+                  <p className=" text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
           </div>
+        </div>
+        <div>
+          <div className="flex flex-row justify-end"> </div>
         </div>
       </form>
     </Form>

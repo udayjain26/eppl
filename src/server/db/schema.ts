@@ -93,7 +93,7 @@ export const estimateStageEnum = pgEnum('estimate_stage', [
   'Empty',
   'Drafting',
   'Pending Rates',
-  'Rates Approval',
+  'Rates Approved',
   'Client Approval',
   'Won',
   'Lost',
@@ -255,7 +255,7 @@ export const variations = createTable('variations', {
 export const variationQtysRates = createTable('variation_qtys_rates', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
   variationUuid: uuid('variation_uuid')
-    .references(() => variations.uuid)
+    .references(() => variations.uuid, { onDelete: 'cascade' })
     .notNull(),
   quantity: numeric('quantity').notNull(),
   rate: numeric('rate').notNull(),
