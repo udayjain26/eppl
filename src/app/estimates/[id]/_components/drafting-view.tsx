@@ -26,16 +26,32 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { toast } from 'sonner'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import CreatePaperForm from '@/app/settings/_components/create-paper-form'
+import { PaperData } from '@/server/paper/types'
 
 export default function DraftingView(props: {
   estimateData: EstimateTableRow
   variationsData: VariationData[]
+  paperData: PaperData[]
 }) {
   const [loading, setLoading] = useState(false)
   const [selectedVariation, setSelectedVariation] = useState<string>()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [openPaperSheet, setOpenPaperSheet] = useState(false)
+
+  const closeDialog = () => {
+    setOpenPaperSheet(false)
+  }
 
   return (
     <div className="flex h-full w-full flex-col gap-y-2 rounded-xl">
@@ -111,6 +127,27 @@ export default function DraftingView(props: {
               <MenubarItem>Option 3</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger>
+              Settings
+              <span>
+                <ChevronDown strokeWidth={1} size={20}></ChevronDown>
+              </span>
+            </MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={() => setOpenPaperSheet(true)}>
+                {' '}
+                <span>
+                  <Plus strokeWidth={1} size={20} className="mr-1"></Plus>
+                </span>
+                Create New Paper
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem>Option 2</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem>Option 3</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
         </Menubar>
       </div>
       <div className="flex h-fit w-full flex-col gap-y-2 overflow-scroll rounded-xl p-1">
@@ -119,7 +156,7 @@ export default function DraftingView(props: {
           return (
             <Card
               className={cn('cursor-pointer hover:bg-slate-50', {
-                'border-2 border-slate-500':
+                'border-2 border-slate-500 hover:bg-transparent':
                   selectedVariation === variation.uuid,
               })}
               key={variation.uuid}
@@ -130,6 +167,7 @@ export default function DraftingView(props: {
               <CardContent>
                 <VariationForm
                   variationData={variation}
+                  paperData={props.paperData}
                   product={props.estimateData.product.productName}
                 ></VariationForm>
               </CardContent>
@@ -176,6 +214,25 @@ export default function DraftingView(props: {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Sheet open={openPaperSheet} onOpenChange={setOpenPaperSheet}>
+        <SheetContent
+          className="flex h-full flex-col"
+          onInteractOutside={(event) => {
+            event.preventDefault()
+          }}
+        >
+          <SheetHeader className="">
+            <SheetTitle>Create New Paper</SheetTitle>
+            <SheetDescription>
+              Please fill out the form below to add a paper to the system.
+            </SheetDescription>
+          </SheetHeader>
+          <CreatePaperForm
+            estimateUuid={props.estimateData.uuid}
+            closeDialog={closeDialog}
+          ></CreatePaperForm>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

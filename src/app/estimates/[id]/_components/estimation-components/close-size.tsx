@@ -1,3 +1,4 @@
+import MySep from '@/app/_components/custom-sep'
 import { commonSizes } from '@/app/estimates/constants'
 import { Button } from '@/components/ui/button'
 import {
@@ -76,121 +77,129 @@ export default function CloseSize(props: { control: any; form: any }) {
   }
 
   return (
-    <div className="flex flex-row gap-x-1">
-      <div className="flex flex-col">
-        {' '}
+    <div className="flex flex-col pt-4">
+      <h1>Close Size Details</h1>
+      <div className="flex flex-row gap-x-1">
         <FormField
           control={props.control}
-          name="closeSizeLength"
+          name="closeSizeName"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Close Size Length (mm)</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onChange={(e) =>
-                    handleInputChange(e, field, setLengthInInches)
-                  }
-                ></Input>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <div className="pl-2 text-sm text-gray-500">
-          {lengthInInches && `(${lengthInInches} in)`}
-        </div>
-      </div>
-      <div className="flex flex-col">
-        <FormField
-          control={props.control}
-          name="closeSizeWidth"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Close Size Width (mm)</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onChange={(e) =>
-                    handleInputChange(e, field, setWidthInInches)
-                  }
-                ></Input>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <div className="pl-2 text-sm text-gray-500">
-          {widthInInches && `(${widthInInches} in)`}
-        </div>
-      </div>
+            <FormItem
+              className="flex flex-col 
+           gap-y-1 pt-[6px]"
+            >
+              <FormLabel>Close Size Name</FormLabel>
 
-      <FormField
-        control={props.control}
-        name="closeSizeName"
-        render={({ field }) => (
-          <FormItem className="flex flex-col">
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger className="mt-6" asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-48 justify-between"
-                >
-                  <input
-                    type="hidden"
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger className="" asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-48 justify-between"
+                  >
+                    <input
+                      type="hidden"
+                      {...field}
+                      value={field.value ? field.value : ''}
+                    />
+                    {field.value
+                      ? commonSizes.find((size) => size.label === field.value)
+                          ?.label
+                      : 'Select size...'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search sizes..."
+                      className="h-10"
+                    />
+                    <CommandEmpty>No size found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandList>
+                        {commonSizes.map((size) => (
+                          <CommandItem
+                            key={size.label}
+                            value={size.label}
+                            onSelect={() => {
+                              props.form.setValue('closeSizeName', size.label)
+                              handleInputSelect(
+                                size,
+                                field,
+                                setLengthInInches,
+                                setWidthInInches,
+                              )
+
+                              setOpen(false)
+                            }}
+                          >
+                            {size.label}
+                            <CheckIcon
+                              className={cn(
+                                'ml-auto h-4 w-4',
+                                field.value === size.label
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandList>
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </FormItem>
+          )}
+        />
+        <div className="flex flex-col">
+          {' '}
+          <FormField
+            control={props.control}
+            name="closeSizeLength"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel>Close Size Length (mm)</FormLabel>
+                <FormControl>
+                  <Input
                     {...field}
-                    value={field.value ? field.value : ''}
-                  />
-                  {field.value
-                    ? commonSizes.find((size) => size.label === field.value)
-                        ?.label
-                    : 'Select size...'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 p-0">
-                <Command>
-                  <CommandInput
-                    placeholder="Search sizes..."
-                    className="h-10"
-                  />
-                  <CommandEmpty>No size found.</CommandEmpty>
-                  <CommandGroup>
-                    <CommandList>
-                      {commonSizes.map((size) => (
-                        <CommandItem
-                          key={size.label}
-                          value={size.label}
-                          onSelect={() => {
-                            props.form.setValue('closeSizeName', size.label)
-                            handleInputSelect(
-                              size,
-                              field,
-                              setLengthInInches,
-                              setWidthInInches,
-                            )
-
-                            setOpen(false)
-                          }}
-                        >
-                          {size.label}
-                          <CheckIcon
-                            className={cn(
-                              'ml-auto h-4 w-4',
-                              field.value === size.label
-                                ? 'opacity-100'
-                                : 'opacity-0',
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
-                    </CommandList>
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </FormItem>
-        )}
-      />
+                    onChange={(e) =>
+                      handleInputChange(e, field, setLengthInInches)
+                    }
+                  ></Input>
+                </FormControl>
+                <div className="pl-2 text-sm text-gray-500">
+                  {lengthInInches && `(${lengthInInches} in)`}
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="flex flex-col">
+          <FormField
+            control={props.control}
+            name="closeSizeWidth"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel>Close Size Width (mm)</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    onChange={(e) =>
+                      handleInputChange(e, field, setWidthInInches)
+                    }
+                  ></Input>
+                </FormControl>
+                <div className="pl-2 text-sm text-gray-500">
+                  {widthInInches && `(${widthInInches} in)`}
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
+      <MySep />
     </div>
   )
 }

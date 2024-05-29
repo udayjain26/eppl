@@ -3,6 +3,7 @@ export type VariationData = {
   estimateUuid: string
   variationTitle: string | undefined
   variationNotes: string | undefined
+  clientEnquiry: string | undefined
   variationQtysRates: {
     uuid: string
     variationUuid: string

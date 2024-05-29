@@ -1,20 +1,25 @@
+import { PaperData } from '@/server/paper/types'
 import CloseSize from './estimation-components/close-size'
+import Cover from './estimation-components/cover'
+import OpenSize from './estimation-components/open-size'
 import Size from './estimation-components/size'
 
 const fieldComponentMap: { [key: string]: React.ComponentType<any> } = {
   size: Size,
   closeSize: CloseSize,
-  // Add other field-component mappings here
+  openSize: OpenSize,
+  cover: Cover,
 }
 
 const productFieldMap: { [key: string]: string[] } = {
-  'Paperback Books': ['closeSize'],
+  'Paperback Books': ['closeSize', 'openSize', 'cover'],
   Posters: ['size'],
 }
 export default function ProductFields(props: {
   control: any
   form: any
   product: string
+  paperData: PaperData[]
 }) {
   const fields = productFieldMap[props.product] || []
 
@@ -28,6 +33,7 @@ export default function ProductFields(props: {
             key={field}
             control={props.control}
             form={props.form}
+            paperData={props.paperData}
           />
         ) : null
       })}

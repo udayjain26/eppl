@@ -69,7 +69,7 @@ export async function createEstimate(
     }
   }
 
-  revalidatePath('/estimate')
+  revalidatePath('/estimates')
 
   return { actionSuccess: true } as EstimateFormState
 }

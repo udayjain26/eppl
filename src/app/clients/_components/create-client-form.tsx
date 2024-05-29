@@ -149,7 +149,7 @@ export function CreateClientForm({
           ></input>
         ) : null}
 
-        <div className="flex h-fit flex-col  gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
+        <div className="flex h-fit flex-col gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl  p-1 shadow-inner">
           <FormField
             control={form.control}
             name="clientFullName"

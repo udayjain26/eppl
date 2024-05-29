@@ -246,6 +246,7 @@ export const variations = createTable('variations', {
     .notNull(),
   variationTitle: varchar('variation_title', { length: 256 }),
   variationNotes: text('variation_notes'),
+  clientEnquiry: text('client_enquiry'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }).notNull(),
@@ -302,3 +303,19 @@ export const estimatesRelations = relations(estimates, ({ one, many }) => ({
   }),
   variations: many(variations),
 }))
+
+export const paperMaster = createTable('paper_master', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  paperName: varchar('paper_type_name', { length: 256 }).notNull().unique(),
+  paperLength: numeric('paper_length', { precision: 7, scale: 2 }).notNull(),
+  paperWidth: numeric('paper_width', { precision: 7, scale: 2 }).notNull(),
+  paperGrammage: numeric('paper_grammage', {
+    precision: 7,
+    scale: 2,
+  }).notNull(),
+  paperFinish: varchar('paper_finish', { length: 256 }).notNull(),
+  paperType: varchar('paper_type', { length: 256 }).notNull(),
+  paperMake: varchar('paper_make', { length: 256 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdBy: varchar('created_by', { length: 256 }).notNull(),
+})

@@ -19,20 +19,26 @@ import {
 } from '@/components/ui/menubar'
 import { getEstimateVariationsData } from '@/server/variations/queries'
 import { VariationData } from '@/server/variations/types'
+import { PaperData } from '@/server/paper/types'
+import { getPaperData } from '@/server/paper/queries'
 
 export default async function FullEstimatePage({
   params,
 }: {
   params: { id: string }
 }) {
-  const estimateData = (await getEstimateDataByIdForFullPage(
-    params.id,
-  )) as EstimateTableRow
+  const [estimateData, paperData] = await Promise.all([
+    getEstimateDataByIdForFullPage(params.id) as Promise<EstimateTableRow>,
+    getPaperData() as Promise<PaperData[]>,
+  ])
+
   const uuid = params.id
 
   const variationsData = (await getEstimateVariationsData(
     uuid,
   )) as VariationData[]
+
+  console.log(paperData)
 
   return (
     <PageWrapper>
@@ -85,6 +91,7 @@ export default async function FullEstimatePage({
           <DraftingView
             estimateData={estimateData}
             variationsData={variationsData}
+            paperData={paperData}
           ></DraftingView>
         </div>
       </div>

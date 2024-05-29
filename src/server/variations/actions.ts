@@ -13,7 +13,7 @@ const Variation = VariationFormSchema.omit({
   // uuid: true,
 })
 
-function emptyStringToNullTransformer(data: any) {
+function emptyStringToUndefinedTransformer(data: any) {
   if (typeof data === 'string' && data === '') {
     return undefined
   }
@@ -60,15 +60,6 @@ export async function saveVariation(
     throw new Error('User Unauthenitcated')
   }
 
-  //Extract the variationQtysRates from the formData
-  try {
-  } catch (e) {
-    return {
-      actionSuccess: false,
-      message:
-        'Failed to save Variation. Make sure fields are filled out properly!',
-    } as VariationFormState
-  }
   const variationQtysRatesData: variationQtyRate[] = []
 
   formData.forEach((value, key) => {
@@ -95,7 +86,7 @@ export async function saveVariation(
   //Transform the formData to a format that can be validated by the schema
   const transformedData: transformedData = {}
   formData.forEach((value, key) => {
-    transformedData[key] = emptyStringToNullTransformer(value)
+    transformedData[key] = emptyStringToUndefinedTransformer(value)
   })
 
   transformedData['variationQtysRates'] = variationQtysRatesData

@@ -27,6 +27,8 @@ import { Plus, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { useEffect } from 'react'
 import ProductFields from './product-fields'
+import FormError from '@/app/_components/form-error'
+import { PaperData } from '@/server/paper/types'
 
 const initialState: VariationFormState = {
   message: null,
@@ -46,6 +48,7 @@ function SaveButton(props: { isDirty: boolean }) {
 
 export default function VariationForm(props: {
   variationData: VariationData
+  paperData: PaperData[]
   product: string
 }) {
   const [state, formAction] = useFormState(saveVariation, initialState)
@@ -61,6 +64,9 @@ export default function VariationForm(props: {
         ? props.variationData.variationNotes
         : '',
       variationQtysRates: props.variationData.variationQtysRates,
+      clientEnquiry: props.variationData.clientEnquiry
+        ? props.variationData.clientEnquiry
+        : '',
     },
   })
 
@@ -126,14 +132,7 @@ export default function VariationForm(props: {
                 </FormItem>
               )}
             />
-            <div>
-              {state.errors?.variationTitle &&
-                state.errors.variationTitle.map((error: string) => (
-                  <p className=" text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
+            <FormError state={state} errorKey="variationTitle"></FormError>
             <FormField
               control={form.control}
               name="variationNotes"
@@ -150,6 +149,22 @@ export default function VariationForm(props: {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="clientEnquiry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Client Enquiry</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="min-h-32"
+                      placeholder="Client Enquiry"
+                      {...field}
+                    ></Textarea>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </div>
           <div className="flex w-full flex-col px-2">
             <div className="flex h-full w-full flex-row gap-x-2 ">
@@ -159,6 +174,7 @@ export default function VariationForm(props: {
                   control={form.control}
                   form={form}
                   product={props.product}
+                  paperData={props.paperData}
                 ></ProductFields>
               </div>
             </div>
@@ -237,14 +253,7 @@ export default function VariationForm(props: {
             <div className="flex flex-row justify-end">
               <SaveButton isDirty={isDirty} />
             </div>
-            <div>
-              {state.errors?.variationQtysRates &&
-                state.errors.variationQtysRates.map((error: string) => (
-                  <p className=" text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
+            <FormError state={state} errorKey="variationQtysRates"></FormError>
           </div>
         </div>
         <div>

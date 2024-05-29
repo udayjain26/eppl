@@ -8,6 +8,7 @@ import {
   HandCoins,
   HomeIcon,
   IndianRupee,
+  Settings,
   Truck,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -42,6 +43,11 @@ const links = [
     name: 'Invoices',
     href: '/invoices',
     icon: IndianRupee,
+  },
+  {
+    name: 'Settings',
+    href: '/settings',
+    icon: Settings,
   },
 ]
 

@@ -5,6 +5,7 @@ export const VariationFormSchema = z.object({
   estimateUuid: z.string().uuid(),
   variationTitle: z.string({ message: 'Variation title is required!' }).trim(),
   variationNotes: z.string().trim().optional(),
+  clientEnquiry: z.string().trim().optional(),
   variationQtysRates: z
     .array(
       z.object({
@@ -22,8 +23,14 @@ export const VariationFormSchema = z.object({
     .optional(),
 
   //Details for the variation
-  sizeLength: z.coerce.number().nonnegative().optional(),
-  sizeWidth: z.coerce.number().nonnegative().optional(),
+  sizeLength: z.coerce
+    .number()
+    .nonnegative({ message: 'Length must be non-negative' })
+    .optional(),
+  sizeWidth: z.coerce
+    .number()
+    .nonnegative({ message: 'Width must be non-negative' })
+    .optional(),
   sizeName: z.string().optional(),
 
   // openSizeLength: z.number().nonnegative().optional(),

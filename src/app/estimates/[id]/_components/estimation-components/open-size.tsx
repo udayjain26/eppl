@@ -1,5 +1,4 @@
 import MySep from '@/app/_components/custom-sep'
-import FormError from '@/app/_components/form-error'
 import { commonSizes } from '@/app/estimates/constants'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,7 +26,7 @@ import { CheckIcon } from 'lucide-react'
 import React from 'react'
 import { ChangeEvent, useState } from 'react'
 
-export default function Size(props: { control: any; form: any }) {
+export default function OpenSize(props: { control: any; form: any }) {
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
 
@@ -47,7 +46,7 @@ export default function Size(props: { control: any; form: any }) {
         const mmValue = (numericValue * 25.4).toFixed(2) // Convert inches to mm
         field.onChange(mmValue)
         setInches(numericValue.toFixed(2))
-        props.form.setValue('sizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
+        props.form.setValue('openSizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
       } else {
         field.onChange(value.slice(0, -1))
         setInches('')
@@ -57,39 +56,39 @@ export default function Size(props: { control: any; form: any }) {
       const numericValue = parseFloat(value)
       if (!isNaN(numericValue)) {
         setInches((numericValue / 25.4).toFixed(2)) // Convert mm to inches
-        props.form.setValue('sizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
+        props.form.setValue('openSizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
       } else {
         setInches('')
       }
     }
   }
   const handleInputSelect = (
-    size: any,
+    openSize: any,
     field: any,
     setLengthInInches: (value: string) => void,
     setWidthInInches: (value: string) => void,
   ) => {
-    const { length, width } = size
-    props.form.setValue('sizeLength', length.toString())
-    props.form.setValue('sizeWidth', width.toString())
-    field.onChange(size.label)
+    const { length, width } = openSize
+    props.form.setValue('openSizeLength', length.toString())
+    props.form.setValue('openSizeWidth', width.toString())
+    field.onChange(openSize.label)
     setLengthInInches((length / 25.4).toFixed(2))
     setWidthInInches((width / 25.4).toFixed(2))
   }
 
   return (
     <div className="flex flex-col pt-4">
-      <h1>Size Details</h1>
+      <h1>Open Size Details</h1>
       <div className="flex flex-row gap-x-1">
         <FormField
           control={props.control}
-          name="sizeName"
+          name="openSizeName"
           render={({ field }) => (
             <FormItem
               className="flex flex-col 
            gap-y-1 pt-[6px]"
             >
-              <FormLabel>Size Name</FormLabel>
+              <FormLabel>Open Size Name</FormLabel>
 
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger className="" asChild>
@@ -124,7 +123,7 @@ export default function Size(props: { control: any; form: any }) {
                             key={size.label}
                             value={size.label}
                             onSelect={() => {
-                              props.form.setValue('sizeName', size.label)
+                              props.form.setValue('openSizeName', size.label)
                               handleInputSelect(
                                 size,
                                 field,
@@ -158,10 +157,10 @@ export default function Size(props: { control: any; form: any }) {
           {' '}
           <FormField
             control={props.control}
-            name="sizeLength"
+            name="openSizeLength"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel>Length (mm)</FormLabel>
+                <FormLabel>Open Size Length (mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -180,10 +179,10 @@ export default function Size(props: { control: any; form: any }) {
         <div className="flex flex-col">
           <FormField
             control={props.control}
-            name="sizeWidth"
+            name="openSizeWidth"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel>Width (mm)</FormLabel>
+                <FormLabel>Open Size Width (mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}

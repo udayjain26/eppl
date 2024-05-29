@@ -178,7 +178,7 @@ export function CreateEstimateForm({
         action={formAction}
         className=" flex h-full w-full flex-col justify-start gap-y-2"
       >
-        <div className="flex h-fit flex-col  gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl p-2 shadow-inner">
+        <div className=" flex h-fit   flex-col  gap-y-2 overflow-y-scroll scroll-smooth rounded-2xl p-2 shadow-inner">
           <FormField
             control={form.control}
             name="clientUuid"
@@ -683,14 +683,6 @@ export function CreateEstimateForm({
           />
         </div>
         <div className="flex h-64 w-full flex-col space-y-2 ">
-          {' '}
-          <div>
-            {
-              <p className="text-sm" key={state.message}>
-                {state.message}
-              </p>
-            }
-          </div>
           <SubmitButton />
           <CancelButton closeDialog={closeDialog} />
         </div>
