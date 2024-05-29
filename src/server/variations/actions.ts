@@ -168,6 +168,8 @@ export async function deleteVariation(variationUuid: string) {
     throw new Error('User Unauthenitcated')
   }
 
+  console.log(variationUuid)
+
   const deletedVariation = await db
     .delete(variations)
     .where(eq(variations.uuid, variationUuid))
@@ -183,7 +185,7 @@ export async function deleteVariation(variationUuid: string) {
   } else {
     return {
       actionSuccess: true,
-      message: `Deleted ${deletedVariation[0].variationTitle} Variation Successfully!`,
+      message: `Deleted ${deletedVariation[0].variationTitle ? deletedVariation[0].variationTitle : 'empty'} variation successfully!`,
     } as VariationFormState
   }
 }

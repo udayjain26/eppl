@@ -21,6 +21,16 @@ export const VariationFormSchema = z.object({
     )
     .optional(),
 
+  //Details for the variation
+  sizeLength: z.coerce.number().nonnegative().optional(),
+  sizeWidth: z.coerce.number().nonnegative().optional(),
+  sizeName: z.string().optional(),
+
+  // openSizeLength: z.number().nonnegative().optional(),
+  // openSizeWidth: z.number().nonnegative().optional(),
+  // closeSizeLength: z.number().nonnegative().optional(),
+  // closeSizeWidth: z.number().nonnegative().optional(),
+
   // createdBy: z.string().uuid(),
   // updatedBy: z.string().uuid(),
   // createdAt: z.date(),

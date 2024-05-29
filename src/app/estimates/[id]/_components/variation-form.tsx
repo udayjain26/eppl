@@ -26,6 +26,7 @@ import { z } from 'zod'
 import { Plus, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { useEffect } from 'react'
+import ProductFields from './product-fields'
 
 const initialState: VariationFormState = {
   message: null,
@@ -43,7 +44,10 @@ function SaveButton(props: { isDirty: boolean }) {
   )
 }
 
-export default function VariationForm(props: { variationData: VariationData }) {
+export default function VariationForm(props: {
+  variationData: VariationData
+  product: string
+}) {
   const [state, formAction] = useFormState(saveVariation, initialState)
 
   const form = useForm<z.infer<typeof VariationFormSchema>>({
@@ -106,7 +110,9 @@ export default function VariationForm(props: { variationData: VariationData }) {
         </div>
 
         <div className="flex flex-row justify-between">
-          <div className="flex w-64 flex-col">
+          <div className="flex min-w-64 flex-col">
+            <h1>Basic Details</h1>
+
             <FormField
               control={form.control}
               name="variationTitle"
@@ -145,7 +151,19 @@ export default function VariationForm(props: { variationData: VariationData }) {
               )}
             />
           </div>
-          <div className="flex w-56 flex-col justify-end gap-y-2">
+          <div className="flex w-full flex-col px-2">
+            <div className="flex h-full w-full flex-row gap-x-2 ">
+              <div className="flex h-full w-full flex-col ">
+                {' '}
+                <ProductFields
+                  control={form.control}
+                  form={form}
+                  product={props.product}
+                ></ProductFields>
+              </div>
+            </div>
+          </div>
+          <div className="flex min-w-56 flex-col justify-end gap-y-2">
             <div className="flex h-full w-full flex-col pt-2 ">
               <div className="h-full min-h-48 min-w-24">
                 <div className="flex flex-row items-center justify-between px-2 py-2">
@@ -190,15 +208,14 @@ export default function VariationForm(props: { variationData: VariationData }) {
                       <div className="flex flex-row gap-x-1 px-2 py-1">
                         <Input
                           className="w-20"
-                          {...register(`variationQtysRates.${index}.quantity`, {
-                            // valueAsNumber: true,
-                          })}
+                          {...register(
+                            `variationQtysRates.${index}.quantity`,
+                            {},
+                          )}
                         />
                         <Input
                           className="w-20"
-                          {...register(`variationQtysRates.${index}.rate`, {
-                            // valueAsNumber: true,
-                          })}
+                          {...register(`variationQtysRates.${index}.rate`, {})}
                         />
 
                         <Button

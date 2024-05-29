@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Menubar,
@@ -11,12 +12,10 @@ import {
 } from '@/components/ui/menubar'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { createVariation, deleteVariation } from '@/server/variations/actions'
-import { ChevronDown, Copy, Plus, Trash } from 'lucide-react'
+import { ChevronDown, Plus, SaveAll, Trash } from 'lucide-react'
 import VariationForm from './variation-form'
 import { VariationData } from '@/server/variations/types'
-import { useState } from 'react'
 import { cn } from '@/lib/utils'
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +25,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -41,7 +39,7 @@ export default function DraftingView(props: {
 
   return (
     <div className="flex h-full w-full flex-col gap-y-2 rounded-xl">
-      <div className="flex flex-row">
+      <div className="flex flex-row justify-between p-1">
         <Menubar>
           <MenubarMenu>
             <MenubarTrigger>
@@ -64,7 +62,12 @@ export default function DraftingView(props: {
                 New Variation
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>Option 2</MenubarItem>
+              <MenubarItem>
+                <span>
+                  <SaveAll strokeWidth={1} size={20} className="mr-1"></SaveAll>
+                </span>
+                Save All
+              </MenubarItem>
               <MenubarSeparator />
               <MenubarItem>Option 3</MenubarItem>
             </MenubarContent>
@@ -110,9 +113,9 @@ export default function DraftingView(props: {
           </MenubarMenu>
         </Menubar>
       </div>
-      <div className="w-ful flex h-full flex-col gap-y-2 overflow-scroll rounded-xl   p-1 ">
+      <div className="flex h-fit w-full flex-col gap-y-2 overflow-scroll rounded-xl p-1">
         {loading ? <div>Loading...</div> : null}
-        {props.variationsData.map((variation: any) => {
+        {props.variationsData.map((variation) => {
           return (
             <Card
               className={cn('cursor-pointer hover:bg-slate-50', {
@@ -125,7 +128,10 @@ export default function DraftingView(props: {
               }}
             >
               <CardContent>
-                <VariationForm variationData={variation}></VariationForm>
+                <VariationForm
+                  variationData={variation}
+                  product={props.estimateData.product.productName}
+                ></VariationForm>
               </CardContent>
             </Card>
           )
@@ -138,8 +144,9 @@ export default function DraftingView(props: {
               Are you sure you wish to delete this variation?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will{' '}
-              <span className="font-bold">permanently delete</span> variation{' '}
+              This action cannot be undone. This action will{' '}
+              <span className="font-bold">permanently delete</span> the
+              variation{' '}
               <span className="font-bold underline underline-offset-1">
                 {
                   props.variationsData.find(
