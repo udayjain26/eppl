@@ -57,16 +57,27 @@ export default function VariationForm(props: {
     resolver: zodResolver(VariationFormSchema),
 
     defaultValues: {
-      variationTitle: props.variationData.variationTitle
-        ? props.variationData.variationTitle
-        : '',
-      variationNotes: props.variationData.variationNotes
-        ? props.variationData.variationNotes
-        : '',
+      variationTitle: props.variationData.variationTitle,
+      variationNotes: props.variationData.variationNotes,
+      clientEnquiry: props.variationData.clientEnquiry,
       variationQtysRates: props.variationData.variationQtysRates,
-      clientEnquiry: props.variationData.clientEnquiry
-        ? props.variationData.clientEnquiry
-        : '',
+      closeSizeName: props.variationData.closeSizeName,
+      closeSizeLength: props.variationData.closeSizeLength?.toString(),
+      closeSizeWidth: props.variationData.closeSizeWidth?.toString(),
+      openSizeName: props.variationData.openSizeName,
+      openSizeLength: props.variationData.openSizeLength?.toString(),
+      openSizeWidth: props.variationData.openSizeWidth?.toString(),
+      sizeName: props.variationData.sizeName,
+      sizeLength: props.variationData.sizeLength?.toString(),
+      sizeWidth: props.variationData.sizeWidth?.toString(),
+      coverColors: props.variationData.coverColors?.toString(),
+      coverPages: props.variationData.coverPages?.toString(),
+      coverLamination: props.variationData.coverLamination,
+      coverPaper: props.variationData.coverPaper,
+      textColors: props.variationData.textColors?.toString(),
+      textPages: props.variationData.textPages?.toString(),
+      textLamination: props.variationData.textLamination,
+      textPaper: props.variationData.textPaper,
     },
   })
 
@@ -231,6 +242,7 @@ export default function VariationForm(props: {
                         />
                         <Input
                           className="w-20"
+                          readOnly
                           {...register(`variationQtysRates.${index}.rate`, {})}
                         />
 

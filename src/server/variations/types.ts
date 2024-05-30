@@ -10,6 +10,29 @@ export type VariationData = {
     quantity: number
     rate: number
   }[]
+
+  sizeName: string | undefined
+  sizeLength: number | undefined
+  sizeWidth: number | undefined
+
+  closeSizeName: string | undefined
+  closeSizeLength: number | undefined
+  closeSizeWidth: number | undefined
+
+  openSizeName: string | undefined
+  openSizeLength: number | undefined
+  openSizeWidth: number | undefined
+
+  coverColors: number | undefined
+  coverPages: number | undefined
+  coverLamination: string | undefined
+  coverPaper: string | undefined
+
+  textColors: number | undefined
+  textPages: number | undefined
+  textLamination: string | undefined
+  textPaper: string | undefined
+
   createdAt: Date
   updatedAt: Date
   createdBy: string

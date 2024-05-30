@@ -97,7 +97,7 @@ export default function Size(props: { control: any; form: any }) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-48 justify-between"
+                    className="w-20 justify-between"
                   >
                     <input
                       type="hidden"
@@ -107,7 +107,7 @@ export default function Size(props: { control: any; form: any }) {
                     {field.value
                       ? commonSizes.find((size) => size.label === field.value)
                           ?.label
-                      : 'Select size...'}
+                      : 'Select'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-0">
@@ -160,8 +160,8 @@ export default function Size(props: { control: any; form: any }) {
             control={props.control}
             name="sizeLength"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Length (mm)</FormLabel>
+              <FormItem className="w-20">
+                <FormLabel>Length(mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -182,8 +182,8 @@ export default function Size(props: { control: any; form: any }) {
             control={props.control}
             name="sizeWidth"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Width (mm)</FormLabel>
+              <FormItem className="w-20">
+                <FormLabel>Width(mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}

@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { CheckIcon } from 'lucide-react'
+import { CheckIcon, ChevronDown } from 'lucide-react'
 import React from 'react'
 import { ChangeEvent, useState } from 'react'
 
@@ -88,7 +88,7 @@ export default function OpenSize(props: { control: any; form: any }) {
               className="flex flex-col 
            gap-y-1 pt-[6px]"
             >
-              <FormLabel>Open Size Name</FormLabel>
+              <FormLabel>Size Name</FormLabel>
 
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger className="" asChild>
@@ -96,7 +96,7 @@ export default function OpenSize(props: { control: any; form: any }) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-48 justify-between"
+                    className="w-20 justify-between"
                   >
                     <input
                       type="hidden"
@@ -106,7 +106,7 @@ export default function OpenSize(props: { control: any; form: any }) {
                     {field.value
                       ? commonSizes.find((size) => size.label === field.value)
                           ?.label
-                      : 'Select size...'}
+                      : 'Select'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-0">
@@ -159,8 +159,8 @@ export default function OpenSize(props: { control: any; form: any }) {
             control={props.control}
             name="openSizeLength"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Open Size Length (mm)</FormLabel>
+              <FormItem className="w-20">
+                <FormLabel>Length(mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -181,8 +181,8 @@ export default function OpenSize(props: { control: any; form: any }) {
             control={props.control}
             name="openSizeWidth"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Open Size Width (mm)</FormLabel>
+              <FormItem className="w-20">
+                <FormLabel>Width(mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}

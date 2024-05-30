@@ -103,7 +103,14 @@ export default function CreatePaperForm(props: {
 
     // Listen for changes in dependent fields and update paperName
     generatePaperName()
-  }, [form.formState])
+  }, [
+    form.watch('paperGrammage'),
+    form.watch('paperType'),
+    form.watch('paperMake'),
+    form.watch('paperFinish'),
+    lengthInInches,
+    widthInInches,
+  ])
 
   useEffect(() => {
     if (state.actionSuccess === true) {

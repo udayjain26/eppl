@@ -35,10 +35,9 @@ export const paperTypes = [
 
 export const paperMakes = [
   { label: 'Prime', value: 'prime' },
-  { label: 'Kodak', value: 'kodak' },
   { label: 'Reel Cut', value: 'reel_cut' },
   { label: 'Ruchira', value: 'ruchira' },
-  { label: 'Shriyans', value: 'shriyans' },
+  { label: 'Shreyans', value: 'shreyans' },
   { label: 'Others', value: 'others' },
 ]
 
@@ -47,5 +46,6 @@ export const paperFinishes = [
   { label: 'Matte', value: 'matte' },
   { label: 'Silk', value: 'silk' },
   { label: 'Uncoated', value: 'uncoated' },
+  { label: 'Fine Paper', value: 'fine_paper' },
   { label: 'Others', value: 'others' },
 ]

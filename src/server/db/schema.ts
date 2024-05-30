@@ -247,6 +247,30 @@ export const variations = createTable('variations', {
   variationTitle: varchar('variation_title', { length: 256 }),
   variationNotes: text('variation_notes'),
   clientEnquiry: text('client_enquiry'),
+
+  //sizes
+  sizeName: varchar('size_name', { length: 256 }),
+  sizeLength: numeric('size_length', { precision: 7, scale: 2 }),
+  sizeWidth: numeric('size_width', { precision: 7, scale: 2 }),
+  closeSizeName: varchar('close_size_name', { length: 256 }),
+  closeSizeLength: numeric('close_size_length', { precision: 7, scale: 2 }),
+  closeSizeWidth: numeric('close_size_width', { precision: 7, scale: 2 }),
+  openSizeName: varchar('open_size_name', { length: 256 }),
+  openSizeLength: numeric('open_size_length', { precision: 7, scale: 2 }),
+  openSizeWidth: numeric('open_size_width', { precision: 7, scale: 2 }),
+
+  //cover
+  coverColors: smallint('cover_colors'),
+  coverPages: smallint('cover_pages'),
+  coverLamination: varchar('cover_lamination', { length: 256 }),
+  coverPaper: varchar('cover_paper', { length: 256 }),
+
+  //text
+  textColors: smallint('text_colors'),
+  textPages: smallint('text_pages'),
+  textLamination: varchar('text_lamination', { length: 256 }),
+  textPaper: varchar('text_paper', { length: 256 }),
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }).notNull(),

@@ -111,6 +111,7 @@ export async function saveVariation(
           .update(variations)
           .set({
             ...validatedFields.data,
+
             updatedBy: user.userId,
             updatedAt: new Date(),
           })
@@ -136,6 +137,7 @@ export async function saveVariation(
         }
       })
     } catch (e) {
+      console.error(e)
       return {
         actionSuccess: false,
         message:
@@ -158,8 +160,6 @@ export async function deleteVariation(variationUuid: string) {
   if (!user.userId) {
     throw new Error('User Unauthenitcated')
   }
-
-  console.log(variationUuid)
 
   const deletedVariation = await db
     .delete(variations)

@@ -6,7 +6,7 @@ import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { getEstimateDataByIdForFullPage } from '@/server/estimates/queries'
 import { ChevronRight } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import DraftingView from './_components/drafting-view'
+import MainView from './_components/main-view'
 import { Input } from '@/components/ui/input'
 import {
   Menubar,
@@ -37,8 +37,6 @@ export default async function FullEstimatePage({
   const variationsData = (await getEstimateVariationsData(
     uuid,
   )) as VariationData[]
-
-  console.log(paperData)
 
   return (
     <PageWrapper>
@@ -88,11 +86,11 @@ export default async function FullEstimatePage({
           </Tabs>
         </div>
         <div className="flex max-h-[97%] min-h-[97%]  w-full flex-col gap-y-2 rounded-xl  p-2 ">
-          <DraftingView
+          <MainView
             estimateData={estimateData}
             variationsData={variationsData}
             paperData={paperData}
-          ></DraftingView>
+          ></MainView>
         </div>
       </div>
     </PageWrapper>

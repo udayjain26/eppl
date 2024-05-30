@@ -31,7 +31,7 @@ import { CheckIcon } from 'lucide-react'
 import React from 'react'
 import { ChangeEvent, useState } from 'react'
 
-export default function Cover(props: {
+export default function Text(props: {
   control: any
   form: any
   paperData: PaperData[]
@@ -42,16 +42,16 @@ export default function Cover(props: {
 
   return (
     <div className="flex  flex-col pt-4">
-      <h1>Cover Details</h1>
+      <h1>Text Details</h1>
       <div className="flex flex-row gap-x-1">
         <div className="flex flex-col">
           {' '}
           <FormField
             control={props.control}
-            name="coverColors"
+            name="textColors"
             render={({ field }) => (
               <FormItem className="w-16">
-                <FormLabel> #Colors</FormLabel>
+                <FormLabel>#Colors</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
                 </FormControl>
@@ -63,7 +63,7 @@ export default function Cover(props: {
           {' '}
           <FormField
             control={props.control}
-            name="coverPages"
+            name="textPages"
             render={({ field }) => (
               <FormItem className="w-16">
                 <FormLabel>#Pages</FormLabel>
@@ -78,13 +78,13 @@ export default function Cover(props: {
           {' '}
           <FormField
             control={props.control}
-            name="coverLamination"
+            name="textLamination"
             render={({ field }) => (
               <FormItem
                 className="flex flex-col 
            gap-y-1 pt-[6px]"
               >
-                <FormLabel>Cover Lamination</FormLabel>
+                <FormLabel>Text Lamination</FormLabel>
 
                 <Popover open={openLamination} onOpenChange={setOpenLamination}>
                   <PopoverTrigger className="" asChild>
@@ -120,7 +120,7 @@ export default function Cover(props: {
                               value={size.label}
                               onSelect={() => {
                                 props.form.setValue(
-                                  'coverLamination',
+                                  'textLamination',
                                   size.label,
                                 )
 
@@ -151,13 +151,13 @@ export default function Cover(props: {
       <div className="flex  w-full flex-row">
         <FormField
           control={props.control}
-          name="coverPaper"
+          name="textPaper"
           render={({ field }) => (
             <FormItem
               className="flex w-full 
            flex-col gap-y-1 pt-[6px]"
             >
-              <FormLabel>Cover Paper</FormLabel>
+              <FormLabel>Text Paper</FormLabel>
 
               <Popover open={openPaper} onOpenChange={setOpenPaper}>
                 <PopoverTrigger className="w-full" asChild>
@@ -193,7 +193,7 @@ export default function Cover(props: {
                             key={paper.paperName}
                             value={paper.paperName}
                             onSelect={() => {
-                              props.form.setValue('coverPaper', paper.paperName)
+                              props.form.setValue('textPaper', paper.paperName)
                               setSelectedPaper(paper)
 
                               setOpenPaper(false)

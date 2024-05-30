@@ -38,8 +38,9 @@ import {
 } from '@/components/ui/sheet'
 import CreatePaperForm from '@/app/settings/_components/create-paper-form'
 import { PaperData } from '@/server/paper/types'
+import CalculationForm from './calculation-form'
 
-export default function DraftingView(props: {
+export default function MainView(props: {
   estimateData: EstimateTableRow
   variationsData: VariationData[]
   paperData: PaperData[]
@@ -48,6 +49,7 @@ export default function DraftingView(props: {
   const [selectedVariation, setSelectedVariation] = useState<string>()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [openPaperSheet, setOpenPaperSheet] = useState(false)
+  const [selectedView, setSelectedView] = useState('specifications') // State for selected view
 
   const closeDialog = () => {
     setOpenPaperSheet(false)
@@ -55,7 +57,17 @@ export default function DraftingView(props: {
 
   return (
     <div className="flex h-full w-full flex-col gap-y-2 rounded-xl">
-      <div className="flex flex-row justify-between p-1">
+      <div className="flex flex-row justify-start gap-x-2 p-1">
+        {selectedView === 'specifications' ? (
+          <div className="flex flex-col justify-center">
+            <h1 className=" text-lg font-normal">Specifications View</h1>
+          </div>
+        ) : null}
+        {selectedView === 'calculation' ? (
+          <div className="flex flex-col justify-center">
+            <h1 className=" text-lg font-normal">Calculation View</h1>
+          </div>
+        ) : null}
         <Menubar>
           <MenubarMenu>
             <MenubarTrigger>
@@ -84,8 +96,8 @@ export default function DraftingView(props: {
                 </span>
                 Save All
               </MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem>
+              {/* <MenubarSeparator />
+              <MenubarItem>Option 3</MenubarItem> */}
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -106,10 +118,10 @@ export default function DraftingView(props: {
                 </span>{' '}
                 Delete Variation{' '}
               </MenubarItem>
-              <MenubarSeparator />
+              {/* <MenubarSeparator />
               <MenubarItem>Option 2</MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem>
+              <MenubarItem>Option 3</MenubarItem> */}
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -120,11 +132,15 @@ export default function DraftingView(props: {
               </span>
             </MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>Option 1</MenubarItem>
+              <MenubarItem onClick={() => setSelectedView('specifications')}>
+                Specifications View
+              </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>Option 2</MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem>
+              <MenubarItem onClick={() => setSelectedView('calculation')}>
+                Calculation View
+              </MenubarItem>
+              {/* <MenubarSeparator />
+              <MenubarItem>Option 3</MenubarItem> */}
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -142,39 +158,66 @@ export default function DraftingView(props: {
                 </span>
                 Create New Paper
               </MenubarItem>
-              <MenubarSeparator />
+              {/* <MenubarSeparator />
               <MenubarItem>Option 2</MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem>
+              <MenubarItem>Option 3</MenubarItem> */}
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
       </div>
-      <div className="flex h-fit w-full flex-col gap-y-2 overflow-scroll rounded-xl p-1">
-        {loading ? <div>Loading...</div> : null}
-        {props.variationsData.map((variation) => {
-          return (
-            <Card
-              className={cn('cursor-pointer hover:bg-slate-50', {
-                'border-2 border-slate-500 hover:bg-transparent':
-                  selectedVariation === variation.uuid,
-              })}
-              key={variation.uuid}
-              onClick={() => {
-                setSelectedVariation(variation.uuid)
-              }}
-            >
-              <CardContent>
-                <VariationForm
-                  variationData={variation}
-                  paperData={props.paperData}
-                  product={props.estimateData.product.productName}
-                ></VariationForm>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+      {selectedView === 'specifications' ? (
+        <div className="flex h-fit w-full flex-col gap-y-2 overflow-scroll rounded-xl p-1">
+          {loading ? <div>Loading...</div> : null}
+          {props.variationsData.map((variation) => {
+            return (
+              <Card
+                className={cn('cursor-pointer hover:bg-slate-50', {
+                  'border-2 border-slate-500 hover:bg-transparent':
+                    selectedVariation === variation.uuid,
+                })}
+                key={variation.uuid}
+                onClick={() => {
+                  setSelectedVariation(variation.uuid)
+                }}
+              >
+                <CardContent>
+                  <VariationForm
+                    variationData={variation}
+                    paperData={props.paperData}
+                    product={props.estimateData.product.productName}
+                  ></VariationForm>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      ) : null}
+
+      {selectedView === 'calculation' ? (
+        <div className="flex h-fit w-full flex-col gap-y-2 overflow-scroll rounded-xl p-1">
+          {loading ? <div>Loading...</div> : null}
+          {props.variationsData.map((variation) => {
+            return (
+              <Card
+                className={cn('cursor-pointer hover:bg-slate-50', {
+                  'border-2 border-slate-500 hover:bg-transparent':
+                    selectedVariation === variation.uuid,
+                })}
+                key={variation.uuid}
+                onClick={() => {
+                  setSelectedVariation(variation.uuid)
+                }}
+              >
+                <CardContent>
+                  <CalculationForm></CalculationForm>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      ) : null}
+
       <AlertDialog open={deleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

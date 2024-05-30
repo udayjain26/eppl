@@ -88,7 +88,7 @@ export default function CloseSize(props: { control: any; form: any }) {
               className="flex flex-col 
            gap-y-1 pt-[6px]"
             >
-              <FormLabel>Close Size Name</FormLabel>
+              <FormLabel>Size Name</FormLabel>
 
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger className="" asChild>
@@ -96,7 +96,7 @@ export default function CloseSize(props: { control: any; form: any }) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-48 justify-between"
+                    className=" w-20 justify-between"
                   >
                     <input
                       type="hidden"
@@ -106,7 +106,7 @@ export default function CloseSize(props: { control: any; form: any }) {
                     {field.value
                       ? commonSizes.find((size) => size.label === field.value)
                           ?.label
-                      : 'Select size...'}
+                      : 'Select'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-0">
@@ -159,8 +159,8 @@ export default function CloseSize(props: { control: any; form: any }) {
             control={props.control}
             name="closeSizeLength"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Close Size Length (mm)</FormLabel>
+              <FormItem className="w-20">
+                <FormLabel>Length(mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -181,8 +181,8 @@ export default function CloseSize(props: { control: any; form: any }) {
             control={props.control}
             name="closeSizeWidth"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel>Close Size Width (mm)</FormLabel>
+              <FormItem className="w-20">
+                <FormLabel>Width(mm)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
