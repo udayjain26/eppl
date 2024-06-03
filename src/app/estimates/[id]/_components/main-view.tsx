@@ -57,7 +57,7 @@ export default function MainView(props: {
 
   return (
     <div className="flex h-full w-full flex-col gap-y-2 rounded-xl">
-      <div className="flex flex-row justify-start gap-x-2 p-1">
+      <div className="flex flex-row justify-between gap-x-2 p-1">
         {selectedView === 'specifications' ? (
           <div className="flex flex-col justify-center">
             <h1 className=" text-lg font-normal">Specifications View</h1>
@@ -184,7 +184,7 @@ export default function MainView(props: {
                 <CardContent>
                   <VariationForm
                     variationData={variation}
-                    paperData={props.paperData}
+                    // paperData={props.paperData}
                     product={props.estimateData.product.productName}
                   ></VariationForm>
                 </CardContent>
@@ -210,7 +210,10 @@ export default function MainView(props: {
                 }}
               >
                 <CardContent>
-                  <CalculationForm></CalculationForm>
+                  <CalculationForm
+                    variationData={variation}
+                    product={props.estimateData.product.productName}
+                  ></CalculationForm>
                 </CardContent>
               </Card>
             )

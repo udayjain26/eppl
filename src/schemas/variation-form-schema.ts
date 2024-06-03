@@ -1,4 +1,3 @@
-import { text } from 'stream/consumers'
 import { z } from 'zod'
 
 export const VariationFormSchema = z.object({
@@ -109,8 +108,7 @@ export const VariationFormSchema = z.object({
       .number()
       .int()
       .nonnegative({ message: 'Cover Colors must be non-negative' })
-      .optional()
-      .transform((val) => val?.toString() || undefined),
+      .optional(),
   ),
   coverPages: z.preprocess(
     (val) => {
@@ -124,11 +122,26 @@ export const VariationFormSchema = z.object({
       .number()
       .int()
       .nonnegative({ message: 'Cover Pages must be non-negative' })
-      .optional()
-      .transform((val) => val?.toString() || undefined),
+      .optional(),
+  ),
+  coverGrammage: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseInt(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .int()
+      .nonnegative({ message: 'Cover Grammage must be non-negative' })
+      .optional(),
   ),
   coverLamination: z.string().optional(),
-  coverPaper: z.string().optional(),
+  coverPaperType: z.string().optional(),
+
+  // coverPaper: z.string().optional(),
 
   textColors: z.preprocess(
     (val) => {
@@ -142,8 +155,7 @@ export const VariationFormSchema = z.object({
       .number()
       .int()
       .nonnegative({ message: 'Text Colors must be non-negative' })
-      .optional()
-      .transform((val) => val?.toString() || undefined),
+      .optional(),
   ),
   textPages: z.preprocess(
     (val) => {
@@ -157,11 +169,25 @@ export const VariationFormSchema = z.object({
       .number()
       .int()
       .nonnegative({ message: 'Text Pages must be non-negative' })
-      .optional()
-      .transform((val) => val?.toString() || undefined),
+      .optional(),
+  ),
+  textGrammage: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseInt(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .int()
+      .nonnegative({ message: 'Text Grammage must be non-negative' })
+      .optional(),
   ),
   textLamination: z.string().optional(),
-  textPaper: z.string().optional(),
+  textPaperType: z.string().optional(),
+  // textPaper: z.string().optional(),
 
   // createdBy: z.string().uuid(),
   // updatedBy: z.string().uuid(),

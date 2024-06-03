@@ -102,5 +102,64 @@ export async function updateEstimateStage(estimateUuid: string) {
         estimateStatus: 'In Progress',
       })
       .where(eq(estimates.uuid, estimateUuid))
+  } else if (estimate.estimateStage !== 'Drafting') {
+    await updateEstimateStageToDrafting(estimateUuid)
+  }
+}
+
+export async function updateEstimateStageToDrafting(estimateUuid: string) {
+  try {
+    await db
+      .update(estimates)
+      .set({
+        estimateStage: 'Drafting',
+      })
+      .where(eq(estimates.uuid, estimateUuid))
+    revalidatePath(`/estimates/${estimateUuid}`)
+    return 'Success'
+  } catch (e) {
+    return 'Database Error'
+  }
+}
+
+export async function canSetToNeedsRates(estimateUuid: string) {
+  try {
+    const canSetToNeedsRates = await db.query.variations
+      .findMany({
+        columns: {},
+        with: { variationQtysRates: true },
+        where: (variation, { eq }) => eq(variation.estimateUuid, estimateUuid),
+      })
+      .then((variations) => {
+        return variations.every((variation) => {
+          return variation.variationQtysRates.length > 0
+        })
+      })
+    return canSetToNeedsRates
+  } catch (e) {
+    return false
+  }
+}
+
+export async function updateEstimateStageToNeedsRates(estimateUuid: string) {
+  try {
+    if (await canSetToNeedsRates(estimateUuid)) {
+      try {
+        await db
+          .update(estimates)
+          .set({
+            estimateStage: 'Needs Rates',
+          })
+          .where(eq(estimates.uuid, estimateUuid))
+        revalidatePath(`/estimates/${estimateUuid}`)
+        return 'Success'
+      } catch (e) {
+        return 'Database Error'
+      }
+    } else {
+      return 'Variations Missing Quantities. Make sure to save all variations!'
+    }
+  } catch (e) {
+    return 'Database Error'
   }
 }

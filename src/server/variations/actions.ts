@@ -5,7 +5,11 @@ import { db } from '../db'
 import { variations, variationQtysRates } from '../db/schema'
 import { revalidatePath } from 'next/cache'
 import { VariationFormState } from './types'
-import { updateEstimateStage as updateEstimateOnVariationCreate } from '../estimates/actions'
+import {
+  canSetToNeedsRates,
+  updateEstimateStage as updateEstimateOnVariationCreate,
+  updateEstimateStageToDrafting,
+} from '../estimates/actions'
 import { eq } from 'drizzle-orm'
 import { VariationFormSchema } from '@/schemas/variation-form-schema'
 
@@ -91,12 +95,9 @@ export async function saveVariation(
 
   transformedData['variationQtysRates'] = variationQtysRatesData
 
-  console.log(transformedData)
-
   const validatedFields = Variation.safeParse(transformedData)
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       actionSuccess: false,
@@ -105,13 +106,13 @@ export async function saveVariation(
     } as VariationFormState
   } else {
     try {
+      console.log('validatedFields.data', validatedFields.data)
       await db.transaction(async (trx) => {
         // Update the variation
         await trx
           .update(variations)
           .set({
             ...validatedFields.data,
-
             updatedBy: user.userId,
             updatedAt: new Date(),
           })
@@ -135,9 +136,15 @@ export async function saveVariation(
             rate: qtyRate.rate.toString(),
           })
         }
+        if (
+          !(await canSetToNeedsRates(formData.get('estimateUuid') as string))
+        ) {
+          await updateEstimateStageToDrafting(
+            formData.get('estimateUuid') as string,
+          )
+        }
       })
     } catch (e) {
-      console.error(e)
       return {
         actionSuccess: false,
         message:
@@ -166,7 +173,9 @@ export async function deleteVariation(variationUuid: string) {
     .where(eq(variations.uuid, variationUuid))
     .returning()
 
-  revalidatePath(`/estimates/${deletedVariation[0].estimateUuid}`)
+  if (deletedVariation.length !== 0) {
+    await updateEstimateStageToDrafting(deletedVariation[0].estimateUuid)
+  }
 
   if (deletedVariation.length === 0) {
     return {
@@ -174,6 +183,8 @@ export async function deleteVariation(variationUuid: string) {
       message: 'Failed to delete Variation. Variation not found!',
     } as VariationFormState
   } else {
+    revalidatePath(`/estimates/${deletedVariation[0].estimateUuid}`)
+
     return {
       actionSuccess: true,
       message: `Deleted ${deletedVariation[0].variationTitle ? deletedVariation[0].variationTitle : 'empty'} variation successfully!`,

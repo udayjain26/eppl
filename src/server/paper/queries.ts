@@ -1,3 +1,5 @@
+'use server'
+
 import { db } from '../db'
 import { PaperData } from './types'
 
@@ -12,6 +14,7 @@ export async function getPaperData(): Promise<PaperData[]> {
 
     return data
   } catch (error) {
+    console.error(error)
     throw new Error('Failed to fetch paper data')
   }
 }

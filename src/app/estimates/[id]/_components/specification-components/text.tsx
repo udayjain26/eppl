@@ -2,6 +2,7 @@
 
 import MySep from '@/app/_components/custom-sep'
 import { commonSizes, laminations } from '@/app/estimates/constants'
+import { paperTypes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -31,27 +32,29 @@ import { CheckIcon } from 'lucide-react'
 import React from 'react'
 import { ChangeEvent, useState } from 'react'
 
-export default function Cover(props: {
+export default function Text(props: {
   control: any
   form: any
   paperData: PaperData[]
 }) {
   const [openLamination, setOpenLamination] = React.useState(false)
-  const [openPaper, setOpenPaper] = React.useState(false)
-  const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
+  const [openPaperType, setOpenPaperType] = React.useState(false)
+
+  // const [openPaper, setOpenPaper] = React.useState(false)
+  // const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
 
   return (
     <div className="flex  flex-col pt-4">
-      <h1>Cover Details</h1>
+      <h1>Text Details</h1>
       <div className="flex flex-row gap-x-1">
         <div className="flex flex-col">
           {' '}
           <FormField
             control={props.control}
-            name="coverColors"
+            name="textColors"
             render={({ field }) => (
               <FormItem className="w-16">
-                <FormLabel> #Colors</FormLabel>
+                <FormLabel>#Colors</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
                 </FormControl>
@@ -63,7 +66,7 @@ export default function Cover(props: {
           {' '}
           <FormField
             control={props.control}
-            name="coverPages"
+            name="textPages"
             render={({ field }) => (
               <FormItem className="w-16">
                 <FormLabel>#Pages</FormLabel>
@@ -78,13 +81,13 @@ export default function Cover(props: {
           {' '}
           <FormField
             control={props.control}
-            name="coverLamination"
+            name="textLamination"
             render={({ field }) => (
               <FormItem
                 className="flex flex-col 
            gap-y-1 pt-[6px]"
               >
-                <FormLabel>Cover Lamination</FormLabel>
+                <FormLabel>Text Lamination</FormLabel>
 
                 <Popover open={openLamination} onOpenChange={setOpenLamination}>
                   <PopoverTrigger className="" asChild>
@@ -120,7 +123,7 @@ export default function Cover(props: {
                               value={size.label}
                               onSelect={() => {
                                 props.form.setValue(
-                                  'coverLamination',
+                                  'textLamination',
                                   size.label,
                                 )
 
@@ -148,16 +151,95 @@ export default function Cover(props: {
           />
         </div>
       </div>
-      <div className="flex  w-full flex-row">
+      <div className="flex flex-row gap-x-1">
         <FormField
           control={props.control}
-          name="coverPaper"
+          name="textGrammage"
+          render={({ field }) => (
+            <FormItem className="w-20">
+              <FormLabel>Paper GSM</FormLabel>
+              <FormControl>
+                <Input {...field}></Input>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={props.control}
+          name="textPaperType"
+          render={({ field }) => (
+            <FormItem
+              className="flex flex-col 
+           gap-y-1 pt-[6px]"
+            >
+              <FormLabel>Text Paper Type</FormLabel>
+
+              <Popover open={openPaperType} onOpenChange={setOpenPaperType}>
+                <PopoverTrigger className="" asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openPaperType}
+                    className="w-48 justify-between"
+                  >
+                    <input
+                      type="hidden"
+                      {...field}
+                      value={field.value ? field.value : ''}
+                    />
+                    {field.value
+                      ? paperTypes.find((type) => type.label === field.value)
+                          ?.label
+                      : 'Select paper type...'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search paper types..."
+                      className="h-10"
+                    />
+                    <CommandEmpty>No paper type found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandList>
+                        {paperTypes.map((type) => (
+                          <CommandItem
+                            key={type.label}
+                            value={type.label}
+                            onSelect={() => {
+                              props.form.setValue('textPaperType', type.label)
+
+                              setOpenPaperType(false)
+                            }}
+                          >
+                            {type.label}
+                            <CheckIcon
+                              className={cn(
+                                'ml-auto h-4 w-4',
+                                field.value === type.label
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandList>
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </FormItem>
+          )}
+        />
+        {/* <FormField
+          control={props.control}
+          name="textPaper"
           render={({ field }) => (
             <FormItem
               className="flex w-full 
            flex-col gap-y-1 pt-[6px]"
             >
-              <FormLabel>Cover Paper</FormLabel>
+              <FormLabel>Text Paper</FormLabel>
 
               <Popover open={openPaper} onOpenChange={setOpenPaper}>
                 <PopoverTrigger className="w-full" asChild>
@@ -193,7 +275,7 @@ export default function Cover(props: {
                             key={paper.paperName}
                             value={paper.paperName}
                             onSelect={() => {
-                              props.form.setValue('coverPaper', paper.paperName)
+                              props.form.setValue('textPaper', paper.paperName)
                               setSelectedPaper(paper)
 
                               setOpenPaper(false)
@@ -227,7 +309,7 @@ export default function Cover(props: {
               </div>
             </FormItem>
           )}
-        />
+        /> */}
       </div>
       <MySep />
     </div>

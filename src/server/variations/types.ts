@@ -25,13 +25,15 @@ export type VariationData = {
 
   coverColors: number | undefined
   coverPages: number | undefined
+  coverGrammage: number | undefined
   coverLamination: string | undefined
-  coverPaper: string | undefined
+  coverPaperType: string | undefined
 
   textColors: number | undefined
   textPages: number | undefined
+  textGrammage: number | undefined
   textLamination: string | undefined
-  textPaper: string | undefined
+  textPaperType: string | undefined
 
   createdAt: Date
   updatedAt: Date

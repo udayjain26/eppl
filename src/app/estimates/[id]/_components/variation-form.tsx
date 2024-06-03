@@ -48,7 +48,6 @@ function SaveButton(props: { isDirty: boolean }) {
 
 export default function VariationForm(props: {
   variationData: VariationData
-  paperData: PaperData[]
   product: string
 }) {
   const [state, formAction] = useFormState(saveVariation, initialState)
@@ -70,14 +69,16 @@ export default function VariationForm(props: {
       sizeName: props.variationData.sizeName,
       sizeLength: props.variationData.sizeLength?.toString(),
       sizeWidth: props.variationData.sizeWidth?.toString(),
-      coverColors: props.variationData.coverColors?.toString(),
-      coverPages: props.variationData.coverPages?.toString(),
+      coverColors: props.variationData.coverColors,
+      coverPages: props.variationData.coverPages,
       coverLamination: props.variationData.coverLamination,
-      coverPaper: props.variationData.coverPaper,
-      textColors: props.variationData.textColors?.toString(),
-      textPages: props.variationData.textPages?.toString(),
+      coverGrammage: props.variationData.coverGrammage,
+      coverPaperType: props.variationData.coverPaperType,
+      textColors: props.variationData.textColors,
+      textPages: props.variationData.textPages,
+      textGrammage: props.variationData.textGrammage,
       textLamination: props.variationData.textLamination,
-      textPaper: props.variationData.textPaper,
+      textPaperType: props.variationData.textPaperType,
     },
   })
 
@@ -185,7 +186,7 @@ export default function VariationForm(props: {
                   control={form.control}
                   form={form}
                   product={props.product}
-                  paperData={props.paperData}
+                  // paperData={props.paperData}
                 ></ProductFields>
               </div>
             </div>

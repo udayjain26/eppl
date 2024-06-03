@@ -8,23 +8,15 @@ import {
 import { EstimateTableRow } from '@/schemas/schema-table-types'
 import Link from 'next/link'
 
-import { MoreVertical } from 'lucide-react'
-
 import { CardDescription, CardFooter } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
 import { formatDistanceToNowStrict } from 'date-fns'
 import {
   estimateStageColors,
   estimateStatusColors,
 } from '../../_components/constants'
+import EstimateDetailsCardActions from './estimate-details-card-actions'
 
 export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
   const dateDistance = formatDistanceToNowStrict(
@@ -53,19 +45,7 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             Date Created: {props.estimateData.createdAt.toDateString()}
           </CardDescription>
         </div>
-        {/* <div className="ml-auto flex items-center gap-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="outline">
-                <MoreVertical strokeWidth={1} size={24} />
-                <span className="sr-only">More</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Clone Estimate</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div> */}
+        <EstimateDetailsCardActions estimateData={props.estimateData} />
       </CardHeader>
       <CardContent className="p-4 text-sm">
         <div className="flex flex-row items-center justify-center ">

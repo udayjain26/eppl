@@ -92,9 +92,9 @@ export const estimateStatusEnum = pgEnum('estimate_status', [
 export const estimateStageEnum = pgEnum('estimate_stage', [
   'Empty',
   'Drafting',
-  'Pending Rates',
-  'Rates Approved',
-  'Client Approval',
+  'Needs Rates',
+  'Estimate Approved',
+  'Client Decision',
   'Won',
   'Lost',
 ])
@@ -262,14 +262,16 @@ export const variations = createTable('variations', {
   //cover
   coverColors: smallint('cover_colors'),
   coverPages: smallint('cover_pages'),
+  coverGrammage: smallint('cover_grammage'),
   coverLamination: varchar('cover_lamination', { length: 256 }),
-  coverPaper: varchar('cover_paper', { length: 256 }),
+  coverPaperType: varchar('cover_paper_type', { length: 256 }),
 
   //text
   textColors: smallint('text_colors'),
   textPages: smallint('text_pages'),
+  textGrammage: smallint('text_grammage'),
   textLamination: varchar('text_lamination', { length: 256 }),
-  textPaper: varchar('text_paper', { length: 256 }),
+  textPaperType: varchar('text_paper_type', { length: 256 }),
 
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

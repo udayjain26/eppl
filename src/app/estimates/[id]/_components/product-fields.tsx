@@ -1,11 +1,11 @@
-import { PaperData } from '@/server/paper/types'
-import CloseSize from './estimation-components/close-size'
-import Cover from './estimation-components/cover'
-import Text from './estimation-components/text'
-import OpenSize from './estimation-components/open-size'
-import Size from './estimation-components/size'
+import CloseSize from './specification-components/close-size'
+import Cover from './specification-components/cover'
+import Text from './specification-components/text'
+import OpenSize from './specification-components/open-size'
+import Size from './specification-components/size'
+import { productFieldMap } from './constants'
 
-const fieldComponentMap: { [key: string]: React.ComponentType<any> } = {
+const specificationComponentMap: { [key: string]: React.ComponentType<any> } = {
   size: Size,
   closeSize: CloseSize,
   openSize: OpenSize,
@@ -13,29 +13,23 @@ const fieldComponentMap: { [key: string]: React.ComponentType<any> } = {
   text: Text,
 }
 
-const productFieldMap: { [key: string]: string[] } = {
-  'Paperback Books': ['closeSize', 'openSize', 'cover', 'text'],
-  Posters: ['size'],
-}
 export default function ProductFields(props: {
   control: any
   form: any
   product: string
-  paperData: PaperData[]
 }) {
-  const fields = productFieldMap[props.product] || []
+  const fields = productFieldMap[props.product]['specificationComponents'] || []
 
   return (
     <div>
       <h1>Product Specifications</h1>
-      {fields.map((field) => {
-        const FieldComponent = fieldComponentMap[field]
+      {fields.map((component) => {
+        const FieldComponent = specificationComponentMap[component]
         return FieldComponent ? (
           <FieldComponent
-            key={field}
+            key={component}
             control={props.control}
             form={props.form}
-            paperData={props.paperData}
           />
         ) : null
       })}

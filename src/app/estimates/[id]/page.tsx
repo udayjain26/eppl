@@ -54,10 +54,10 @@ export default async function FullEstimatePage({
                 <ChevronRight className="" size={20} strokeWidth="1" />
               </div>
             </div>
-            <div className="flex h-8 flex-col justify-center ">
+            <div className="flex h-fit flex-col justify-center  ">
               {' '}
               <Link href={`/estimates/${estimateData.uuid}`}>
-                <p className="overflow-hidden text-ellipsis  text-base">
+                <p className="overflow-hidden text-ellipsis text-base">
                   {estimateData.estimateTitle}
                 </p>
               </Link>
