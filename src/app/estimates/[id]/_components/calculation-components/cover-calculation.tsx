@@ -93,11 +93,20 @@ export default function CoverCalculation(props: {
     selectedPaper,
     props.variationData,
   ])
+  useEffect(() => {
+    const initialPaperName = props.form.getValues('coverPaper')
+    const initialSelectedPaper = paperData.find(
+      (paper) => paper.paperName === initialPaperName,
+    )
+    if (initialSelectedPaper) {
+      setSelectedPaper(initialSelectedPaper)
+    }
+  }, [paperData, props.form])
 
   return (
     <>
       <div className="flex flex-row justify-between gap-x-8 p-4">
-        <div className="flex w-full flex-col gap-y-2">
+        <div className="flex flex-col gap-y-2">
           <h1 className="underline">Cover Specifications</h1>
           <div className="text-sm">
             <ul className="flex flex-col gap-y-2">
@@ -133,7 +142,7 @@ export default function CoverCalculation(props: {
             </ul>
           </div>
         </div>
-        <div className="flex w-full flex-col gap-y-2">
+        <div className="flex  flex-col gap-y-2">
           <div className="flex flex-row gap-x-2">
             <FormField
               control={props.form.control}
@@ -171,18 +180,6 @@ export default function CoverCalculation(props: {
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={props.form.control}
-              name="coverWastage"
-              render={({ field }) => (
-                <FormItem className=" grow">
-                  <FormLabel>Wastage%</FormLabel>
-                  <FormControl>
-                    <Input {...field}></Input>
-                  </FormControl>
-                </FormItem>
-              )}
-            /> */}
           </div>
           <div className="flex flex-row gap-x-2">
             <ul className="flex flex-row gap-x-2 text-sm">
@@ -197,9 +194,10 @@ export default function CoverCalculation(props: {
             name="coverPaper"
             render={({ field }) => (
               <FormItem
-                className="flex w-full 
+                className="flex 
            flex-col gap-y-1"
               >
+                <FormLabel>Select Paper</FormLabel>
                 <Popover open={openPaper} onOpenChange={setOpenPaper}>
                   <PopoverTrigger className="w-full" asChild>
                     <Button
@@ -274,10 +272,10 @@ export default function CoverCalculation(props: {
             )}
           />
         </div>
-        <div className="flex w-full flex-col">
+        <div className="flex  flex-col ">
           <h1 className="underline">Calculated</h1>
 
-          <div className="text-sm">
+          <div className="flex flex-col gap-y-7 text-sm">
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">
@@ -310,8 +308,8 @@ export default function CoverCalculation(props: {
             />
           </div>
         </div>
-        <div className="flex w-full flex-col"></div>
       </div>
+      <div className="flex w-full flex-row"></div>
       <Separator />
     </>
   )

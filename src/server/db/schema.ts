@@ -279,6 +279,28 @@ export const variations = createTable('variations', {
   updatedBy: varchar('updated_by', { length: 256 }).notNull(),
 })
 
+export const variationCalculation = createTable('variation_calculation', {
+  uuid: uuid('uuid').defaultRandom().primaryKey(),
+  variationUuid: uuid('variation_uuid')
+    .references(() => variations.uuid, { onDelete: 'cascade' })
+    .notNull(),
+  coverSpine: numeric('cover_spine', { precision: 7, scale: 2 }),
+  coverBleed: numeric('cover_bleed', { precision: 7, scale: 2 }),
+  coverGrippers: numeric('cover_grippers', { precision: 7, scale: 2 }),
+  coverPaper: varchar('cover_paper', { length: 256 }),
+  coverPaperRate: numeric('paper_rate', { precision: 7, scale: 2 }),
+})
+
+export const variationCalculationRelations = relations(
+  variationCalculation,
+  ({ one }) => ({
+    variation: one(variations, {
+      fields: [variationCalculation.variationUuid],
+      references: [variations.uuid],
+    }),
+  }),
+)
+
 export const variationQtysRates = createTable('variation_qtys_rates', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
   variationUuid: uuid('variation_uuid')

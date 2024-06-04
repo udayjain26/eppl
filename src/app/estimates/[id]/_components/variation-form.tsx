@@ -57,8 +57,12 @@ export default function VariationForm(props: {
 
     defaultValues: {
       variationTitle: props.variationData.variationTitle,
-      variationNotes: props.variationData.variationNotes,
-      clientEnquiry: props.variationData.clientEnquiry,
+      variationNotes: props.variationData.variationNotes
+        ? props.variationData.variationNotes
+        : '',
+      clientEnquiry: props.variationData.clientEnquiry
+        ? props.variationData.clientEnquiry
+        : '',
       variationQtysRates: props.variationData.variationQtysRates,
       closeSizeName: props.variationData.closeSizeName,
       closeSizeLength: props.variationData.closeSizeLength?.toString(),
