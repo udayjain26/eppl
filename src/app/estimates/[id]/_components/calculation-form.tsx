@@ -9,6 +9,18 @@ import { CalculationFormSchema } from '@/schemas/calculation-form-schema'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form } from '@/components/ui/form'
+import { useFormStatus } from 'react-dom'
+import { Button } from '@/components/ui/button'
+
+function SaveButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? 'Saving Calculation...' : 'Save Calculation'}
+    </Button>
+  )
+}
 
 const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   coverCalculation: CoverCalculation,
@@ -41,6 +53,7 @@ export default function CalculationFields(props: {
             ) : null
           })}
         </div>
+        <div className="w-fit"> {/* <SaveButton /> */}</div>
       </form>
     </Form>
   )

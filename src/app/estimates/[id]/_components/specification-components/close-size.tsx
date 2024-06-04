@@ -96,7 +96,7 @@ export default function CloseSize(props: { control: any; form: any }) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className=" w-20 justify-between"
+                    className="min-w-32 justify-between"
                   >
                     <input
                       type="hidden"

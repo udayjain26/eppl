@@ -38,8 +38,8 @@ export default function Cover(props: {
   paperData: PaperData[]
 }) {
   const [openLamination, setOpenLamination] = React.useState(false)
-  // const [openPaper, setOpenPaper] = React.useState(false)
-  // const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
+  const [openPaper, setOpenPaper] = React.useState(false)
+  const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
   const [openPaperType, setOpenPaperType] = React.useState(false)
 
   const [openPaperFinish, setOpenPaperFinish] = React.useState(false)

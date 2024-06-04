@@ -85,7 +85,7 @@ export default function OpenSize(props: { control: any; form: any }) {
           name="openSizeName"
           render={({ field }) => (
             <FormItem
-              className="flex flex-col 
+              className="flex flex-col
            gap-y-1 pt-[6px]"
             >
               <FormLabel>Size Name</FormLabel>
@@ -96,7 +96,7 @@ export default function OpenSize(props: { control: any; form: any }) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-20 justify-between"
+                    className="min-w-32 justify-between "
                   >
                     <input
                       type="hidden"

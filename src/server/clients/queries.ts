@@ -14,7 +14,6 @@ export async function getClientsData(): Promise<Client[]> {
   } catch (error) {
     throw new Error('Failed to fetch clients data')
   }
-  return []
 }
 
 export async function getClientById(id: string): Promise<Client> {

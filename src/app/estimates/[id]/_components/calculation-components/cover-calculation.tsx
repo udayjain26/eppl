@@ -2,7 +2,12 @@
 
 import { VariationData } from '@/server/variations/types'
 import { Separator } from '@/components/ui/separator'
-import { FormField, FormItem, FormLabel } from '@/components/ui/form'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form'
 import {
   Popover,
   PopoverContent,
@@ -22,6 +27,18 @@ import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { PaperData } from '@/server/paper/types'
 import { getPaperData } from '@/server/paper/queries'
+import {
+  PaperPiece,
+  calculateTotalCoverSheets as calculateTotalCoverSheets,
+} from '@/server/calculations/cover/actions'
+import { Input } from '@/components/ui/input'
+
+type CoverSheetsData = {
+  coverPiecesPerSheet: number
+  coverUpsPerSheet: number
+  piecesPositions: PaperPiece[]
+  percentageSheetUsed: number
+}
 
 export default function CoverCalculation(props: {
   variationData: VariationData
@@ -30,58 +47,151 @@ export default function CoverCalculation(props: {
   const [paperData, setPaperData] = useState<PaperData[]>([])
   const [openPaper, setOpenPaper] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
+  const [coverSheetsData, setCoverSheetsData] = useState<
+    CoverSheetsData | undefined
+  >(undefined)
+
+  const effectiveCoverLength = props.variationData.openSizeLength
+    ? props.variationData.openSizeLength +
+      Number(props.form.watch('coverBleed')) * 2
+    : 0
+  const effectiveCoverWidth = props.variationData.openSizeWidth
+    ? props.variationData.openSizeWidth +
+      Number(props.form.watch('coverSpine')) +
+      Number(props.form.watch('coverBleed')) * 2
+    : 0
+
+  const grippers = Number(props.form.watch('coverGrippers'))
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await getPaperData()
+      console.log(result)
       setPaperData(result)
     }
     fetchData()
   }, [])
 
-  console.log('paperData', paperData)
+  useEffect(() => {
+    const calculateCoverSheets = async () => {
+      const coverSheetsData = await calculateTotalCoverSheets(
+        props.variationData,
+        selectedPaper ? selectedPaper : undefined,
+        props.variationData.coverPages,
+        effectiveCoverLength,
+        effectiveCoverWidth,
+        grippers,
+      )
+      setCoverSheetsData(coverSheetsData)
+    }
+
+    calculateCoverSheets()
+  }, [
+    effectiveCoverLength,
+    effectiveCoverWidth,
+    grippers,
+    selectedPaper,
+    props.variationData,
+  ])
+
   return (
     <>
-      <div className="flex flex-row gap-x-2">
-        <div className="flex flex-col gap-y-2">
+      <div className="flex flex-row justify-between gap-x-8 p-4">
+        <div className="flex w-full flex-col gap-y-2">
           <h1 className="underline">Cover Specifications</h1>
           <div className="text-sm">
-            <ul>
-              <li className="flex items-center justify-between border">
-                <span className="text-muted-foreground">Length</span>
+            <ul className="flex flex-col gap-y-2">
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Close Length</span>
                 <span>{props.variationData?.closeSizeLength} mm</span>
               </li>
-              <li className="flex items-center justify-between border">
-                <span className="text-muted-foreground">Width</span>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Close Width</span>
                 <span>{props.variationData?.closeSizeWidth} mm</span>
               </li>
-              <li className="flex items-center justify-between border">
+              <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Grammage</span>
                 <span>{props.variationData?.coverGrammage} gsm</span>
               </li>
-              <li className="flex items-center justify-between border">
+              <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Paper Type</span>
                 <span>{props.variationData?.coverPaperType}</span>
               </li>
 
-              <li className="flex items-center justify-between border">
+              <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Colors</span>
                 <span>{props.variationData?.coverColors} </span>
               </li>
-              <li className="flex items-center justify-between border">
-                <span className="text-muted-foreground">Pages</span>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Pages/Ups</span>
                 <span>{props.variationData?.coverPages} </span>
               </li>
-              <li className="flex items-center justify-between border">
+              <li className="flex items-center justify-between text-right">
                 <span className="text-muted-foreground">Lamination</span>
                 <span>{props.variationData?.coverLamination} </span>
               </li>
             </ul>
           </div>
         </div>
-        <div className="flex w-1/2 flex-col gap-y-2">
-          <h1 className="underline">Cover Planning</h1>
+        <div className="flex w-full flex-col gap-y-2">
+          <div className="flex flex-row gap-x-2">
+            <FormField
+              control={props.form.control}
+              name="coverSpine"
+              render={({ field }) => (
+                <FormItem className=" grow">
+                  <FormLabel>Spine(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverBleed"
+              render={({ field }) => (
+                <FormItem className=" grow">
+                  <FormLabel>Bleed(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverGrippers"
+              render={({ field }) => (
+                <FormItem className=" grow">
+                  <FormLabel>Grippers(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* <FormField
+              control={props.form.control}
+              name="coverWastage"
+              render={({ field }) => (
+                <FormItem className=" grow">
+                  <FormLabel>Wastage%</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            /> */}
+          </div>
+          <div className="flex flex-row gap-x-2">
+            <ul className="flex flex-row gap-x-2 text-sm">
+              <li>Effective Cover Length: {effectiveCoverLength}(mm)</li>
+              <li>Effective Cover Width: {effectiveCoverWidth}(mm) </li>
+            </ul>
+          </div>
 
+          <h1 className="">Cover Paper Planning</h1>
           <FormField
             control={props.form.control}
             name="coverPaper"
@@ -129,7 +239,6 @@ export default function CoverCalculation(props: {
                                   paper.paperName,
                                 )
                                 setSelectedPaper(paper)
-
                                 setOpenPaper(false)
                               }}
                             >
@@ -165,6 +274,43 @@ export default function CoverCalculation(props: {
             )}
           />
         </div>
+        <div className="flex w-full flex-col">
+          <h1 className="underline">Calculated</h1>
+
+          <div className="text-sm">
+            <ul className="flex flex-col gap-y-1">
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">
+                  Cover Pieces/Sheet
+                </span>
+                <span>{coverSheetsData?.coverPiecesPerSheet}</span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Cover Ups/Sheet</span>
+                <span>{coverSheetsData?.coverUpsPerSheet}</span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Paper Area Used</span>
+                <span>
+                  {coverSheetsData?.percentageSheetUsed?.toFixed(2)} %
+                </span>
+              </li>
+            </ul>
+            <FormField
+              control={props.form.control}
+              name="coverPaperRate"
+              render={({ field }) => (
+                <FormItem className=" grow">
+                  <FormLabel>Paper Rate/Kg</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <div className="flex w-full flex-col"></div>
       </div>
       <Separator />
     </>
