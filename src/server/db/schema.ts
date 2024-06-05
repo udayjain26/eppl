@@ -356,6 +356,10 @@ export const variationCalculation = createTable('variation_calculation', {
   coverGrippers: numeric('cover_grippers', { precision: 7, scale: 2 }),
   coverPaper: varchar('cover_paper', { length: 256 }),
   coverPaperRate: numeric('paper_rate', { precision: 7, scale: 2 }),
+  coverWastageFactor: numeric('cover_wastage_factor', {
+    precision: 7,
+    scale: 2,
+  }),
 })
 
 export const coverSheetsDataTable = createTable('cover_sheets_data_table', {

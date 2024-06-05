@@ -65,6 +65,9 @@ export default function CalculationFields(props: {
         coverPaperRate: data?.coverPaperRate
           ? data.coverPaperRate.toString()
           : '90',
+        coverWastageFactor: data?.coverWastageFactor
+          ? data.coverWastageFactor.toString()
+          : '1',
       })
     }
     fetchCalculationData()

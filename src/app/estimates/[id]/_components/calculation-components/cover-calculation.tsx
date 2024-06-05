@@ -291,6 +291,18 @@ export default function CoverCalculation(props: {
               </FormItem>
             )}
           />
+          {/* <FormField
+            control={props.form.control}
+            name="coverWastageFactor"
+            render={({ field }) => (
+              <FormItem className=" w-fit">
+                <FormLabel>Cover Wastage Factor</FormLabel>
+                <FormControl>
+                  <Input {...field}></Input>
+                </FormControl>
+              </FormItem>
+            )}
+          /> */}
           <FormField
             control={props.form.control}
             name="coverWastageFactor"
@@ -305,6 +317,7 @@ export default function CoverCalculation(props: {
                     step={0.01}
                     defaultValue={[value]}
                     onValueCommit={onChange}
+                    name="coverWastageFactor"
                   />
                 </FormControl>
               </FormItem>

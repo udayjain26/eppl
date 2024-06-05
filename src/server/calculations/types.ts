@@ -12,5 +12,6 @@ export type VariationCalculationData =
       coverGrippers?: number
       coverPaper?: string
       coverPaperRate?: number
+      coverWastageFactor?: number
     }
   | undefined
