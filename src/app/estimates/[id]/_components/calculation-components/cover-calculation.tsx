@@ -291,7 +291,7 @@ export default function CoverCalculation(props: {
               <FormItem className=" w-fit">
                 <FormLabel>Cover Wastage Factor</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input type="float" {...field}></Input>
                 </FormControl>
               </FormItem>
             )}
@@ -306,7 +306,7 @@ export default function CoverCalculation(props: {
                   <Slider
                     className="mt-2"
                     min={0.01}
-                    max={2}
+                    max={2.0}
                     step={0.01}
                     defaultValue={[value]}
                     onValueCommit={onChange}

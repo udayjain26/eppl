@@ -31,7 +31,7 @@ function SaveButton() {
 
 const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   coverCalculation: CoverCalculation,
-  textCalculation: TextCalculation,
+  // textCalculation: TextCalculation,
 }
 
 export default function CalculationFields(props: {
@@ -44,6 +44,14 @@ export default function CalculationFields(props: {
 
   const form = useForm<z.infer<typeof CalculationFormSchema>>({
     resolver: zodResolver(CalculationFormSchema),
+    defaultValues: {
+      coverSpine: '0',
+      coverBleed: '3',
+      coverGrippers: '10',
+      coverPaper: '',
+      coverPaperRate: '90',
+      coverWastageFactor: '1',
+    },
   })
 
   const initialState: CalculationFormState = {
@@ -73,9 +81,23 @@ export default function CalculationFields(props: {
       })
     }
     fetchCalculationData()
-  }, [props.variationData.uuid])
+  }, [])
+
+  console.log(
+    'Form values on render:',
+    form.getValues('coverWastageFactor'),
+    form.getValues('coverPaperRate'),
+    form.getValues('coverPaper'),
+    form.getValues('coverGrippers'),
+    form.getValues('coverBleed'),
+    form.getValues('coverSpine'),
+  )
 
   const fields = productFieldMap[props.product]['calculationComponents'] || []
+
+  // if (!variationCalculationData) {
+  //   return <div>Loading...</div>
+  // }
 
   return (
     <Form {...form}>

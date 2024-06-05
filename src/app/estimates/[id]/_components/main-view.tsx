@@ -185,7 +185,6 @@ export default function MainView(props: {
                 <CardContent>
                   <VariationForm
                     variationData={variation}
-                    // paperData={props.paperData}
                     product={props.estimateData.product.productName}
                   ></VariationForm>
                 </CardContent>
