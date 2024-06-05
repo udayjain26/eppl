@@ -39,6 +39,7 @@ import {
 import CreatePaperForm from '@/app/settings/_components/create-paper-form'
 import { PaperData } from '@/server/paper/types'
 import CalculationForm from './calculation-form'
+import CalculationFields from './calculation-form'
 
 export default function MainView(props: {
   estimateData: EstimateTableRow
@@ -210,10 +211,11 @@ export default function MainView(props: {
                 }}
               >
                 <CardContent>
-                  <CalculationForm
+                  <CalculationFields
                     variationData={variation}
                     product={props.estimateData.product.productName}
-                  ></CalculationForm>
+                    paperData={props.paperData}
+                  ></CalculationFields>
                 </CardContent>
               </Card>
             )

@@ -17,6 +17,7 @@ import CoverCalculation from './calculation-components/cover-calculation'
 import TextCalculation from './calculation-components/text-calculation'
 import { VariationData } from '@/server/variations/types'
 import { useFormState, useFormStatus } from 'react-dom'
+import { PaperData } from '@/server/paper/types'
 
 function SaveButton() {
   const { pending } = useFormStatus()
@@ -36,6 +37,7 @@ const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
 export default function CalculationFields(props: {
   product: string
   variationData: VariationData
+  paperData: PaperData[]
 }) {
   const [variationCalculationData, setVariationCalculationData] =
     useState<VariationCalculationData | null>(null)
@@ -95,6 +97,7 @@ export default function CalculationFields(props: {
                   key={component}
                   variationData={props.variationData}
                   form={form}
+                  paperData={props.paperData}
                 />
               ) : null
             })}

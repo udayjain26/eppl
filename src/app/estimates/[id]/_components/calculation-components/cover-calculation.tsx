@@ -54,9 +54,10 @@ type CoverSheetsData = {
 
 export default function CoverCalculation(props: {
   variationData: VariationData
+  paperData: PaperData[]
   form: any
 }) {
-  const [paperData, setPaperData] = useState<PaperData[]>([])
+  // const [paperData, setPaperData] = useState<PaperData[]>([])
   const [openPaper, setOpenPaper] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
   const [coverSheetsData, setCoverSheetsData] = useState<
@@ -76,17 +77,18 @@ export default function CoverCalculation(props: {
     : 0
   const grippers = Number(props.form.watch('coverGrippers'))
   const wastageFactor = Number(props.form.watch('coverWastageFactor'))
-  console.log(wastageFactor)
   const paperRatePerkg = Number(props.form.watch('coverPaperRate'))
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await getPaperData()
-      console.log(result)
-      setPaperData(result)
+    const initialPaperName = props.form.getValues('coverPaper')
+
+    const initialSelectedPaper = props.paperData.find(
+      (paper) => paper.paperName === initialPaperName,
+    )
+    if (initialSelectedPaper) {
+      setSelectedPaper(initialSelectedPaper)
     }
-    fetchData()
-  }, [])
+  }, [props.form.watch('coverPaper')])
 
   useEffect(() => {
     const calculateCoverSheets = async () => {
@@ -111,17 +113,8 @@ export default function CoverCalculation(props: {
     paperRatePerkg,
     wastageFactor,
     props.variationData,
+    props.form,
   ])
-
-  useEffect(() => {
-    const initialPaperName = props.form.getValues('coverPaper')
-    const initialSelectedPaper = paperData.find(
-      (paper) => paper.paperName === initialPaperName,
-    )
-    if (initialSelectedPaper) {
-      setSelectedPaper(initialSelectedPaper)
-    }
-  }, [paperData, props.form])
 
   return (
     <>
@@ -232,7 +225,7 @@ export default function CoverCalculation(props: {
                         value={field.value ? field.value : ''}
                       />
                       {field.value
-                        ? paperData.find(
+                        ? props.paperData.find(
                             (paper) => paper.paperName === field.value,
                           )?.paperName
                         : 'Select paper...'}
@@ -247,7 +240,7 @@ export default function CoverCalculation(props: {
                       <CommandEmpty>No paper found.</CommandEmpty>
                       <CommandGroup>
                         <CommandList className="w-full">
-                          {paperData.map((paper) => (
+                          {props.paperData.map((paper) => (
                             <CommandItem
                               key={paper.paperName}
                               value={paper.paperName}
