@@ -28,6 +28,8 @@ export default async function saveCalculationData(
     throw new Error('User Unauthenticated')
   }
 
+  console.log('formData', formData)
+
   const transformedData: TransformedData = {}
   formData.forEach((value, key) => {
     transformedData[key] = emptyStringToUndefinedTransformer(value)

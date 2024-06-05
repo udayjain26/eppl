@@ -6,8 +6,8 @@ import { VariationData } from '../../variations/types'
 export interface PaperPiece {
   length: number
   width: number
-  x: number
-  y: number
+  x1: number
+  y1: number
   x2: number
   y2: number
 }
@@ -19,16 +19,33 @@ export async function calculateTotalCoverSheets(
   effectiveCoverLength?: number,
   effectiveCoverWidth?: number,
   grippers?: number,
+  paperCostPerKg?: number,
+  wastageFactor?: number,
 ): Promise<
   | {
       coverPiecesPerSheet: number
       coverUpsPerSheet: number
       piecesPositions: PaperPiece[]
       percentageSheetUsed: number
+      requiredSheetsDataTable: {
+        quantity: number
+        requiredSheets: number
+        totalWastage: number
+        totalRequiredSheets: number
+        totalWeight: number
+        totalCost: number
+        costPerPiece: number
+      }[]
     }
   | undefined
 > {
-  if (!variationData || !paperData || !upsPerCoverPiece) {
+  if (
+    !variationData ||
+    !paperData ||
+    !upsPerCoverPiece ||
+    !paperCostPerKg ||
+    !wastageFactor
+  ) {
     return undefined
   } else {
     const {
@@ -44,48 +61,45 @@ export async function calculateTotalCoverSheets(
       grippers,
     )
 
-    const requiredSheets = await calculateRequiredSheets(
+    const requiredSheetsData = await calculateRequiredSheets(
       variationData,
       coverUpsPerSheet,
       upsPerCoverPiece,
+      wastageFactor,
     )
 
-    const requiredPaperWeight = calculateRequiredPaper(
-      requiredSheets,
-      paperData,
-    )
+    const requiredSheetsDataTable = requiredSheetsData.map((o) => {
+      const paperLengthInM = paperData.paperLength / 1000
+      const paperWidthInM = paperData.paperWidth / 1000
+      const sheetWeightInKg =
+        (paperLengthInM * paperWidthInM * paperData.paperGrammage) / 1000
+      const weight = Math.ceil(sheetWeightInKg * o.totalRequiredSheets)
+      const cost = weight * paperCostPerKg
+      const costPerPiece = Math.ceil((cost / o.quantity) * 100) / 100
+
+      return {
+        ...o,
+        totalWeight: weight,
+        totalCost: cost,
+        costPerPiece: costPerPiece,
+      }
+    })
 
     return {
       coverPiecesPerSheet,
       coverUpsPerSheet,
       piecesPositions,
       percentageSheetUsed,
+      requiredSheetsDataTable,
     }
   }
-}
-
-export async function calculateRequiredPaper(
-  requiredSheets: any,
-  paperData: PaperData,
-) {
-  const weightData = requiredSheets.map((o: any) => {
-    const paperLengthInM = paperData.paperLength / 1000
-    const paperWidthInM = paperData.paperWidth / 1000
-    const sheetWeightInKg =
-      (paperLengthInM * paperWidthInM * paperData.paperGrammage) / 1000
-    const weight = Math.ceil(sheetWeightInKg * o.totalRequiredSheets)
-
-    return {
-      ...o,
-      weight: weight,
-    }
-  })
 }
 
 export async function calculateRequiredSheets(
   variationData: VariationData,
   upsPerSheet: number,
   upsPerCoverPiece: number,
+  wastageFactor: number,
 ) {
   //get all qts from each qty object
   const allQtysData = variationData.variationQtysRates.map((o) => o)
@@ -93,8 +107,8 @@ export async function calculateRequiredSheets(
   //calculate required covers for each qty and modify the object
   const data = allQtysData.map((o) => {
     const requiredCoversUps = o.quantity * upsPerCoverPiece
-    const requiredSheets = requiredCoversUps / upsPerSheet
-    const totalWastage = getWastageSheets(requiredSheets)
+    const requiredSheets = Math.ceil(requiredCoversUps / upsPerSheet)
+    const totalWastage = getWastageSheets(requiredSheets, wastageFactor)
     const totalSheets = requiredSheets + totalWastage
 
     return {
@@ -104,7 +118,6 @@ export async function calculateRequiredSheets(
       totalRequiredSheets: totalSheets,
     }
   })
-  console.log(data)
   return data
 }
 
@@ -164,8 +177,8 @@ export async function calculateCoverSheetsAndUps(
   } else {
     coverPiecesPerSheet = totalPiecesWithRotation
     piecesPositions = calculatePiecePositions(
-      coverWidth,
       coverLength,
+      coverWidth,
       numPiecesLengthwiseRotated,
       numPiecesWidthwiseRotated,
       true,
@@ -195,38 +208,59 @@ function calculatePiecePositions(
 ): PaperPiece[] {
   const piecesPositions: PaperPiece[] = []
 
-  for (let i = 0; i < numPiecesLengthwise; i++) {
-    for (let j = 0; j < numPiecesWidthwise; j++) {
-      const x = i * (rotated ? pieceWidth : pieceLength)
-      const y = j * (rotated ? pieceLength : pieceWidth)
+  if (!rotated) {
+    for (let i = 0; i < numPiecesLengthwise; i++) {
+      for (let j = 0; j < numPiecesWidthwise; j++) {
+        const y1 = i * pieceLength
+        const x1 = j * pieceWidth
+        const y2 = y1 + pieceLength
+        const x2 = x1 + pieceWidth
 
-      piecesPositions.push({
-        length: rotated ? pieceWidth : pieceLength,
-        width: rotated ? pieceLength : pieceWidth,
-        x,
-        y,
-        x2: x + (rotated ? pieceWidth : pieceLength),
-        y2: y + (rotated ? pieceLength : pieceWidth),
-      })
+        piecesPositions.push({
+          length: pieceLength,
+          width: pieceWidth,
+          x1,
+          y1,
+          x2,
+          y2,
+        })
+      }
+    }
+  } else {
+    for (let i = 0; i < numPiecesLengthwise; i++) {
+      for (let j = 0; j < numPiecesWidthwise; j++) {
+        const y1 = i * pieceWidth
+        const x1 = j * pieceLength
+        const y2 = y1 + pieceWidth
+        const x2 = x1 + pieceLength
+        piecesPositions.push({
+          length: pieceWidth,
+          width: pieceLength,
+          x1,
+          y1,
+          x2,
+          y2,
+        })
+      }
     }
   }
 
   return piecesPositions
 }
 
-function getWastageSheets(requiredSheets: number) {
+function getWastageSheets(requiredSheets: number, wastageFactor: number) {
   let totalWastage: number
   if (requiredSheets <= 0) {
     totalWastage = 0
-  } else if (requiredSheets <= 2000) {
+  } else if (requiredSheets <= 2100) {
     totalWastage = 150
-  } else if (requiredSheets <= 4000) {
+  } else if (requiredSheets <= 4100) {
     totalWastage = 200
-  } else if (requiredSheets <= 10000) {
+  } else if (requiredSheets <= 10200) {
     totalWastage = 300
   } else {
     totalWastage = requiredSheets * 0.025
   }
 
-  return totalWastage
+  return Math.ceil(totalWastage * wastageFactor)
 }

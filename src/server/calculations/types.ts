@@ -11,6 +11,6 @@ export type VariationCalculationData =
       coverBleed?: number
       coverGrippers?: number
       coverPaper?: string
-      coverRate?: number
+      coverPaperRate?: number
     }
   | undefined
