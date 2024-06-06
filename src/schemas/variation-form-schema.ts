@@ -96,7 +96,21 @@ export const VariationFormSchema = z.object({
       .transform((val) => val?.toString() || undefined),
   ),
 
-  coverColors: z.preprocess(
+  coverFrontColors: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseInt(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .int()
+      .nonnegative({ message: 'Cover Colors must be non-negative' })
+      .optional(),
+  ),
+  coverBackColors: z.preprocess(
     (val) => {
       if (typeof val === 'string') {
         const parsed = parseInt(val)
@@ -139,6 +153,7 @@ export const VariationFormSchema = z.object({
       .optional(),
   ),
   coverLamination: z.string().optional(),
+  // coverBothSideLamination: z.coerce.boolean().optional(),
   coverPaperType: z.string().optional(),
 
   // coverPaper: z.string().optional(),

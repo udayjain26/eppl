@@ -40,8 +40,8 @@ export default async function FullEstimatePage({
 
   return (
     <PageWrapper>
-      <div className="flex h-full w-full flex-col overflow-y-auto sm:flex-row">
-        <div className="flex h-full max-h-[97%] min-w-[20%] max-w-[20%] flex-col">
+      <div className="flex flex-col overflow-y-auto sm:flex-row">
+        <div className="flex h-full max-h-[97%] min-w-[20%] flex-col sm:max-w-[20%]">
           <div className=" flex grow justify-start gap-x-1 ">
             <div className="flex h-8 flex-col justify-center ">
               {' '}

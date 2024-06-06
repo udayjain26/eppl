@@ -12,6 +12,8 @@ import {
 } from '../estimates/actions'
 import { eq } from 'drizzle-orm'
 import { VariationFormSchema } from '@/schemas/variation-form-schema'
+import { create } from 'domain'
+import { createEmptyCalculationData } from '../calculations/actions'
 
 const Variation = VariationFormSchema.omit({
   // uuid: true,
@@ -42,13 +44,17 @@ export async function createVariation(estimateUuid: string) {
     throw new Error('User Unauthenitcated')
   }
 
-  await db.insert(variations).values({
-    estimateUuid: estimateUuid,
+  const variationUuid = await db
+    .insert(variations)
+    .values({
+      estimateUuid: estimateUuid,
 
-    createdBy: user.userId,
-    updatedBy: user.userId,
-  })
+      createdBy: user.userId,
+      updatedBy: user.userId,
+    })
+    .returning({ uuid: variations.uuid })
 
+  await createEmptyCalculationData(variationUuid[0].uuid)
   await updateEstimateOnVariationCreate(estimateUuid)
 
   revalidatePath(`/estimates/${estimateUuid}`)
@@ -106,7 +112,7 @@ export async function saveVariation(
     } as VariationFormState
   } else {
     try {
-      console.log('validatedFields.data', validatedFields.data)
+      // console.log('validatedFields.data', validatedFields.data)
       await db.transaction(async (trx) => {
         // Update the variation
         await trx

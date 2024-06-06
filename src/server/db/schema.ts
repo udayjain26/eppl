@@ -260,7 +260,8 @@ export const variations = createTable('variations', {
   openSizeWidth: numeric('open_size_width', { precision: 7, scale: 2 }),
 
   //cover
-  coverColors: smallint('cover_colors'),
+  coverFrontColors: smallint('cover_front_colors'),
+  coverBackColors: smallint('cover_back_colors'),
   coverPages: smallint('cover_pages'),
   coverGrammage: smallint('cover_grammage'),
   coverLamination: varchar('cover_lamination', { length: 256 }),
@@ -342,6 +343,10 @@ export const paperMaster = createTable('paper_master', {
   paperFinish: varchar('paper_finish', { length: 256 }).notNull(),
   paperType: varchar('paper_type', { length: 256 }).notNull(),
   paperMake: varchar('paper_make', { length: 256 }).notNull(),
+  paperDefaultRate: numeric('paper_default_rate', {
+    precision: 7,
+    scale: 2,
+  }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }).notNull(),
 })
@@ -360,17 +365,20 @@ export const variationCalculation = createTable('variation_calculation', {
     precision: 7,
     scale: 2,
   }),
+  coverPlateRate: numeric('cover_plate_rate', { precision: 7, scale: 2 }),
+  coverPrintingRate: numeric('cover_printing_rate', { precision: 7, scale: 2 }),
+  coverPrintingType: varchar('cover_printing_type', { length: 256 }),
 })
 
-export const coverSheetsDataTable = createTable('cover_sheets_data_table', {
-  uuid: uuid('uuid').defaultRandom().primaryKey(),
-  variationCalculationUuid: uuid('variation_calculation_uuid')
-    .references(() => variationCalculation.uuid, { onDelete: 'cascade' })
-    .notNull(),
-  quantity: numeric('quantity').notNull(),
-  requiredSheets: numeric('required_sheets').notNull(),
-  wastageSheets: numeric('wastage_sheets').notNull(),
-})
+// export const coverSheetsDataTable = createTable('cover_sheets_data_table', {
+//   uuid: uuid('uuid').defaultRandom().primaryKey(),
+//   variationCalculationUuid: uuid('variation_calculation_uuid')
+//     .references(() => variationCalculation.uuid, { onDelete: 'cascade' })
+//     .notNull(),
+//   quantity: numeric('quantity').notNull(),
+//   requiredSheets: numeric('required_sheets').notNull(),
+//   wastageSheets: numeric('wastage_sheets').notNull(),
+// })
 
 export const variationCalculationRelations = relations(
   variationCalculation,

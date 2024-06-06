@@ -1,18 +1,11 @@
 'use server'
 
+import { CoverCostData } from '@/app/estimates/[id]/_components/calculation-components/cover-calculation'
 import { PaperData } from '../../paper/types'
 import { VariationData } from '../../variations/types'
+import { laminations } from '@/app/estimates/constants'
 
-export interface PaperPiece {
-  length: number
-  width: number
-  x1: number
-  y1: number
-  x2: number
-  y2: number
-}
-
-export async function calculateTotalCoverSheets(
+export async function calculateTotalCoverCostData(
   variationData?: VariationData,
   paperData?: PaperData,
   upsPerCoverPiece?: number,
@@ -21,30 +14,19 @@ export async function calculateTotalCoverSheets(
   grippers?: number,
   paperCostPerKg?: number,
   wastageFactor?: number,
-): Promise<
-  | {
-      coverPiecesPerSheet: number
-      coverUpsPerSheet: number
-      piecesPositions: PaperPiece[]
-      percentageSheetUsed: number
-      requiredSheetsDataTable: {
-        quantity: number
-        requiredSheets: number
-        totalWastage: number
-        totalRequiredSheets: number
-        totalWeight: number
-        totalCost: number
-        costPerPiece: number
-      }[]
-    }
-  | undefined
-> {
+  coverPlateRate?: number,
+  coverPrintingRate?: number,
+  coverPrintingType?: string,
+): Promise<CoverCostData | undefined> {
   if (
     !variationData ||
     !paperData ||
     !upsPerCoverPiece ||
     !paperCostPerKg ||
-    !wastageFactor
+    !wastageFactor ||
+    !coverPlateRate ||
+    !coverPrintingRate ||
+    !coverPrintingType
   ) {
     return undefined
   } else {
@@ -68,20 +50,52 @@ export async function calculateTotalCoverSheets(
       wastageFactor,
     )
 
-    const requiredSheetsDataTable = requiredSheetsData.map((o) => {
+    const frontColors = variationData.coverFrontColors || 0
+    const backColors = variationData.coverBackColors || 0
+
+    const allCoverCostDetails = requiredSheetsData.map((qty) => {
       const paperLengthInM = paperData.paperLength / 1000
       const paperWidthInM = paperData.paperWidth / 1000
       const sheetWeightInKg =
         (paperLengthInM * paperWidthInM * paperData.paperGrammage) / 1000
-      const weight = Math.ceil(sheetWeightInKg * o.totalRequiredSheets)
-      const cost = weight * paperCostPerKg
-      const costPerPiece = Math.ceil((cost / o.quantity) * 100) / 100
+      const weight = sheetWeightInKg * qty.totalRequiredSheets
+      const paperCost = weight * paperCostPerKg
+      const platesCost = calculatePlatesCost(
+        coverPrintingType,
+        frontColors,
+        backColors,
+        coverPlateRate,
+      )
+
+      const printingCost = calculatePrintingCost(
+        qty.totalRequiredSheets,
+        coverPrintingRate,
+        coverPrintingType,
+        frontColors,
+        backColors,
+      )
+
+      const laminationCost = calculateLaminationCost(
+        variationData,
+        qty.totalRequiredSheets,
+        paperData,
+      )
+
+      const totalCost = paperCost + platesCost + printingCost + laminationCost
+      const costPerPiece = totalCost / qty.quantity
 
       return {
-        ...o,
-        totalWeight: weight,
-        totalCost: cost,
-        costPerPiece: costPerPiece,
+        quantity: qty.quantity,
+        calculatedSheets: qty.requiredSheets,
+        wastageSheets: qty.totalWastage,
+        totalSheets: Number(qty.totalRequiredSheets.toFixed(0)),
+        paperWeight: Number(weight.toFixed(3)),
+        paperCost: Number(paperCost.toFixed(2)),
+        platesCost: Number(platesCost.toFixed(2)),
+        printingCost: Number(printingCost.toFixed(2)),
+        laminationCost: Number(laminationCost.toFixed(2)),
+        totalCost: Number(totalCost.toFixed(2)),
+        costPerPiece: Number(costPerPiece.toFixed(2)),
       }
     })
 
@@ -90,8 +104,84 @@ export async function calculateTotalCoverSheets(
       coverUpsPerSheet,
       piecesPositions,
       percentageSheetUsed,
-      requiredSheetsDataTable,
+      coverCostDataDict: allCoverCostDetails,
     }
+  }
+}
+
+function calculatePlatesCost(
+  coverPrintingType: string,
+  frontColors: number,
+  backColors: number,
+  coverPlateRate: number,
+) {
+  if (coverPrintingType === 'frontBack') {
+    return (frontColors + backColors) * coverPlateRate
+  } else {
+    return frontColors * coverPlateRate
+  }
+}
+
+function calculatePrintingCost(
+  totalRequiredSheets: number,
+  coverPrintingRateThousand: number,
+  coverPrintingType: string,
+  frontColors: number,
+  backColors: number,
+) {
+  const minimumSheets = 2000
+  const coverPrintingRate = coverPrintingRateThousand / 1000
+
+  if (coverPrintingType === 'frontBack') {
+    const frontImpressions = totalRequiredSheets * frontColors
+
+    const backImpressions = totalRequiredSheets * backColors
+
+    const totalImpressions = frontImpressions + backImpressions
+
+    if (totalRequiredSheets < minimumSheets) {
+      return minimumSheets * (frontColors + backColors) * coverPrintingRate
+    } else {
+      return totalImpressions * coverPrintingRate
+    }
+  } else if (coverPrintingType === 'singleSide') {
+    const totalImpressions = totalRequiredSheets * frontColors
+
+    if (totalRequiredSheets < minimumSheets) {
+      return minimumSheets * frontColors * coverPrintingRate
+    } else {
+      return totalImpressions * coverPrintingRate
+    }
+  } else {
+    const totalImpressions = totalRequiredSheets * frontColors * 2
+
+    if (totalRequiredSheets < minimumSheets / 2) {
+      return minimumSheets * frontColors * coverPrintingRate
+    } else {
+      return totalImpressions * coverPrintingRate
+    }
+  }
+}
+
+function calculateLaminationCost(
+  variationData: VariationData,
+  qtySheets: number,
+  paperData: PaperData,
+) {
+  const paperLengthInmm = paperData.paperLength / 10
+  const paperWidthInmm = paperData.paperWidth / 10
+  const laminationRate = laminations.find(
+    (lam) => lam.label === variationData.coverLamination,
+  )?.rate!
+
+  if (laminationRate !== 0) {
+    const laminationCost = (
+      (paperLengthInmm * paperWidthInmm * qtySheets) /
+      laminationRate
+    ).toFixed(2)
+    return Number(laminationCost)
+  } else {
+    return 0
   }
 }
 
@@ -107,7 +197,7 @@ export async function calculateRequiredSheets(
   //calculate required covers for each qty and modify the object
   const data = allQtysData.map((o) => {
     const requiredCoversUps = o.quantity * upsPerCoverPiece
-    const requiredSheets = Math.ceil(requiredCoversUps / upsPerSheet)
+    const requiredSheets = requiredCoversUps / upsPerSheet
     const totalWastage = getWastageSheets(requiredSheets, wastageFactor)
     const totalSheets = requiredSheets + totalWastage
 
@@ -199,6 +289,32 @@ export async function calculateCoverSheetsAndUps(
   }
 }
 
+function getWastageSheets(requiredSheets: number, wastageFactor: number) {
+  let totalWastage: number
+  if (requiredSheets <= 0) {
+    totalWastage = 0
+  } else if (requiredSheets <= 2100) {
+    totalWastage = 150
+  } else if (requiredSheets <= 4100) {
+    totalWastage = 200
+  } else if (requiredSheets <= 10200) {
+    totalWastage = 300
+  } else {
+    totalWastage = requiredSheets * 0.025
+  }
+
+  return totalWastage * wastageFactor
+}
+
+export interface PaperPiece {
+  length: number
+  width: number
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+}
+
 function calculatePiecePositions(
   pieceLength: number,
   pieceWidth: number,
@@ -246,21 +362,4 @@ function calculatePiecePositions(
   }
 
   return piecesPositions
-}
-
-function getWastageSheets(requiredSheets: number, wastageFactor: number) {
-  let totalWastage: number
-  if (requiredSheets <= 0) {
-    totalWastage = 0
-  } else if (requiredSheets <= 2100) {
-    totalWastage = 150
-  } else if (requiredSheets <= 4100) {
-    totalWastage = 200
-  } else if (requiredSheets <= 10200) {
-    totalWastage = 300
-  } else {
-    totalWastage = requiredSheets * 0.025
-  }
-
-  return Math.ceil(totalWastage * wastageFactor)
 }

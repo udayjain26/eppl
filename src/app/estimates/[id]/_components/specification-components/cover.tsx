@@ -4,6 +4,7 @@ import MySep from '@/app/_components/custom-sep'
 import { commonSizes, laminations } from '@/app/estimates/constants'
 import { paperFinishes, paperTypes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Command,
   CommandEmpty,
@@ -52,10 +53,25 @@ export default function Cover(props: {
           {' '}
           <FormField
             control={props.control}
-            name="coverColors"
+            name="coverFrontColors"
             render={({ field }) => (
-              <FormItem className="w-16">
-                <FormLabel> #Colors</FormLabel>
+              <FormItem className="w-20">
+                <FormLabel>Front #Col</FormLabel>
+                <FormControl>
+                  <Input {...field}></Input>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="flex flex-col">
+          {' '}
+          <FormField
+            control={props.control}
+            name="coverBackColors"
+            render={({ field }) => (
+              <FormItem className="w-20">
+                <FormLabel> Back #Col</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
                 </FormControl>
@@ -69,7 +85,7 @@ export default function Cover(props: {
             control={props.control}
             name="coverPages"
             render={({ field }) => (
-              <FormItem className="w-16">
+              <FormItem className="w-20">
                 <FormLabel>#Pages</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -150,6 +166,24 @@ export default function Cover(props: {
               </FormItem>
             )}
           />
+          {/* <FormField
+            control={props.form.control}
+            name="coverBothSideLamination"
+            render={({ field }) => (
+              <FormItem className="mt-1 flex flex-row items-start gap-x-2 rounded-md border p-2 ">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    {...field}
+                  />
+                </FormControl>
+                <div className="gap-y-1 leading-none">
+                  <FormLabel>Both Side Lamination</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          /> */}
         </div>
       </div>
       <div className="flex flex-row gap-x-1">

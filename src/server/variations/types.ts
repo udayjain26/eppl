@@ -23,7 +23,8 @@ export type VariationData = {
   openSizeLength: number | undefined
   openSizeWidth: number | undefined
 
-  coverColors: number | undefined
+  coverFrontColors: number | undefined
+  coverBackColors: number | undefined
   coverPages: number | undefined
   coverGrammage: number | undefined
   coverLamination: string | undefined

@@ -7,6 +7,7 @@ export type PaperData = {
   paperFinish: string
   paperType: string
   paperMake: string
+  paperDefaultRate: number
   createdAt: Date
   createdBy: string
 }

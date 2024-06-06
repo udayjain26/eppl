@@ -10,6 +10,7 @@ export async function getPaperData(): Promise<PaperData[]> {
       paperLength: Number(row.paperLength),
       paperWidth: Number(row.paperWidth),
       paperGrammage: Number(row.paperGrammage),
+      paperDefaultRate: Number(row.paperDefaultRate),
     })) as PaperData[]
 
     return data

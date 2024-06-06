@@ -29,24 +29,49 @@ import { PaperData } from '@/server/paper/types'
 import { getPaperData } from '@/server/paper/queries'
 import {
   PaperPiece,
-  calculateTotalCoverSheets as calculateTotalCoverSheets,
+  calculateTotalCoverCostData as calculateTotalCoverCostData,
 } from '@/server/calculations/cover/actions'
 import { Input } from '@/components/ui/input'
 import { useFieldArray } from 'react-hook-form'
 import FormError from '@/app/_components/form-error'
 import { Slider } from '@/components/ui/slider'
+import { Stage, Layer, Rect, Text, Circle, Line } from 'react-konva'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 
-type CoverSheetsData = {
+export type CoverCostData = {
   coverPiecesPerSheet: number
   coverUpsPerSheet: number
   piecesPositions: PaperPiece[]
   percentageSheetUsed: number
-  requiredSheetsDataTable: {
+  coverCostDataDict: {
     quantity: number
-    requiredSheets: number
-    totalWastage: number
-    totalRequiredSheets: number
-    totalWeight: number
+    calculatedSheets: number
+    wastageSheets: number
+    totalSheets: number
+    paperWeight: number
+    paperCost: number
+    platesCost: number
+    printingCost: number
+    laminationCost: number
     totalCost: number
     costPerPiece: number
   }[]
@@ -60,9 +85,11 @@ export default function CoverCalculation(props: {
   // const [paperData, setPaperData] = useState<PaperData[]>([])
   const [openPaper, setOpenPaper] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
-  const [coverSheetsData, setCoverSheetsData] = useState<
-    CoverSheetsData | undefined
+  const [coverCostDataTable, setCoverCostDataTable] = useState<
+    CoverCostData | undefined
   >(undefined)
+
+  console.log(coverCostDataTable)
 
   const { register } = props.form
 
@@ -75,9 +102,19 @@ export default function CoverCalculation(props: {
       Number(props.form.watch('coverSpine')) +
       Number(props.form.watch('coverBleed')) * 2
     : 0
+
   const grippers = Number(props.form.watch('coverGrippers'))
+  const effectivePaperLength = selectedPaper?.paperLength
+    ? selectedPaper.paperLength - grippers
+    : 0
+  const effectivePaperWidth = selectedPaper?.paperWidth
+    ? selectedPaper.paperWidth
+    : 0
   const wastageFactor = Number(props.form.watch('coverWastageFactor'))
   const paperRatePerkg = Number(props.form.watch('coverPaperRate'))
+  const plateRate = Number(props.form.watch('coverPlateRate'))
+  const printingRate = Number(props.form.watch('coverPrintingRate'))
+  const coverPrintingType = props.form.watch('coverPrintingType')
 
   useEffect(() => {
     const initialPaperName = props.form.getValues('coverPaper')
@@ -92,7 +129,7 @@ export default function CoverCalculation(props: {
 
   useEffect(() => {
     const calculateCoverSheets = async () => {
-      const coverSheetsData = await calculateTotalCoverSheets(
+      const fetchCoverCostDataTable = await calculateTotalCoverCostData(
         props.variationData,
         selectedPaper ? selectedPaper : undefined,
         props.variationData.coverPages,
@@ -101,8 +138,11 @@ export default function CoverCalculation(props: {
         grippers,
         paperRatePerkg,
         wastageFactor,
+        plateRate,
+        printingRate,
+        coverPrintingType,
       )
-      setCoverSheetsData(coverSheetsData)
+      setCoverCostDataTable(fetchCoverCostDataTable)
     }
     calculateCoverSheets()
   }, [
@@ -112,14 +152,17 @@ export default function CoverCalculation(props: {
     selectedPaper,
     paperRatePerkg,
     wastageFactor,
+    plateRate,
+    printingRate,
+    coverPrintingType,
     props.variationData,
     props.form,
   ])
 
   return (
     <>
-      <div className="flex flex-row gap-x-8 p-4">
-        <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-x-8 p-4 sm:flex-row">
+        <div className="flex w-full max-w-[12rem] flex-col gap-y-2">
           <h1 className="underline">Cover Specifications</h1>
           <div className="text-sm">
             <ul className="flex flex-col gap-y-2">
@@ -132,6 +175,14 @@ export default function CoverCalculation(props: {
                 <span>{props.variationData?.closeSizeWidth} mm</span>
               </li>
               <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Open Length</span>
+                <span>{props.variationData?.openSizeLength} mm</span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Open Width</span>
+                <span>{props.variationData?.openSizeWidth} mm</span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Grammage</span>
                 <span>{props.variationData?.coverGrammage} gsm</span>
               </li>
@@ -142,7 +193,10 @@ export default function CoverCalculation(props: {
 
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Colors</span>
-                <span>{props.variationData?.coverColors} </span>
+                <span>
+                  {props.variationData?.coverFrontColors} +{' '}
+                  {props.variationData?.coverBackColors}
+                </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Pages/Ups</span>
@@ -155,13 +209,13 @@ export default function CoverCalculation(props: {
             </ul>
           </div>
         </div>
-        <div className="flex  flex-col gap-y-2">
+        <div className="flex w-full flex-col gap-y-2">
           <div className="flex flex-row gap-x-2">
             <FormField
               control={props.form.control}
               name="coverSpine"
               render={({ field }) => (
-                <FormItem className=" grow">
+                <FormItem className=" ">
                   <FormLabel>Spine(mm)</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
@@ -173,7 +227,7 @@ export default function CoverCalculation(props: {
               control={props.form.control}
               name="coverBleed"
               render={({ field }) => (
-                <FormItem className=" grow">
+                <FormItem className=" ">
                   <FormLabel>Bleed(mm)</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
@@ -185,7 +239,7 @@ export default function CoverCalculation(props: {
               control={props.form.control}
               name="coverGrippers"
               render={({ field }) => (
-                <FormItem className=" grow">
+                <FormItem className=" ">
                   <FormLabel>Grippers(mm)</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
@@ -193,15 +247,82 @@ export default function CoverCalculation(props: {
                 </FormItem>
               )}
             />
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="mt-6" variant="outline">
+                  View Planning
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:h-[600px] sm:max-w-[1000px]"></DialogContent>
+            </Dialog>
           </div>
-          <div className="flex flex-row gap-x-2">
-            <ul className="flex flex-row gap-x-2 text-sm">
-              <li>Effective Cover Length: {effectiveCoverLength}(mm)</li>
-              <li>Effective Cover Width: {effectiveCoverWidth}(mm) </li>
+          <div className="flex w-full flex-row gap-x-2">
+            <ul className="flex flex-row gap-x-2 text-xs">
+              <li>
+                Effective Cover Length: {effectiveCoverLength}(mm) /{' '}
+                {(effectiveCoverLength / 25.4).toFixed(2)}(in)
+              </li>
+              <li>
+                Effective Cover Width: {effectiveCoverWidth}(mm) /{' '}
+                {(effectiveCoverWidth / 25.4).toFixed(2)}(in)
+              </li>
+              <li>
+                Effective Paper Length: {effectivePaperLength}(mm) /{' '}
+                {(effectivePaperLength / 25.4).toFixed(2)}(in)
+              </li>
+              <li>
+                Effective Paper Width: {effectivePaperWidth}(mm) /{' '}
+                {(effectivePaperWidth / 25.4).toFixed(2)}(in)
+              </li>
             </ul>
           </div>
+          <FormField
+            control={props.form.control}
+            name="coverPrintingType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Printing Type</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-row gap-x-4"
+                    {...field}
+                  >
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem value="frontBack" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Front Back</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem value="workAndTurn" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Work and Turn
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem value="workAndTumble" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Work and Tumble
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem value="singleSide" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Single Side</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-          <h1 className="">Cover Paper Planning</h1>
           <FormField
             control={props.form.control}
             name="coverPaper"
@@ -212,7 +333,7 @@ export default function CoverCalculation(props: {
               >
                 <FormLabel>Select Paper</FormLabel>
                 <Popover open={openPaper} onOpenChange={setOpenPaper}>
-                  <PopoverTrigger className="w-full" asChild>
+                  <PopoverTrigger className="" asChild>
                     <Button
                       variant="outline"
                       role="combobox"
@@ -301,7 +422,9 @@ export default function CoverCalculation(props: {
             name="coverWastageFactor"
             render={({ field: { value, onChange } }) => (
               <FormItem className="w-2/5">
-                <FormLabel>Cover Wastage Factor: {value}</FormLabel>
+                <FormLabel>
+                  Cover Wastage Factor: {(value * 100).toFixed(2)}%
+                </FormLabel>
                 <FormControl>
                   <Slider
                     className="mt-2"
@@ -317,31 +440,32 @@ export default function CoverCalculation(props: {
             )}
           />
         </div>
-        <div className="flex  flex-col ">
+        <div className="flex w-full max-w-[12rem] flex-col ">
           <h1 className="underline">Calculated</h1>
 
-          <div className="flex flex-col gap-y-7 text-sm">
+          <div className="flex  flex-col gap-y-1 text-sm">
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">
                   Cover Pieces/Sheet
                 </span>
-                <span>{coverSheetsData?.coverPiecesPerSheet}</span>
+                <span>{coverCostDataTable?.coverPiecesPerSheet}</span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Cover Ups/Sheet</span>
-                <span>{coverSheetsData?.coverUpsPerSheet}</span>
+                <span>{coverCostDataTable?.coverUpsPerSheet}</span>
               </li>
               <li
                 className={cn('flex items-center justify-between border-b-2', {
-                  ' text-red-500': coverSheetsData?.percentageSheetUsed! < 90,
+                  ' text-red-500':
+                    coverCostDataTable?.percentageSheetUsed! < 90,
                 })}
               >
                 <span className={cn('text-muted-foreground', {})}>
                   Paper Area Used
                 </span>
                 <span>
-                  {coverSheetsData?.percentageSheetUsed?.toFixed(2)} %
+                  {coverCostDataTable?.percentageSheetUsed?.toFixed(2)} %
                 </span>
               </li>
             </ul>
@@ -350,7 +474,31 @@ export default function CoverCalculation(props: {
               name="coverPaperRate"
               render={({ field }) => (
                 <FormItem className=" grow">
-                  <FormLabel>Paper Rate/Kg</FormLabel>
+                  <FormLabel>Paper Rate(&#x20B9;)/Kg</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverPlateRate"
+              render={({ field }) => (
+                <FormItem className=" grow">
+                  <FormLabel>Plate Rate(&#x20B9;)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverPrintingRate"
+              render={({ field }) => (
+                <FormItem className=" grow">
+                  <FormLabel>Printing Rate(&#x20B9;)/Colors</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
                   </FormControl>
@@ -360,114 +508,163 @@ export default function CoverCalculation(props: {
           </div>
         </div>
       </div>
-      <div className="flex w-full flex-row">
-        <div className="flex flex-col justify-end gap-y-2">
-          <div className="flex h-full w-full flex-col pt-2 ">
-            <div className="h-full min-h-48">
-              <div className="flex flex-row items-center justify-between px-2 py-2">
-                <h1 className="text-center text-base font-bold">
-                  Total Sheets and Rate Data Table
-                </h1>
-              </div>
-              <Separator />
+      <Table>
+        <TableCaption>Cover Paper, Plates and Printing Data</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Cover Quantity</TableHead>
+            <TableHead>Calculated Sheets</TableHead>
+            <TableHead>Wastage Sheets</TableHead>
+            <TableHead>Total Sheets</TableHead>
+            <TableHead>Paper Weight</TableHead>
+            <TableHead>Paper Cost</TableHead>
+            <TableHead>Plates Cost</TableHead>
+            <TableHead>Printing Cost</TableHead>
+            <TableHead>Lamination Cost</TableHead>
+            <TableHead>Total Cost</TableHead>
+            <TableHead>Cost/Cover</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {coverCostDataTable?.coverCostDataDict.map((item, index) => {
+            return (
+              <TableRow key={item.quantity}>
+                <TableCell>{item.quantity}</TableCell>
+                <TableCell>{item.calculatedSheets}</TableCell>
+                <TableCell>{item.wastageSheets}</TableCell>
+                <TableCell>{item.totalSheets}</TableCell>
+                <TableCell>{item.paperWeight}</TableCell>
+                <TableCell>{item.paperCost}&#x20B9;</TableCell>
+                <TableCell>{item.platesCost}&#x20B9;</TableCell>
+                <TableCell>{item.printingCost}&#x20B9;</TableCell>
+                <TableCell>{item.laminationCost}&#x20B9;</TableCell>
+                <TableCell>{item.totalCost}&#x20B9;</TableCell>
+                <TableCell>{item.costPerPiece}&#x20B9; </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
 
-              <div className="flex flex-row px-2 py-1">
-                <div className="flex w-20  flex-col border-b text-sm ">
-                  <p className="  px-2 text-center">Quantity</p>
-                </div>
-
-                <div className="flex w-20 flex-col border-b text-sm ">
-                  <p className="  px-2 text-center">Calculated Sheets</p>
-                </div>
-
-                <div className="flex w-20 flex-col border-b  text-sm">
-                  <p className="  px-2 text-center">Wastage Sheets</p>
-                </div>
-
-                <div className="flex w-20 flex-col border-b  text-sm ">
-                  <p className=" px-2 text-center">Total Sheets</p>
-                </div>
-                <div className="flex w-20 flex-col border-b text-sm ">
-                  <p className="  px-2 text-center">Total Weight</p>
-                </div>
-                <div className="flex w-20 flex-col border-b text-sm ">
-                  <p className="  px-2 text-center">Total Cost</p>
-                </div>
-                <div className="flex w-20 flex-col border-b text-sm ">
-                  <p className="  px-2 text-center">Cost/ Piece</p>
-                </div>
-              </div>
-
-              <ul className="">
-                {coverSheetsData?.requiredSheetsDataTable.map((item, index) => (
-                  <li key={item.quantity}>
-                    <div className="flex flex-row px-2 py-1">
-                      <Input
-                        className="w-20 border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                        readOnly
-                        value={item.quantity}
-                        {...register(
-                          `coverSheetsDataTable.${index}.quantity`,
-                          {},
-                        )}
-                      />
-                      <Input
-                        className="w-20 border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                        readOnly
-                        value={item.requiredSheets}
-                        {...register(
-                          `coverSheetsDataTable.${index}.requiredSheets`,
-                          {},
-                        )}
-                      />
-                      <Input
-                        className="w-20 border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                        value={item.totalWastage}
-                        {...register(
-                          `coverSheetsDataTable.${index}.totalWastage`,
-                          {},
-                        )}
-                      />
-                      <Input
-                        className="w-20 border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                        value={item.totalRequiredSheets}
-                        {...register(
-                          `coverSheetsDataTable.${index}.totalRequiredSheets`,
-                          {},
-                        )}
-                      />
-                      <Input
-                        className="w-20 border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                        value={item.totalWeight}
-                        {...register(
-                          `coverSheetsDataTable.${index}.totalWeight`,
-                          {},
-                        )}
-                      />
-                      <Input
-                        className="w-20 border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                        value={item.totalCost}
-                        {...register(
-                          `coverSheetsDataTable.${index}.totalCost`,
-                          {},
-                        )}
-                      />
-                      <Input
-                        className="w-20 border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                        value={item.costPerPiece}
-                        {...register(
-                          `coverSheetsDataTable.${index}.costPerPiece`,
-                          {},
-                        )}
-                      />
-                    </div>
-                  </li>
-                ))}
-              </ul>
+      {/* <div className="flex w-full flex-col gap-x-2  p-2 sm:flex-row">
+        <div className="flex flex-col justify-start gap-y-2">
+          <div className="h-full min-h-48 ">
+            <div className="flex flex-row items-center justify-between px-2 py-2">
+              <h1 className="text-center text-base underline">
+                Paper, Plates and Printing Rate Table
+              </h1>
             </div>
+            <Separator />
+            <div className="flex px-2 py-1">
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Quantity</p>
+              </div>
+
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Calculated Sheets</p>
+              </div>
+
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Wastage Sheets</p>
+              </div>
+
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Total Sheets</p>
+              </div>
+
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Paper Weight</p>
+              </div>
+
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Paper Cost</p>
+              </div>
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Plates Cost</p>
+              </div>
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Printing Cost</p>
+              </div>
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Total Cost</p>
+              </div>
+
+              <div className="flex flex-1 flex-col border-b text-sm">
+                <p className="text-center">Total Cost/Piece</p>
+              </div>
+            </div>
+
+            <ul className="">
+              {coverCostDataTable?.coverCostDataDict.map((item, index) => (
+                <li key={item.quantity}>
+                  <div className="flex flex-row px-2 py-1 ">
+                    <Input
+                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
+                      readOnly
+                      value={item.quantity}
+                      {...register(
+                        `coverSheetsDataTable.${index}.quantity`,
+                        {},
+                      )}
+                    />
+                    <Input
+                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
+                      readOnly
+                      value={item.requiredSheets}
+                      {...register(
+                        `coverSheetsDataTable.${index}.requiredSheets`,
+                        {},
+                      )}
+                    />
+                    <Input
+                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
+                      value={item.totalWastage}
+                      {...register(
+                        `coverSheetsDataTable.${index}.totalWastage`,
+                        {},
+                      )}
+                    />
+                    <Input
+                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
+                      value={item.totalRequiredSheets}
+                      {...register(
+                        `coverSheetsDataTable.${index}.totalRequiredSheets`,
+                        {},
+                      )}
+                    />
+                    <Input
+                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
+                      value={`${item.totalWeight} kg`}
+                      {...register(
+                        `coverSheetsDataTable.${index}.totalWeight`,
+                        {},
+                      )}
+                    />
+                    <Input
+                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
+                      value={`${item.totalCost} ₹`}
+                      {...register(
+                        `coverSheetsDataTable.${index}.totalCost`,
+                        {},
+                      )}
+                    />
+                    <Input
+                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
+                      value={`${item.costPerPiece} ₹`}
+                      {...register(
+                        `coverSheetsDataTable.${index}.costPerPiece`,
+                        {},
+                      )}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </div>
+        
+      </div> */}
+
       <Separator />
     </>
   )

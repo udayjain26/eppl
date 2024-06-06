@@ -13,5 +13,8 @@ export type VariationCalculationData =
       coverPaper?: string
       coverPaperRate?: number
       coverWastageFactor?: number
+      coverPlateRate?: number
+      coverPrintingRate?: number
+      coverPrintingType?: string
     }
   | undefined

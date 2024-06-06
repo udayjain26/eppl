@@ -44,14 +44,6 @@ export default function CalculationFields(props: {
 
   const form = useForm<z.infer<typeof CalculationFormSchema>>({
     resolver: zodResolver(CalculationFormSchema),
-    defaultValues: {
-      coverSpine: '0',
-      coverBleed: '3',
-      coverGrippers: '10',
-      coverPaper: '',
-      coverPaperRate: '90',
-      coverWastageFactor: '1',
-    },
   })
 
   const initialState: CalculationFormState = {
@@ -78,26 +70,25 @@ export default function CalculationFields(props: {
         coverWastageFactor: data?.coverWastageFactor
           ? data.coverWastageFactor.toString()
           : '1',
+        coverPlateRate: data?.coverPlateRate
+          ? data.coverPlateRate.toString()
+          : '300',
+        coverPrintingRate: data?.coverPrintingRate
+          ? data.coverPrintingRate.toString()
+          : '150',
+        coverPrintingType: data?.coverPrintingType
+          ? data.coverPrintingType
+          : 'frontBack',
       })
     }
     fetchCalculationData()
   }, [])
 
-  console.log(
-    'Form values on render:',
-    form.getValues('coverWastageFactor'),
-    form.getValues('coverPaperRate'),
-    form.getValues('coverPaper'),
-    form.getValues('coverGrippers'),
-    form.getValues('coverBleed'),
-    form.getValues('coverSpine'),
-  )
-
   const fields = productFieldMap[props.product]['calculationComponents'] || []
 
-  // if (!variationCalculationData) {
-  //   return <div>Loading...</div>
-  // }
+  if (!variationCalculationData) {
+    return <div>Loading...</div>
+  }
 
   return (
     <Form {...form}>

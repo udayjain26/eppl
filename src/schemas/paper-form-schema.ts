@@ -14,4 +14,7 @@ export const PaperFormSchema = z.object({
   paperType: z.string({ message: 'Paper finish is required!' }),
   paperFinish: z.string({ message: 'Paper finish is required!' }).trim(),
   paperMake: z.string({ message: 'Paper finish is required!' }),
+  paperDefaultRate: z.coerce
+    .number({ message: 'Rate must be a number' })
+    .nonnegative({ message: 'Rate must be non-negative' }),
 })

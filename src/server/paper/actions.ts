@@ -51,6 +51,7 @@ export async function createPaper(
         paperLength: String(validatedFields.data.paperLength),
         paperWidth: String(validatedFields.data.paperWidth),
         paperGrammage: String(validatedFields.data.paperGrammage),
+        paperDefaultRate: String(validatedFields.data.paperDefaultRate),
       }
       await db.insert(paperMaster).values(dataWithUserIds)
     } catch (error) {

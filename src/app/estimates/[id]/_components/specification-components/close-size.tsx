@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { CheckIcon } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ChangeEvent, useState } from 'react'
 
 export default function CloseSize(props: { control: any; form: any }) {
@@ -75,11 +75,22 @@ export default function CloseSize(props: { control: any; form: any }) {
     setLengthInInches((length / 25.4).toFixed(2))
     setWidthInInches((width / 25.4).toFixed(2))
   }
+  useEffect(() => {
+    const lengthValue = props.form.getValues('closeSizeLength')
+    const widthValue = props.form.getValues('closeSizeWidth')
+
+    if (lengthValue) {
+      setLengthInInches((parseFloat(lengthValue) / 25.4).toFixed(2))
+    }
+    if (widthValue) {
+      setWidthInInches((parseFloat(widthValue) / 25.4).toFixed(2))
+    }
+  }, [props.form])
 
   return (
     <div className="flex flex-col pt-4">
       <h1>Close Size Details</h1>
-      <div className="flex flex-row gap-x-1">
+      <div className="flex h-20 flex-row gap-x-1 ">
         <FormField
           control={props.control}
           name="closeSizeName"
@@ -153,7 +164,7 @@ export default function CloseSize(props: { control: any; form: any }) {
             </FormItem>
           )}
         />
-        <div className="flex flex-col">
+        <div className="flex  flex-col">
           {' '}
           <FormField
             control={props.control}

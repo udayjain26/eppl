@@ -155,12 +155,6 @@ export default function CreatePaperForm(props: {
         action={formAction}
         className=" flex h-full w-full flex-col justify-start gap-y-2"
       >
-        <input
-          hidden
-          readOnly
-          name="estimateUuid"
-          value={props.estimateUuid}
-        ></input>
         <div className="flex max-h-[80%] flex-col gap-y-2  overflow-y-scroll scroll-smooth rounded-2xl p-2 shadow-inner ">
           <FormField
             control={form.control}
@@ -454,6 +448,23 @@ export default function CreatePaperForm(props: {
                   </PopoverContent>
                 </Popover>
                 <FormError state={state} errorKey="paperFinish" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="paperDefaultRate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Paper Default Rate(&#x20B9;)</FormLabel>
+
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter values in &#x20B9;"
+                    {...field}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />

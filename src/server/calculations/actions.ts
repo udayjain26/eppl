@@ -19,6 +19,20 @@ interface TransformedData {
   [key: string]: any
 }
 
+export async function createEmptyCalculationData(variationUuid: string) {
+  const user = auth()
+  if (!user.userId) {
+    throw new Error('User Unauthenticated')
+  }
+
+  const dataWithUserIds = {
+    userId: user.userId,
+    variationUuid: variationUuid,
+  }
+
+  await db.insert(variationCalculation).values(dataWithUserIds)
+}
+
 export default async function saveCalculationData(
   previousState: CalculationFormState,
   formData: FormData,
