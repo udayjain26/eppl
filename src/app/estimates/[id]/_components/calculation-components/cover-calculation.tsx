@@ -32,7 +32,7 @@ import {
   calculateTotalCoverCostData as calculateTotalCoverCostData,
 } from '@/server/calculations/cover/actions'
 import { Input } from '@/components/ui/input'
-import { useFieldArray } from 'react-hook-form'
+import { UseFormReturn, useFieldArray } from 'react-hook-form'
 import FormError from '@/app/_components/form-error'
 import { Slider } from '@/components/ui/slider'
 import { Stage, Layer, Rect, Text, Circle, Line } from 'react-konva'
@@ -46,22 +46,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { useDebounce } from 'use-debounce'
 
 export type CoverCostData = {
   coverPiecesPerSheet: number
-  coverUpsPerSheet: number
+  pagesPerSheet: number
   piecesPositions: PaperPiece[]
   percentageSheetUsed: number
+  forms: number
+  totalSets: number
   coverCostDataDict: {
     quantity: number
     calculatedSheets: number
@@ -80,19 +74,15 @@ export type CoverCostData = {
 export default function CoverCalculation(props: {
   variationData: VariationData
   paperData: PaperData[]
-  form: any
+  form: UseFormReturn
 }) {
-  // const [paperData, setPaperData] = useState<PaperData[]>([])
   const [openPaper, setOpenPaper] = useState(false)
-  const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
+  const [selectedPaper, setSelectedPaper] = useState<PaperData | undefined>(
+    undefined,
+  )
   const [coverCostDataTable, setCoverCostDataTable] = useState<
     CoverCostData | undefined
   >(undefined)
-
-  console.log(coverCostDataTable)
-
-  const { register } = props.form
-
   const effectiveCoverLength = props.variationData.openSizeLength
     ? props.variationData.openSizeLength +
       Number(props.form.watch('coverBleed')) * 2
@@ -102,8 +92,14 @@ export default function CoverCalculation(props: {
       Number(props.form.watch('coverSpine')) +
       Number(props.form.watch('coverBleed')) * 2
     : 0
+  const coverPrintingType = props.form.watch('coverPrintingType')
+  let grippers: number
+  grippers = Number(props.form.watch('coverGrippers'))
 
-  const grippers = Number(props.form.watch('coverGrippers'))
+  if (coverPrintingType === 'workAndTumble') {
+    grippers = Number(props.form.watch('coverGrippers')) * 2
+  }
+
   const effectivePaperLength = selectedPaper?.paperLength
     ? selectedPaper.paperLength - grippers
     : 0
@@ -114,11 +110,14 @@ export default function CoverCalculation(props: {
   const paperRatePerkg = Number(props.form.watch('coverPaperRate'))
   const plateRate = Number(props.form.watch('coverPlateRate'))
   const printingRate = Number(props.form.watch('coverPrintingRate'))
-  const coverPrintingType = props.form.watch('coverPrintingType')
+
+  const [debouncedWastageFactor] = useDebounce(wastageFactor, 1000)
+  const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 1000)
+  const [debouncedPlateRate] = useDebounce(plateRate, 1000)
+  const [debouncedPrintingRate] = useDebounce(printingRate, 1000)
 
   useEffect(() => {
     const initialPaperName = props.form.getValues('coverPaper')
-
     const initialSelectedPaper = props.paperData.find(
       (paper) => paper.paperName === initialPaperName,
     )
@@ -131,15 +130,15 @@ export default function CoverCalculation(props: {
     const calculateCoverSheets = async () => {
       const fetchCoverCostDataTable = await calculateTotalCoverCostData(
         props.variationData,
-        selectedPaper ? selectedPaper : undefined,
+        selectedPaper,
         props.variationData.coverPages,
         effectiveCoverLength,
         effectiveCoverWidth,
         grippers,
-        paperRatePerkg,
-        wastageFactor,
-        plateRate,
-        printingRate,
+        debouncedPaperRatePerkg,
+        debouncedWastageFactor,
+        debouncedPlateRate,
+        debouncedPrintingRate,
         coverPrintingType,
       )
       setCoverCostDataTable(fetchCoverCostDataTable)
@@ -150,10 +149,10 @@ export default function CoverCalculation(props: {
     effectiveCoverWidth,
     grippers,
     selectedPaper,
-    paperRatePerkg,
-    wastageFactor,
-    plateRate,
-    printingRate,
+    debouncedPaperRatePerkg,
+    debouncedWastageFactor,
+    debouncedPlateRate,
+    debouncedPrintingRate,
     coverPrintingType,
     props.variationData,
     props.form,
@@ -199,7 +198,7 @@ export default function CoverCalculation(props: {
                 </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Pages/Ups</span>
+                <span className="text-muted-foreground">Pages</span>
                 <span>{props.variationData?.coverPages} </span>
               </li>
               <li className="flex items-center justify-between text-right">
@@ -259,11 +258,11 @@ export default function CoverCalculation(props: {
           <div className="flex w-full flex-row gap-x-2">
             <ul className="flex flex-row gap-x-2 text-xs">
               <li>
-                Effective Cover Length: {effectiveCoverLength}(mm) /{' '}
+                Effective Open Length: {effectiveCoverLength}(mm) /{' '}
                 {(effectiveCoverLength / 25.4).toFixed(2)}(in)
               </li>
               <li>
-                Effective Cover Width: {effectiveCoverWidth}(mm) /{' '}
+                Effective Open Width: {effectiveCoverWidth}(mm) /{' '}
                 {(effectiveCoverWidth / 25.4).toFixed(2)}(in)
               </li>
               <li>
@@ -313,7 +312,10 @@ export default function CoverCalculation(props: {
                     </FormItem>
                     <FormItem className="flex items-center gap-x-1 ">
                       <FormControl>
-                        <RadioGroupItem value="singleSide" />
+                        <RadioGroupItem
+                          disabled={props.variationData.coverBackColors !== 0}
+                          value="singleSide"
+                        />
                       </FormControl>
                       <FormLabel className="font-normal">Single Side</FormLabel>
                     </FormItem>
@@ -405,18 +407,7 @@ export default function CoverCalculation(props: {
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={props.form.control}
-            name="coverWastageFactor"
-            render={({ field }) => (
-              <FormItem className=" w-fit">
-                <FormLabel>Cover Wastage Factor</FormLabel>
-                <FormControl>
-                  <Input type="float" {...field}></Input>
-                </FormControl>
-              </FormItem>
-            )}
-          /> */}
+
           <FormField
             control={props.form.control}
             name="coverWastageFactor"
@@ -432,7 +423,7 @@ export default function CoverCalculation(props: {
                     max={2.0}
                     step={0.01}
                     defaultValue={[value]}
-                    onValueCommit={onChange}
+                    onValueChange={onChange}
                     name="coverWastageFactor"
                   />
                 </FormControl>
@@ -452,8 +443,17 @@ export default function CoverCalculation(props: {
                 <span>{coverCostDataTable?.coverPiecesPerSheet}</span>
               </li>
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Cover Ups/Sheet</span>
-                <span>{coverCostDataTable?.coverUpsPerSheet}</span>
+                <span className="text-muted-foreground">Pages/Sheet</span>
+                <span>{coverCostDataTable?.pagesPerSheet}</span>
+              </li>
+
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Cover Forms</span>
+                <span>{coverCostDataTable?.forms}</span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Total Sets</span>
+                <span>{coverCostDataTable?.totalSets}</span>
               </li>
               <li
                 className={cn('flex items-center justify-between border-b-2', {
@@ -545,125 +545,6 @@ export default function CoverCalculation(props: {
           })}
         </TableBody>
       </Table>
-
-      {/* <div className="flex w-full flex-col gap-x-2  p-2 sm:flex-row">
-        <div className="flex flex-col justify-start gap-y-2">
-          <div className="h-full min-h-48 ">
-            <div className="flex flex-row items-center justify-between px-2 py-2">
-              <h1 className="text-center text-base underline">
-                Paper, Plates and Printing Rate Table
-              </h1>
-            </div>
-            <Separator />
-            <div className="flex px-2 py-1">
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Quantity</p>
-              </div>
-
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Calculated Sheets</p>
-              </div>
-
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Wastage Sheets</p>
-              </div>
-
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Total Sheets</p>
-              </div>
-
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Paper Weight</p>
-              </div>
-
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Paper Cost</p>
-              </div>
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Plates Cost</p>
-              </div>
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Printing Cost</p>
-              </div>
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Total Cost</p>
-              </div>
-
-              <div className="flex flex-1 flex-col border-b text-sm">
-                <p className="text-center">Total Cost/Piece</p>
-              </div>
-            </div>
-
-            <ul className="">
-              {coverCostDataTable?.coverCostDataDict.map((item, index) => (
-                <li key={item.quantity}>
-                  <div className="flex flex-row px-2 py-1 ">
-                    <Input
-                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                      readOnly
-                      value={item.quantity}
-                      {...register(
-                        `coverSheetsDataTable.${index}.quantity`,
-                        {},
-                      )}
-                    />
-                    <Input
-                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                      readOnly
-                      value={item.requiredSheets}
-                      {...register(
-                        `coverSheetsDataTable.${index}.requiredSheets`,
-                        {},
-                      )}
-                    />
-                    <Input
-                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                      value={item.totalWastage}
-                      {...register(
-                        `coverSheetsDataTable.${index}.totalWastage`,
-                        {},
-                      )}
-                    />
-                    <Input
-                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                      value={item.totalRequiredSheets}
-                      {...register(
-                        `coverSheetsDataTable.${index}.totalRequiredSheets`,
-                        {},
-                      )}
-                    />
-                    <Input
-                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                      value={`${item.totalWeight} kg`}
-                      {...register(
-                        `coverSheetsDataTable.${index}.totalWeight`,
-                        {},
-                      )}
-                    />
-                    <Input
-                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                      value={`${item.totalCost} ₹`}
-                      {...register(
-                        `coverSheetsDataTable.${index}.totalCost`,
-                        {},
-                      )}
-                    />
-                    <Input
-                      className=" border-none text-center shadow-none ring-0 focus-visible:ring-0"
-                      value={`${item.costPerPiece} ₹`}
-                      {...register(
-                        `coverSheetsDataTable.${index}.costPerPiece`,
-                        {},
-                      )}
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        
-      </div> */}
 
       <Separator />
     </>

@@ -26,8 +26,9 @@ import { cn } from '@/lib/utils'
 import { CheckIcon } from 'lucide-react'
 import React from 'react'
 import { ChangeEvent, useState } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 
-export default function Size(props: { control: any; form: any }) {
+export default function Size(props: { control: any; form: UseFormReturn }) {
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
 

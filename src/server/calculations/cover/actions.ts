@@ -32,7 +32,7 @@ export async function calculateTotalCoverCostData(
   } else {
     const {
       coverPiecesPerSheet,
-      coverUpsPerSheet,
+      coverUpsPerSheet: pagesPerSheet,
       piecesPositions,
       percentageSheetUsed,
     } = await calculateCoverSheetsAndUps(
@@ -45,10 +45,17 @@ export async function calculateTotalCoverCostData(
 
     const requiredSheetsData = await calculateRequiredSheets(
       variationData,
-      coverUpsPerSheet,
+      pagesPerSheet,
       upsPerCoverPiece,
       wastageFactor,
     )
+
+    const forms = calculateCoverForms(
+      pagesPerSheet,
+      upsPerCoverPiece,
+      coverPiecesPerSheet,
+    )
+    const totalSets = calculateTotalSets(forms, coverPrintingType)
 
     const frontColors = variationData.coverFrontColors || 0
     const backColors = variationData.coverBackColors || 0
@@ -86,8 +93,8 @@ export async function calculateTotalCoverCostData(
 
       return {
         quantity: qty.quantity,
-        calculatedSheets: qty.requiredSheets,
-        wastageSheets: qty.totalWastage,
+        calculatedSheets: Number(qty.requiredSheets.toFixed(0)),
+        wastageSheets: Number(qty.totalWastage.toFixed(0)),
         totalSheets: Number(qty.totalRequiredSheets.toFixed(0)),
         paperWeight: Number(weight.toFixed(3)),
         paperCost: Number(paperCost.toFixed(2)),
@@ -101,12 +108,30 @@ export async function calculateTotalCoverCostData(
 
     return {
       coverPiecesPerSheet,
-      coverUpsPerSheet,
+      pagesPerSheet,
       piecesPositions,
       percentageSheetUsed,
+      forms,
+      totalSets,
       coverCostDataDict: allCoverCostDetails,
     }
   }
+}
+
+function calculateTotalSets(forms: number, coverPrintingType: string) {
+  if (coverPrintingType === 'frontBack') {
+    return forms * 2
+  } else {
+    return forms
+  }
+}
+
+function calculateCoverForms(
+  upsPerSheet: number,
+  pagesPerCover: number,
+  coverPiecesPerSheet: number,
+) {
+  return pagesPerCover / (upsPerSheet / coverPiecesPerSheet)
 }
 
 function calculatePlatesCost(
@@ -168,8 +193,8 @@ function calculateLaminationCost(
   qtySheets: number,
   paperData: PaperData,
 ) {
-  const paperLengthInmm = paperData.paperLength / 10
-  const paperWidthInmm = paperData.paperWidth / 10
+  const paperLengthInmm = paperData.paperLength
+  const paperWidthInmm = paperData.paperWidth
   const laminationRate = laminations.find(
     (lam) => lam.label === variationData.coverLamination,
   )?.rate!
@@ -177,7 +202,8 @@ function calculateLaminationCost(
   if (laminationRate !== 0) {
     const laminationCost = (
       (paperLengthInmm * paperWidthInmm * qtySheets) /
-      laminationRate
+      laminationRate /
+      100
     ).toFixed(2)
     return Number(laminationCost)
   } else {

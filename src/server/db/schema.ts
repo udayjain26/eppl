@@ -360,7 +360,7 @@ export const variationCalculation = createTable('variation_calculation', {
   coverBleed: numeric('cover_bleed', { precision: 7, scale: 2 }),
   coverGrippers: numeric('cover_grippers', { precision: 7, scale: 2 }),
   coverPaper: varchar('cover_paper', { length: 256 }),
-  coverPaperRate: numeric('paper_rate', { precision: 7, scale: 2 }),
+  coverPaperRate: numeric('cover_paper_rate', { precision: 7, scale: 2 }),
   coverWastageFactor: numeric('cover_wastage_factor', {
     precision: 7,
     scale: 2,
@@ -368,6 +368,17 @@ export const variationCalculation = createTable('variation_calculation', {
   coverPlateRate: numeric('cover_plate_rate', { precision: 7, scale: 2 }),
   coverPrintingRate: numeric('cover_printing_rate', { precision: 7, scale: 2 }),
   coverPrintingType: varchar('cover_printing_type', { length: 256 }),
+  textGutters: numeric('text_gutters', { precision: 7, scale: 2 }),
+  textBleed: numeric('text_bleed', { precision: 7, scale: 2 }),
+  textGrippers: numeric('text_grippers', { precision: 7, scale: 2 }),
+  textPaper: varchar('text_paper', { length: 256 }),
+  textPaperRate: numeric('text_paper_rate', { precision: 7, scale: 2 }),
+  textWastageFactor: numeric('text_wastage_factor', {
+    precision: 7,
+    scale: 2,
+  }),
+  textPlateRate: numeric('text_plate_rate', { precision: 7, scale: 2 }),
+  textPrintingRate: numeric('text_printing_rate', { precision: 7, scale: 2 }),
 })
 
 // export const coverSheetsDataTable = createTable('cover_sheets_data_table', {

@@ -32,18 +32,16 @@ import { set } from 'date-fns'
 import { CheckIcon } from 'lucide-react'
 import React from 'react'
 import { ChangeEvent, useState } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 
 export default function Cover(props: {
   control: any
-  form: any
+  form: UseFormReturn
   paperData: PaperData[]
 }) {
   const [openLamination, setOpenLamination] = React.useState(false)
-  const [openPaper, setOpenPaper] = React.useState(false)
-  const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
-  const [openPaperType, setOpenPaperType] = React.useState(false)
 
-  const [openPaperFinish, setOpenPaperFinish] = React.useState(false)
+  const [openPaperType, setOpenPaperType] = React.useState(false)
 
   return (
     <div className="flex  flex-col pt-4">
@@ -166,24 +164,6 @@ export default function Cover(props: {
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={props.form.control}
-            name="coverBothSideLamination"
-            render={({ field }) => (
-              <FormItem className="mt-1 flex flex-row items-start gap-x-2 rounded-md border p-2 ">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    {...field}
-                  />
-                </FormControl>
-                <div className="gap-y-1 leading-none">
-                  <FormLabel>Both Side Lamination</FormLabel>
-                </div>
-              </FormItem>
-            )}
-          /> */}
         </div>
       </div>
       <div className="flex flex-row gap-x-1">
@@ -266,156 +246,6 @@ export default function Cover(props: {
             </FormItem>
           )}
         />
-        {/* <FormField
-          control={props.control}
-          name="coverPaperFinish"
-          render={({ field }) => (
-            <FormItem
-              className="flex flex-col 
-           gap-y-1 pt-[6px]"
-            >
-              <FormLabel>Cover Paper Finish</FormLabel>
-
-              <Popover open={openPaperFinish} onOpenChange={setOpenPaperFinish}>
-                <PopoverTrigger className="" asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openPaperFinish}
-                    className="w-48 justify-between"
-                  >
-                    <input
-                      type="hidden"
-                      {...field}
-                      value={field.value ? field.value : ''}
-                    />
-                    {field.value
-                      ? paperFinishes.find((type) => type.label === field.value)
-                          ?.label
-                      : 'Select paper finish...'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-48 p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Search paper finish..."
-                      className="h-10"
-                    />
-                    <CommandEmpty>No finish found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandList>
-                        {paperFinishes.map((type) => (
-                          <CommandItem
-                            key={type.label}
-                            value={type.label}
-                            onSelect={() => {
-                              props.form.setValue(
-                                'coverPaperFinish',
-                                type.label,
-                              )
-
-                              setOpenPaperType(false)
-                            }}
-                          >
-                            {type.label}
-                            <CheckIcon
-                              className={cn(
-                                'ml-auto h-4 w-4',
-                                field.value === type.label
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandList>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </FormItem>
-          )}
-        /> */}
-
-        {/* <FormField
-          control={props.control}
-          name="coverPaper"
-          render={({ field }) => (
-            <FormItem
-              className="flex w-full 
-           flex-col gap-y-1 pt-[6px]"
-            >
-              <FormLabel>Cover Paper</FormLabel>
-
-              <Popover open={openPaper} onOpenChange={setOpenPaper}>
-                <PopoverTrigger className="w-full" asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openPaper}
-                    className="w-full justify-between"
-                  >
-                    <input
-                      type="hidden"
-                      {...field}
-                      value={field.value ? field.value : ''}
-                    />
-                    {field.value
-                      ? props.paperData.find(
-                          (paper) => paper.paperName === field.value,
-                        )?.paperName
-                      : 'Select paper...'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className=" p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Search paper..."
-                      className="h-10"
-                    />
-                    <CommandEmpty>No paper found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandList className="w-full">
-                        {props.paperData.map((paper) => (
-                          <CommandItem
-                            key={paper.paperName}
-                            value={paper.paperName}
-                            onSelect={() => {
-                              props.form.setValue('coverPaper', paper.paperName)
-                              setSelectedPaper(paper)
-
-                              setOpenPaper(false)
-                            }}
-                          >
-                            {paper.paperName}
-                            <CheckIcon
-                              className={cn(
-                                'ml-auto h-4 w-4',
-                                field.value === paper.paperName
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandList>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <div>
-                {selectedPaper && (
-                  <div className="flex flex-row gap-x-2 text-xs">
-                    <p>Weight: {selectedPaper.paperGrammage} gsm</p>
-                    <p>Make: {selectedPaper.paperMake}</p>
-                    <p>Type: {selectedPaper.paperType}</p>
-                    <p>Finish: {selectedPaper.paperFinish}</p>
-                  </div>
-                )}
-              </div>
-            </FormItem>
-          )}
-        /> */}
       </div>
       <MySep />
     </div>

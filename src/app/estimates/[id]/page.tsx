@@ -41,30 +41,28 @@ export default async function FullEstimatePage({
   return (
     <PageWrapper>
       <div className="flex flex-col overflow-y-auto sm:flex-row">
-        <div className="flex h-full max-h-[97%] min-w-[20%] flex-col sm:max-w-[20%]">
-          <div className=" flex grow justify-start gap-x-1 ">
-            <div className="flex h-8 flex-col justify-center ">
+        <div className="flex h-full max-h-[97%] min-w-[20%] flex-col gap-y-2 sm:max-w-[20%]">
+          <div className=" flex  justify-start gap-x-1 ">
+            <div className="flex h-8 flex-col justify-start ">
               {' '}
               <Link href={'/estimates'}>
                 <p className="  text-base">Estimates</p>
               </Link>
             </div>
             <div>
-              <div className="flex h-8 flex-col justify-center">
-                <ChevronRight className="" size={20} strokeWidth="1" />
+              <div className="flex h-8 flex-col justify-start">
+                <ChevronRight className="" size={24} strokeWidth="1" />
               </div>
             </div>
-            <div className="flex h-fit flex-col justify-center  ">
+            <div className="flex h-16 w-44 flex-col justify-start overflow-hidden text-ellipsis  ">
               {' '}
-              <Link href={`/estimates/${estimateData.uuid}`}>
-                <p className="overflow-hidden text-ellipsis text-base">
-                  {estimateData.estimateTitle}
-                </p>
+              <Link className="" href={`/estimates/${estimateData.uuid}`}>
+                <p className="">{estimateData.estimateTitle}</p>
               </Link>
             </div>
           </div>
 
-          <Tabs defaultValue="estimate" className=" h-full flex-col px-1 pt-5">
+          <Tabs defaultValue="estimate" className=" h-full flex-col px-1">
             <TabsList className="flex flex-row justify-start overflow-x-auto ">
               <TabsTrigger className="min-w-fit" value="estimate">
                 Estimate Details

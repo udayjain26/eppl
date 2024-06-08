@@ -31,7 +31,7 @@ function SaveButton() {
 
 const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   coverCalculation: CoverCalculation,
-  // textCalculation: TextCalculation,
+  textCalculation: TextCalculation,
 }
 
 export default function CalculationFields(props: {
@@ -79,6 +79,22 @@ export default function CalculationFields(props: {
         coverPrintingType: data?.coverPrintingType
           ? data.coverPrintingType
           : 'frontBack',
+        textGutters: data?.textGutters ? data.textGutters.toString() : '0',
+        textBleed: data?.textBleed ? data.textBleed.toString() : '3',
+        textGrippers: data?.textGrippers ? data.textGrippers.toString() : '10',
+        textPaper: data?.textPaper,
+        textPaperRate: data?.textPaperRate
+          ? data.textPaperRate.toString()
+          : '90',
+        textWastageFactor: data?.textWastageFactor
+          ? data.textWastageFactor.toString()
+          : '1',
+        textPlateRate: data?.textPlateRate
+          ? data.textPlateRate.toString()
+          : '300',
+        textPrintingRate: data?.textPrintingRate
+          ? data.textPrintingRate.toString()
+          : '150',
       })
     }
     fetchCalculationData()

@@ -57,7 +57,7 @@ export default function MainView(props: {
   }
 
   return (
-    <div className="flex h-full w-full flex-col gap-y-2 rounded-xl">
+    <div className="flex h-full w-full flex-col gap-y-4 rounded-xl">
       <div className="flex flex-row justify-between gap-x-2 p-1">
         {selectedView === 'specifications' ? (
           <div className="flex flex-col justify-center">

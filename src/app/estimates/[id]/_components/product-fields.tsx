@@ -4,6 +4,10 @@ import Text from './specification-components/text'
 import OpenSize from './specification-components/open-size'
 import Size from './specification-components/size'
 import { productFieldMap } from './constants'
+import { UseFormReturn } from 'react-hook-form'
+import Fabrication from './specification-components/fabrication'
+import Packaging from './specification-components/packaging'
+import Dispatch from './specification-components/dispatch'
 
 const specificationComponentMap: { [key: string]: React.ComponentType<any> } = {
   size: Size,
@@ -11,11 +15,14 @@ const specificationComponentMap: { [key: string]: React.ComponentType<any> } = {
   openSize: OpenSize,
   cover: Cover,
   text: Text,
+  fabrication: Fabrication,
+  packaging: Packaging,
+  dispatch: Dispatch,
 }
 
 export default function ProductFields(props: {
   control: any
-  form: any
+  form: UseFormReturn<any>
   product: string
 }) {
   const fields = productFieldMap[props.product]['specificationComponents'] || []

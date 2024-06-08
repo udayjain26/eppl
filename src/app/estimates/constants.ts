@@ -53,8 +53,14 @@ export const laminations = [
     rate: 161,
   },
   {
-    label: 'Single Side Normal Velvet',
-    value: 'single_side_normal_velvet',
+    label: 'Single Side Thermal Velvet',
+    value: 'single_side_thermal_velvet',
+    rate: 323,
+  },
+
+  {
+    label: 'Single Side Thermal Metallic',
+    value: 'single_side_normal_metallic',
     rate: 323,
   },
 

@@ -31,10 +31,11 @@ import { set } from 'date-fns'
 import { CheckIcon } from 'lucide-react'
 import React from 'react'
 import { ChangeEvent, useState } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 
 export default function Text(props: {
   control: any
-  form: any
+  form: UseFormReturn
   paperData: PaperData[]
 }) {
   const [openLamination, setOpenLamination] = React.useState(false)
@@ -231,85 +232,6 @@ export default function Text(props: {
             </FormItem>
           )}
         />
-        {/* <FormField
-          control={props.control}
-          name="textPaper"
-          render={({ field }) => (
-            <FormItem
-              className="flex w-full 
-           flex-col gap-y-1 pt-[6px]"
-            >
-              <FormLabel>Text Paper</FormLabel>
-
-              <Popover open={openPaper} onOpenChange={setOpenPaper}>
-                <PopoverTrigger className="w-full" asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openPaper}
-                    className="w-full justify-between"
-                  >
-                    <input
-                      type="hidden"
-                      {...field}
-                      value={field.value ? field.value : ''}
-                    />
-                    {field.value
-                      ? props.paperData.find(
-                          (paper) => paper.paperName === field.value,
-                        )?.paperName
-                      : 'Select paper...'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className=" p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Search paper..."
-                      className="h-10"
-                    />
-                    <CommandEmpty>No paper found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandList className="w-full">
-                        {props.paperData.map((paper) => (
-                          <CommandItem
-                            key={paper.paperName}
-                            value={paper.paperName}
-                            onSelect={() => {
-                              props.form.setValue('textPaper', paper.paperName)
-                              setSelectedPaper(paper)
-
-                              setOpenPaper(false)
-                            }}
-                          >
-                            {paper.paperName}
-                            <CheckIcon
-                              className={cn(
-                                'ml-auto h-4 w-4',
-                                field.value === paper.paperName
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandList>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <div>
-                {selectedPaper && (
-                  <div className="flex flex-row gap-x-2 text-xs">
-                    <p>Weight: {selectedPaper.paperGrammage} gsm</p>
-                    <p>Make: {selectedPaper.paperMake}</p>
-                    <p>Type: {selectedPaper.paperType}</p>
-                    <p>Finish: {selectedPaper.paperFinish}</p>
-                  </div>
-                )}
-              </div>
-            </FormItem>
-          )}
-        /> */}
       </div>
       <MySep />
     </div>
