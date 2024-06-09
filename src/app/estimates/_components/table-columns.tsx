@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
-import { estimateStageColors, estimateStatusColors } from './constants'
+import { estimateStageColors } from './constants'
 
 export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
   {
@@ -188,11 +188,7 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     header: ({ column }) => columnHeader(column, 'Status'),
     meta: { columnName: 'Status' },
     cell: ({ row }) => {
-      return (
-        <div className={estimateStatusColors(row.original.estimateStatus)}>
-          {row.original.estimateStatus}
-        </div>
-      )
+      return <div className="">{row.original.estimateStatus}</div>
     },
   },
   {

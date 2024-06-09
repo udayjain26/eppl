@@ -1,7 +1,7 @@
 'use server'
 
 import { TextCostData } from '@/app/estimates/[id]/_components/calculation-components/text-calculation'
-import { laminations } from '@/app/estimates/constants'
+import { laminations } from '@/app/settings/constants'
 import { PaperData } from '@/server/paper/types'
 import { VariationData } from '@/server/variations/types'
 import { text } from 'stream/consumers'

@@ -1,5 +1,5 @@
 import MySep from '@/app/_components/custom-sep'
-import { commonSizes } from '@/app/estimates/constants'
+import { commonSizes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -24,7 +24,6 @@ import {
 import { cn } from '@/lib/utils'
 import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
-import { ChangeEvent, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 export default function Fabrication(props: {

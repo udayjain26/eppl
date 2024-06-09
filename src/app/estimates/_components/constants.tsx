@@ -14,7 +14,3 @@ export function estimateStageColors(stage: string) {
     },
   )
 }
-
-export function estimateStatusColors(status: string) {
-  return cn(' text-sm')
-}

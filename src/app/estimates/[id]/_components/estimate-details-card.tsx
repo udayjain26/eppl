@@ -12,10 +12,7 @@ import { CardDescription, CardFooter } from '@/components/ui/card'
 
 import { Separator } from '@/components/ui/separator'
 import { formatDistanceToNowStrict } from 'date-fns'
-import {
-  estimateStageColors,
-  estimateStatusColors,
-} from '../../_components/constants'
+import { estimateStageColors } from '../../_components/constants'
 import EstimateDetailsCardActions from './estimate-details-card-actions'
 
 export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
@@ -32,13 +29,7 @@ export function EstimateDetailsCard(props: { estimateData: EstimateTableRow }) {
             {props.estimateData.estimateNumber.toString().padStart(6, '0')}
             <span>
               {' '}
-              <div
-                className={estimateStatusColors(
-                  props.estimateData.estimateStatus,
-                )}
-              >
-                {props.estimateData.estimateStatus}
-              </div>
+              <div className="text-sm">{props.estimateData.estimateStatus}</div>
             </span>
           </CardTitle>
           <CardDescription>

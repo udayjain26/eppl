@@ -3,7 +3,7 @@
 import { CoverCostData } from '@/app/estimates/[id]/_components/calculation-components/cover-calculation'
 import { PaperData } from '../../paper/types'
 import { VariationData } from '../../variations/types'
-import { laminations } from '@/app/estimates/constants'
+import { laminations } from '@/app/settings/constants'
 
 export async function calculateTotalCoverCostData(
   variationData?: VariationData,
@@ -304,7 +304,7 @@ export async function calculateCoverSheetsAndUps(
 
   percentageSheetUsed =
     ((coverPiecesPerSheet * effectiveCoverLength * effectiveCoverWidth) /
-      (paperLength * paperWidth)) *
+      (paperData.paperLength * paperData.paperWidth)) *
     100
 
   return {

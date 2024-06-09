@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/command'
 import { CheckIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { paperFinishes, paperMakes, paperTypes } from '../constants'
+import { paperFinishes, paperMakes, paperTypes } from '../paper-constants'
 import { set } from 'date-fns'
 import { Sub } from '@radix-ui/react-dropdown-menu'
 import FormError from '@/app/_components/form-error'
@@ -64,10 +64,7 @@ function CancelButton({ closeDialog }: { closeDialog: () => void }) {
   )
 }
 
-export default function CreatePaperForm(props: {
-  closeDialog: () => void
-  estimateUuid: string
-}) {
+export default function CreatePaperForm(props: { closeDialog: () => void }) {
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
   const [state, formAction] = useFormState(createPaper, initialState)

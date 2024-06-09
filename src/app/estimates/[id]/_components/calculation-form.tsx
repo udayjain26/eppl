@@ -12,7 +12,7 @@ import {
 } from '@/server/calculations/types'
 import saveCalculationData from '@/server/calculations/actions'
 import { CalculationFormSchema } from '@/schemas/calculation-form-schema'
-import { productFieldMap } from './constants'
+import { productFieldMap } from '../../../settings/product-constants'
 import CoverCalculation from './calculation-components/cover-calculation'
 import TextCalculation from './calculation-components/text-calculation'
 import { VariationData } from '@/server/variations/types'

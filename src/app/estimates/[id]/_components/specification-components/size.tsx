@@ -1,6 +1,6 @@
 import MySep from '@/app/_components/custom-sep'
 import FormError from '@/app/_components/form-error'
-import { commonSizes } from '@/app/estimates/constants'
+import { commonSizes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -132,7 +132,6 @@ export default function Size(props: { control: any; form: UseFormReturn }) {
                                 setLengthInInches,
                                 setWidthInInches,
                               )
-
                               setOpen(false)
                             }}
                           >

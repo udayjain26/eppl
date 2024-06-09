@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import PageWrapper from '../_components/page-wrapper'
-import CreatePaperSheet from './_components/create-paper-sheet'
 
 export default function Page() {
   return (
@@ -13,10 +12,7 @@ export default function Page() {
           </Link>
         </div>
         <div className="flex max-h-[90%] flex-col">
-          <div className=" flex flex-row pt-2">
-            {' '}
-            {/* <CreatePaperSheet /> */}
-          </div>
+          <div className=" flex flex-row pt-2"> </div>
         </div>
       </div>
     </PageWrapper>

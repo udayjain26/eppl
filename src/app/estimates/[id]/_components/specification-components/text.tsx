@@ -1,8 +1,8 @@
 'use client'
 
 import MySep from '@/app/_components/custom-sep'
-import { commonSizes, laminations } from '@/app/estimates/constants'
-import { paperTypes } from '@/app/settings/constants'
+import { laminations } from '@/app/settings/constants'
+import { paperTypes } from '@/app/settings/paper-constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
