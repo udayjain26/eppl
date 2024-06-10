@@ -398,7 +398,7 @@ export default function CoverCalculation(props: {
                       <p>L(mm): {selectedPaper.paperLength}</p>
                       <p>W(mm): {selectedPaper.paperWidth}</p>
                       <p>Weight: {selectedPaper.paperGrammage} gsm</p>
-                      <p>Make: {selectedPaper.paperMake}</p>
+                      <p>Make: {selectedPaper.paperMill}</p>
                       <p>Type: {selectedPaper.paperType}</p>
                       <p>Finish: {selectedPaper.paperFinish}</p>
                     </div>
@@ -408,28 +408,66 @@ export default function CoverCalculation(props: {
             )}
           />
 
-          <FormField
-            control={props.form.control}
-            name="coverWastageFactor"
-            render={({ field: { value, onChange } }) => (
-              <FormItem className="w-2/5">
-                <FormLabel>
-                  Cover Wastage Factor: {(value * 100).toFixed(2)}%
-                </FormLabel>
-                <FormControl>
-                  <Slider
-                    className="mt-2"
-                    min={0.01}
-                    max={2.0}
-                    step={0.01}
-                    defaultValue={[value]}
-                    onValueChange={onChange}
-                    name="coverWastageFactor"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-row gap-x-2">
+            <FormField
+              control={props.form.control}
+              name="coverWastageFactor"
+              render={({ field: { value, onChange } }) => (
+                <FormItem className="w-2/5">
+                  <FormLabel>
+                    Cover Wastage Factor: {(value * 100).toFixed(2)}%
+                  </FormLabel>
+                  <FormControl>
+                    <Slider
+                      className="mt-2"
+                      min={0.01}
+                      max={2.0}
+                      step={0.01}
+                      defaultValue={[value]}
+                      onValueChange={onChange}
+                      name="coverWastageFactor"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverWorkingLength"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Working Length(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverWorkingWidth"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Working Width(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverWorkingSheetUps"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Calculated Working Sheet Ups</FormLabel>
+                  <FormControl>
+                    <Input readOnly={true} {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
         <div className="flex w-full max-w-[12rem] flex-col ">
           <h1 className="underline">Calculated</h1>

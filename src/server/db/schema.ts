@@ -333,7 +333,7 @@ export const estimatesRelations = relations(estimates, ({ one, many }) => ({
 
 export const paperMaster = createTable('paper_master', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
-  paperName: varchar('paper_type_name', { length: 256 }).notNull().unique(),
+  paperName: varchar('paper_name', { length: 256 }).notNull().unique(),
   paperLength: numeric('paper_length', { precision: 7, scale: 2 }).notNull(),
   paperWidth: numeric('paper_width', { precision: 7, scale: 2 }).notNull(),
   paperGrammage: numeric('paper_grammage', {
@@ -342,11 +342,13 @@ export const paperMaster = createTable('paper_master', {
   }).notNull(),
   paperFinish: varchar('paper_finish', { length: 256 }).notNull(),
   paperType: varchar('paper_type', { length: 256 }).notNull(),
-  paperMake: varchar('paper_make', { length: 256 }).notNull(),
+  paperMill: varchar('paper_mill', { length: 256 }).notNull(),
+  paperQuality: varchar('paper_quality', { length: 256 }).notNull(),
   paperDefaultRate: numeric('paper_default_rate', {
     precision: 7,
     scale: 2,
   }).notNull(),
+  paperRemarks: text('paper_remarks'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }).notNull(),
 })

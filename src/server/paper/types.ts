@@ -6,8 +6,10 @@ export type PaperData = {
   paperGrammage: number
   paperFinish: string
   paperType: string
-  paperMake: string
+  paperMill: string
+  paperQuality: string
   paperDefaultRate: number
+  paperRemarks: string
   createdAt: Date
   createdBy: string
 }

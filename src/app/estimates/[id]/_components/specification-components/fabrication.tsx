@@ -1,5 +1,5 @@
 import MySep from '@/app/_components/custom-sep'
-import { commonSizes } from '@/app/settings/constants'
+import { paperbackBindingTypes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -38,13 +38,13 @@ export default function Fabrication(props: {
       <div className="flex h-20 flex-row gap-x-1">
         <FormField
           control={props.control}
-          name="fabricationType"
+          name="paperbackBookBinding"
           render={({ field }) => (
             <FormItem
               className="flex flex-col
            gap-y-1 pt-[6px]"
             >
-              <FormLabel>Book Binding</FormLabel>
+              <FormLabel>Paperback Book Binding</FormLabel>
 
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger className="" asChild>
@@ -60,8 +60,9 @@ export default function Fabrication(props: {
                       value={field.value ? field.value : ''}
                     />
                     {field.value
-                      ? commonSizes.find((size) => size.label === field.value)
-                          ?.label
+                      ? paperbackBindingTypes.find(
+                          (size) => size.label === field.value,
+                        )?.label
                       : 'Select'}
                   </Button>
                 </PopoverTrigger>
@@ -74,12 +75,15 @@ export default function Fabrication(props: {
                     <CommandEmpty>No size found.</CommandEmpty>
                     <CommandGroup>
                       <CommandList>
-                        {commonSizes.map((size) => (
+                        {paperbackBindingTypes.map((size) => (
                           <CommandItem
                             key={size.label}
                             value={size.label}
                             onSelect={() => {
-                              props.form.setValue('openSizeName', size.label)
+                              props.form.setValue(
+                                'paperbackBookBinding',
+                                size.label,
+                              )
 
                               setOpen(false)
                             }}

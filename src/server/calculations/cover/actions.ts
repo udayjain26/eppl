@@ -193,17 +193,18 @@ function calculateLaminationCost(
   qtySheets: number,
   paperData: PaperData,
 ) {
-  const paperLengthInmm = paperData.paperLength
-  const paperWidthInmm = paperData.paperWidth
+  const paperLengthInM = paperData.paperLength / 1000
+  const paperWidthInM = paperData.paperWidth / 1000
   const laminationRate = laminations.find(
     (lam) => lam.label === variationData.coverLamination,
   )?.rate!
 
   if (laminationRate !== 0) {
     const laminationCost = (
-      (paperLengthInmm * paperWidthInmm * qtySheets) /
-      laminationRate /
-      100
+      paperLengthInM *
+      paperWidthInM *
+      qtySheets *
+      laminationRate
     ).toFixed(2)
     return Number(laminationCost)
   } else {

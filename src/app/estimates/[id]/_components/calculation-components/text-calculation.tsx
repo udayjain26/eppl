@@ -318,7 +318,7 @@ export default function TextCalculation(props: {
                       <p>L(mm): {selectedPaper.paperLength}</p>
                       <p>W(mm): {selectedPaper.paperWidth}</p>
                       <p>Weight: {selectedPaper.paperGrammage} gsm</p>
-                      <p>Make: {selectedPaper.paperMake}</p>
+                      <p>Make: {selectedPaper.paperMill}</p>
                       <p>Type: {selectedPaper.paperType}</p>
                       <p>Finish: {selectedPaper.paperFinish}</p>
                     </div>

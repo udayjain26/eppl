@@ -64,6 +64,7 @@ export async function calculateTextCost(
       jobQuantity,
       wastageFactor,
       totalSetsUsed,
+      textColors,
     )
     const totalSheets = calculatedSheets + wastageSheets
     const paperWeight = calculatePaperWeight(
@@ -148,9 +149,9 @@ function calculatePrintingCost(
   const printingRate = textPrintingRate / 1000
 
   if (totalSheets <= minimumSheets) {
-    return minimumSheets * printingRate * textColors
+    return minimumSheets * printingRate * textColors * 2
   } else {
-    return totalSheets * printingRate * textColors
+    return totalSheets * printingRate * textColors * 2
   }
 }
 
@@ -169,20 +170,35 @@ function getWastageSheets(
   jobQuantity: number,
   wastageFactor: number,
   totalSetsUsed: number,
+  textColors: number,
 ) {
-  if (jobQuantity <= 0) {
-    return 0
-  } else if (jobQuantity <= 2100) {
-    return totalSetsUsed * wastageFactor * 75
-  } else if (jobQuantity <= 4200) {
-    return totalSetsUsed * wastageFactor * 100
-  } else if (jobQuantity <= 8400) {
-    return totalSetsUsed * wastageFactor * 150
+  if (textColors === 1) {
+    if (jobQuantity <= 0) {
+      return 0
+    } else if (jobQuantity <= 2100) {
+      return totalSetsUsed * wastageFactor * 75
+    } else if (jobQuantity <= 4200) {
+      return totalSetsUsed * wastageFactor * 100
+    } else if (jobQuantity <= 8400) {
+      return totalSetsUsed * wastageFactor * 125
+    } else {
+      return totalSetsUsed * wastageFactor * jobQuantity * 0.015
+    }
   } else {
-    return totalSetsUsed * wastageFactor * jobQuantity * 0.025
+    if (jobQuantity <= 0) {
+      return 0
+    } else if (jobQuantity <= 2100) {
+      return totalSetsUsed * wastageFactor * 75
+    } else if (jobQuantity <= 4200) {
+      return totalSetsUsed * wastageFactor * 100
+    } else if (jobQuantity <= 8400) {
+      return totalSetsUsed * wastageFactor * 125
+    } else {
+      return totalSetsUsed * wastageFactor * jobQuantity * 0.025
+    }
   }
 }
-function calculateTotalSets(textForms: number): number {
+function calculateTotalSets(textForms: number) {
   // Calculate the number of complete forms
   const completeForms = Math.floor(textForms)
   let totalSets = completeForms * 2

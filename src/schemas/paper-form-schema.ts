@@ -13,8 +13,10 @@ export const PaperFormSchema = z.object({
     .nonnegative({ message: 'Grammage must be non-negative' }),
   paperType: z.string({ message: 'Paper finish is required!' }),
   paperFinish: z.string({ message: 'Paper finish is required!' }).trim(),
-  paperMake: z.string({ message: 'Paper finish is required!' }),
+  paperMill: z.string({ message: 'Paper finish is required!' }),
+  paperQuality: z.string({ message: 'Paper quality is required!' }),
   paperDefaultRate: z.coerce
     .number({ message: 'Rate must be a number' })
     .nonnegative({ message: 'Rate must be non-negative' }),
+  paperRemarks: z.string({ message: 'Remarks is required!' }).trim().optional(),
 })

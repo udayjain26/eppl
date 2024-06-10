@@ -31,11 +31,12 @@ import {
 } from '@/components/ui/command'
 import { CheckIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { paperFinishes, paperMakes, paperTypes } from '../paper-constants'
+import { paperFinishes, paperMills, paperTypes } from '../paper-constants'
 import { set } from 'date-fns'
 import { Sub } from '@radix-ui/react-dropdown-menu'
 import FormError from '@/app/_components/form-error'
 import { toast } from 'sonner'
+import { Textarea } from '@/components/ui/textarea'
 const initialState: PaperFormState = {
   message: null,
   errors: {},
@@ -70,7 +71,8 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
   const [state, formAction] = useFormState(createPaper, initialState)
   const [openPaperType, setOpenPaperType] = useState(false)
 
-  const [openPaperMake, setOpenPaperMake] = useState(false)
+  const [openPaperMill, setOpenPaperMill] = useState(false)
+  const [openPaperQuality, setOpenPaperQuality] = useState(false)
 
   const [openPaperFinish, setOpenPaperFinish] = useState(false)
 
@@ -85,12 +87,12 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
         widthInInches &&
         form.getValues('paperGrammage') &&
         form.getValues('paperType') &&
-        form.getValues('paperMake') &&
+        form.getValues('paperMill') &&
         form.getValues('paperFinish')
 
       // If all fields are filled, generate the paper name
       if (allFieldsFilled) {
-        const name = `${lengthInInches}x${widthInInches}/${form.getValues('paperGrammage')}gsm ${form.getValues('paperMake')} ${form.getValues('paperType')} ${form.getValues('paperFinish')}`
+        const name = `${lengthInInches}x${widthInInches}/${form.getValues('paperGrammage')}gsm ${form.getValues('paperMill')} ${form.getValues('paperQuality')} ${form.getValues('paperFinish')}`
         form.setValue('paperName', name)
       } else {
         // If any field is empty, set paperName to an empty string
@@ -103,7 +105,8 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
   }, [
     form.watch('paperGrammage'),
     form.watch('paperType'),
-    form.watch('paperMake'),
+    form.watch('paperMill'),
+    form.watch('paperQuality'),
     form.watch('paperFinish'),
     lengthInInches,
     widthInInches,
@@ -309,18 +312,18 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
 
           <FormField
             control={form.control}
-            name="paperMake"
+            name="paperMill"
             render={({ field }) => (
               <FormItem
                 className="flex w-full 
            flex-col gap-y-1 pt-[6px]"
               >
-                <FormLabel>Paper Make</FormLabel>
+                <FormLabel>Paper Mill</FormLabel>
 
                 <Popover
                   modal={true}
-                  open={openPaperMake}
-                  onOpenChange={setOpenPaperMake}
+                  open={openPaperMill}
+                  onOpenChange={setOpenPaperMill}
                 >
                   <PopoverTrigger className="w-full" asChild>
                     <Button
@@ -334,7 +337,7 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
                         value={field.value ? field.value : ''}
                       />
                       {field.value
-                        ? paperMakes.find((make) => make.label === field.value)
+                        ? paperMills.find((make) => make.label === field.value)
                             ?.label
                         : 'Select make type...'}
                     </Button>
@@ -348,13 +351,14 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
                       <CommandEmpty>No make found.</CommandEmpty>
                       <CommandGroup>
                         <CommandList>
-                          {paperMakes.map((make) => (
+                          {paperMills.map((make) => (
                             <CommandItem
                               key={make.label}
                               value={make.label}
                               onSelect={() => {
-                                form.setValue('paperMake', make.label)
-                                setOpenPaperMake(false)
+                                form.setValue('paperMill', make.label)
+                                form.setValue('paperQuality', '')
+                                setOpenPaperMill(false)
                               }}
                             >
                               {make.label}
@@ -373,7 +377,91 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
                     </Command>
                   </PopoverContent>
                 </Popover>
-                <FormError state={state} errorKey="paperMake" />
+                <FormError state={state} errorKey="paperMill" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="paperQuality"
+            render={({ field }) => (
+              <FormItem
+                className="flex w-full 
+           flex-col gap-y-1 pt-[6px]"
+              >
+                <FormLabel>Paper Quality</FormLabel>
+
+                <Popover
+                  modal={true}
+                  open={openPaperQuality}
+                  onOpenChange={setOpenPaperQuality}
+                >
+                  <PopoverTrigger className="w-full" asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="w-full justify-between"
+                    >
+                      <input
+                        type="hidden"
+                        {...field}
+                        value={field.value ? field.value : ''}
+                      />
+                      {field.value
+                        ? paperMills !== undefined
+                          ? paperMills
+                              .find(
+                                (make) =>
+                                  make.label === form.getValues('paperMill'),
+                              )
+                              ?.qualities.find(
+                                (quality) => quality === field.value,
+                              )
+                          : 'Loading'
+                        : 'Select quality type...'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search quality types..."
+                        className="h-10"
+                      />
+                      <CommandEmpty>No quality found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandList>
+                          {paperMills &&
+                            paperMills
+                              ?.find(
+                                (mill) =>
+                                  mill.label === form.getValues('paperMill'),
+                              )
+                              ?.qualities.map((quality) => (
+                                <CommandItem
+                                  key={quality}
+                                  value={quality}
+                                  onSelect={() => {
+                                    form.setValue('paperQuality', quality)
+                                    setOpenPaperQuality(false)
+                                  }}
+                                >
+                                  {quality}
+                                  <CheckIcon
+                                    className={cn(
+                                      'ml-auto h-4 w-4',
+                                      field.value === quality
+                                        ? 'opacity-100'
+                                        : 'opacity-0',
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                        </CommandList>
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FormError state={state} errorKey="paperQuality" />
               </FormItem>
             )}
           />
@@ -461,6 +549,22 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
                     placeholder="Enter values in &#x20B9;"
                     {...field}
                   />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="paperRemarks"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notes</FormLabel>
+                <FormControl>
+                  <Textarea
+                    className="min-h-32"
+                    placeholder="Remarks"
+                    {...field}
+                  ></Textarea>
                 </FormControl>
               </FormItem>
             )}

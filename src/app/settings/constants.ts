@@ -1,63 +1,65 @@
+//Lamination rates are in rupees per square meter
+
 export const laminations = [
   { label: 'None', value: 'none', rate: 0 },
   {
     label: 'Both Side Thermal Matte',
     value: 'both_side_thermal_matte',
-    rate: 484,
+    rate: 20.7,
   },
   {
     label: 'Single Side Thermal Matte',
     value: 'single_side_thermal_matte',
-    rate: 968,
+    rate: 10.35,
   },
   {
     label: 'Both Side Thermal Gloss',
     value: 'both_side_thermal_gloss',
-    rate: 645,
+    rate: 15.5,
   },
   {
     label: 'Single Side Thermal Gloss',
     value: 'single_side_thermal_gloss',
-    rate: 1290,
+    rate: 7.75,
   },
 
   {
     label: 'Both Side Normal Matte',
     value: 'both_side_normal_matte',
-    rate: 968,
+    rate: 10.35,
   },
   {
     label: 'Single Side Normal Matte',
     value: 'single_side_normal_matte',
-    rate: 1935,
+    rate: 5.2,
   },
 
   {
     label: 'Both Side Normal Gloss',
     value: 'both_side_normal_gloss',
-    rate: 1129,
+    rate: 8.9,
   },
   {
     label: 'Single Side Normal Gloss',
     value: 'single_side_normal_gloss',
-    rate: 2258,
+    rate: 4.45,
   },
 
   {
     label: 'Both Side Thermal Velvet',
     value: 'both_side_thermal_velvet',
-    rate: 161,
+    rate: 62,
   },
   {
     label: 'Single Side Thermal Velvet',
     value: 'single_side_thermal_velvet',
-    rate: 323,
+    rate: 31,
   },
 
   {
     label: 'Single Side Thermal Metallic',
-    value: 'single_side_normal_metallic',
-    rate: 323,
+    value: 'single_side_thermal_metallic',
+    rate: 31,
   },
 ]
 
@@ -148,4 +150,17 @@ export const commonSizes = [
   { label: 'Index Card Landscape', length: 76.2, width: 127 },
   { label: 'Custom Portrait', length: 0, width: 0 },
   { label: 'Custom Landscape', length: 0, width: 0 },
+]
+
+// rates are in rupees per 1000 qty per form
+
+export const paperbackBindingTypes = [
+  { label: 'Perfect', value: 'perfect_binding', rate: 200 },
+  { label: 'Sewn and Perfect', value: 'sewn_and_perfect', rate: 400 },
+]
+
+export const postpressProcesses = [
+  { label: 'None', value: 'none', rate: 0 },
+  { label: 'Folding', value: 'folding', rate: 70 },
+  { label: 'Gathering', value: 'gathering', rate: 50 },
 ]

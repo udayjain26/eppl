@@ -274,10 +274,7 @@ export default function MainView(props: {
               Please fill out the form below to add a paper to the system.
             </SheetDescription>
           </SheetHeader>
-          <CreatePaperForm
-            estimateUuid={props.estimateData.uuid}
-            closeDialog={closeDialog}
-          ></CreatePaperForm>
+          <CreatePaperForm closeDialog={closeDialog}></CreatePaperForm>
         </SheetContent>
       </Sheet>
     </div>

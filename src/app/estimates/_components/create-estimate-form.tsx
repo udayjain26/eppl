@@ -232,6 +232,7 @@ export function CreateEstimateForm({
                                 key={client.uuid}
                                 onSelect={() => {
                                   form.setValue('clientUuid', client.uuid)
+                                  form.setValue('contactUuid', '')
                                   closeClientPopover()
                                 }}
                               >
