@@ -84,6 +84,7 @@ export default function VariationForm(props: {
       textGrammage: props.variationData.textGrammage,
       textLamination: props.variationData.textLamination,
       textPaperType: props.variationData.textPaperType,
+      paperbackBookBinding: props.variationData.paperbackBookBinding,
     },
   })
 

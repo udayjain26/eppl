@@ -31,19 +31,25 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { calculateTextCost } from '@/server/calculations/text/actions'
+import {
+  PrintingForms,
+  calculateTextCost,
+} from '@/server/calculations/text/actions'
 import { PaperData } from '@/server/paper/types'
 import { VariationData } from '@/server/variations/types'
+import { set } from 'date-fns'
 import { CheckIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { text } from 'stream/consumers'
 import { useDebounce } from 'use-debounce'
 
 export type TextCostData = {
   textUpsPerSheet: number
-  textForms: number
+  textForms: PrintingForms
   totalSets: number
   paperAreaUsed: number
+
   textCostDataDict: {
     jobQuantity: number
     calculatedSheets: number
@@ -64,6 +70,36 @@ export default function TextCalculation(props: {
   paperData: PaperData[]
   form: UseFormReturn
 }) {
+  const [lengthInInches, setLengthInInches] = useState('')
+  const [widthInInches, setWidthInInches] = useState('')
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: any,
+    setInches: (value: string) => void,
+  ) => {
+    const value = e.target.value
+    const lastChar = value.charAt(value.length - 1)
+
+    if (lastChar === '"') {
+      const numericValue = parseFloat(value.slice(0, -1))
+      if (!isNaN(numericValue)) {
+        const mmValue = (numericValue * 25.4).toFixed(2) // Convert inches to mm
+        field.onChange(mmValue)
+        setInches(numericValue.toFixed(2))
+      } else {
+        field.onChange(value.slice(0, -1))
+        setInches('')
+      }
+    } else {
+      field.onChange(value)
+      const numericValue = parseFloat(value)
+      if (!isNaN(numericValue)) {
+        setInches((numericValue / 25.4).toFixed(2)) // Convert mm to inches
+      } else {
+        setInches('')
+      }
+    }
+  }
   const [openPaper, setOpenPaper] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState<PaperData | undefined>(
     undefined,
@@ -92,21 +128,45 @@ export default function TextCalculation(props: {
   const paperRatePerkg = Number(props.form.watch('textPaperRate'))
   const plateRate = Number(props.form.watch('textPlateRate'))
   const printingRate = Number(props.form.watch('textPrintingRate'))
+  const textWorkingLength = Number(props.form.watch('textWorkingLength'))
+  const textWorkingWidth = Number(props.form.watch('textWorkingWidth'))
+  const watchPaperData = props.form.watch('textPaper')
 
-  const [debouncedWastageFactor] = useDebounce(wastageFactor, 1000)
-  const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 1000)
-  const [debouncedPlateRate] = useDebounce(plateRate, 1000)
-  const [debouncedPrintingRate] = useDebounce(printingRate, 1000)
+  const [debouncedWastageFactor] = useDebounce(wastageFactor, 2000)
+  const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 2000)
+  const [debouncedPlateRate] = useDebounce(plateRate, 2000)
+  const [debouncedPrintingRate] = useDebounce(printingRate, 2000)
+  const [debouncedTextWorkingLength] = useDebounce(textWorkingLength, 2000)
+  const [debouncedTextWorkingWidth] = useDebounce(textWorkingWidth, 2000)
+
+  useEffect(() => {
+    const lengthValue = props.form.getValues('textWorkingLength')
+    const widthValue = props.form.getValues('textWorkingWidth')
+
+    if (lengthValue || lengthValue === 0) {
+      setLengthInInches((parseFloat(lengthValue) / 25.4).toFixed(2))
+    }
+    if (widthValue || widthValue === 0) {
+      setWidthInInches((parseFloat(widthValue) / 25.4).toFixed(2))
+    }
+  }, [textWorkingLength, textWorkingWidth])
 
   useEffect(() => {
     const initialPaperName = props.form.getValues('textPaper')
     const initialSelectedPaper = props.paperData.find(
       (paper) => paper.paperName === initialPaperName,
     )
+
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
+      props.form.setValue(
+        'textPaperRate',
+        initialSelectedPaper.paperDefaultRate,
+      )
+      props.form.setValue('textWorkingLength', initialSelectedPaper.paperLength)
+      props.form.setValue('textWorkingWidth', initialSelectedPaper.paperWidth)
     }
-  }, [props.form.watch('textPaper')])
+  }, [watchPaperData])
 
   useEffect(() => {
     const calculateTextCostData = async () => {
@@ -116,6 +176,8 @@ export default function TextCalculation(props: {
         effectiveTextLength,
         effectiveTextWidth,
         grippers,
+        debouncedTextWorkingLength,
+        debouncedTextWorkingWidth,
         debouncedPaperRatePerkg,
         debouncedWastageFactor,
         debouncedPlateRate,
@@ -129,6 +191,10 @@ export default function TextCalculation(props: {
     effectiveTextWidth,
     grippers,
     selectedPaper,
+    textWorkingLength,
+    textWorkingWidth,
+    debouncedTextWorkingLength,
+    debouncedTextWorkingWidth,
     debouncedPaperRatePerkg,
     debouncedWastageFactor,
     debouncedPlateRate,
@@ -283,30 +349,48 @@ export default function TextCalculation(props: {
                       <CommandEmpty>No paper found.</CommandEmpty>
                       <CommandGroup>
                         <CommandList className="w-full">
-                          {props.paperData.map((paper) => (
-                            <CommandItem
-                              key={paper.paperName}
-                              value={paper.paperName}
-                              onSelect={() => {
-                                props.form.setValue(
-                                  'textPaper',
-                                  paper.paperName,
-                                )
-                                setSelectedPaper(paper)
-                                setOpenPaper(false)
-                              }}
-                            >
-                              {paper.paperName}
-                              <CheckIcon
-                                className={cn(
-                                  'ml-auto h-4 w-4',
-                                  field.value === paper.paperName
-                                    ? 'opacity-100'
-                                    : 'opacity-0',
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
+                          {props.paperData
+                            .filter(
+                              (paper) =>
+                                paper.paperGrammage ===
+                                  props.variationData.textGrammage &&
+                                paper.paperType ===
+                                  props.variationData.textPaperType,
+                            )
+                            .map((paper) => (
+                              <CommandItem
+                                key={paper.paperName}
+                                value={paper.paperName}
+                                onSelect={() => {
+                                  console.log('triggered again')
+                                  setSelectedPaper(undefined)
+                                  props.form.setValue(
+                                    'textPaper',
+                                    paper.paperName,
+                                  )
+                                  props.form.setValue(
+                                    'textWorkingLength',
+                                    paper.paperLength,
+                                  )
+                                  props.form.setValue(
+                                    'textWorkingWidth',
+                                    paper.paperWidth,
+                                  )
+                                  setSelectedPaper(paper)
+                                  setOpenPaper(false)
+                                }}
+                              >
+                                {paper.paperName}
+                                <CheckIcon
+                                  className={cn(
+                                    'ml-auto h-4 w-4',
+                                    field.value === paper.paperName
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
                         </CommandList>
                       </CommandGroup>
                     </Command>
@@ -328,28 +412,82 @@ export default function TextCalculation(props: {
             )}
           />
 
-          <FormField
-            control={props.form.control}
-            name="textWastageFactor"
-            render={({ field: { value, onChange } }) => (
-              <FormItem className="w-2/5">
-                <FormLabel>
-                  Text Wastage Factor: {(value * 100).toFixed(2)}%
-                </FormLabel>
-                <FormControl>
-                  <Slider
-                    className="mt-2"
-                    min={0.01}
-                    max={2.0}
-                    step={0.01}
-                    defaultValue={[value]}
-                    onValueChange={onChange}
-                    name="textWastageFactor"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-row gap-x-2">
+            <FormField
+              control={props.form.control}
+              name="textWastageFactor"
+              render={({ field: { value, onChange } }) => (
+                <FormItem className="w-2/5">
+                  <FormLabel>
+                    Text Wastage Factor: {(value * 100).toFixed(2)}%
+                  </FormLabel>
+                  <FormControl>
+                    <Slider
+                      className="mt-2"
+                      min={0.01}
+                      max={2.0}
+                      step={0.01}
+                      defaultValue={[value]}
+                      onValueChange={onChange}
+                      name="textWastageFactor"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="textWorkingLength"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Working Length(mm)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onChange={(e) =>
+                        handleInputChange(e, field, setLengthInInches)
+                      }
+                    ></Input>
+                  </FormControl>
+                  <div className="pl-2 text-sm text-gray-500">
+                    {lengthInInches && `(${lengthInInches} in)`}
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="textWorkingWidth"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Working Width(mm)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onChange={(e) =>
+                        handleInputChange(e, field, setWidthInInches)
+                      }
+                    ></Input>
+                  </FormControl>
+                  <div className="pl-2 text-sm text-gray-500">
+                    {widthInInches && `(${widthInInches} in)`}
+                  </div>
+                </FormItem>
+              )}
+            />
+            {/* <FormField
+              control={props.form.control}
+              name="textWorkingSheetUps"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Calculated Working Sheet Ups</FormLabel>
+                  <FormControl>
+                    <Input readOnly={true} {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            /> */}
+          </div>
         </div>
         <div className="flex w-full max-w-[12rem] flex-col ">
           <h1 className="underline">Calculated</h1>
@@ -363,11 +501,15 @@ export default function TextCalculation(props: {
 
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Text Forms</span>
-                <span>{textCostDataTable?.textForms}</span>
+                {/* <span>{textCostDataTable?.textForms}</span> */}
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Total Sets</span>
-                <span>{textCostDataTable?.totalSets}</span>
+                <span>
+                  {/* {textCostDataTable?.totalSets.totalSetsFB! +
+                    textCostDataTable?.totalSets.totalSetsWTHalf! +
+                    textCostDataTable?.totalSets.totalSetsWTQuarter!} */}
+                </span>
               </li>
               <li
                 className={cn('flex items-center justify-between border-b-2', {

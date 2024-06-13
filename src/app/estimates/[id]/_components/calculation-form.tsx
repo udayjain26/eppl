@@ -18,6 +18,7 @@ import TextCalculation from './calculation-components/text-calculation'
 import { VariationData } from '@/server/variations/types'
 import { useFormState, useFormStatus } from 'react-dom'
 import { PaperData } from '@/server/paper/types'
+import FabricationCalculation from './calculation-components/fabrication-calculation'
 
 function SaveButton() {
   const { pending } = useFormStatus()
@@ -32,6 +33,7 @@ function SaveButton() {
 const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   coverCalculation: CoverCalculation,
   textCalculation: TextCalculation,
+  fabricationCalculation: FabricationCalculation,
 }
 
 export default function CalculationFields(props: {
@@ -91,10 +93,16 @@ export default function CalculationFields(props: {
           : '1',
         textPlateRate: data?.textPlateRate
           ? data.textPlateRate.toString()
-          : '300',
+          : '500',
         textPrintingRate: data?.textPrintingRate
           ? data.textPrintingRate.toString()
           : '150',
+        textWorkingLength: data?.textWorkingLength
+          ? data.textWorkingLength.toString()
+          : '0',
+        textWorkingWidth: data?.textWorkingWidth
+          ? data.textWorkingWidth.toString()
+          : '0',
       })
     }
     fetchCalculationData()

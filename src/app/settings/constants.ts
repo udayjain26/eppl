@@ -148,8 +148,7 @@ export const commonSizes = [
   { label: 'Postcard Landscape', length: 105, width: 148 },
   { label: 'Index Card Portrait', length: 127, width: 76.2 },
   { label: 'Index Card Landscape', length: 76.2, width: 127 },
-  { label: 'Custom Portrait', length: 0, width: 0 },
-  { label: 'Custom Landscape', length: 0, width: 0 },
+  { label: 'Custom', length: 0, width: 0 },
 ]
 
 // rates are in rupees per 1000 qty per form
@@ -157,6 +156,7 @@ export const commonSizes = [
 export const paperbackBindingTypes = [
   { label: 'Perfect', value: 'perfect_binding', rate: 200 },
   { label: 'Sewn and Perfect', value: 'sewn_and_perfect', rate: 400 },
+  { label: 'Side Pin and Perfect', value: 'side_pin_and_perfect', rate: 410 },
 ]
 
 export const postpressProcesses = [

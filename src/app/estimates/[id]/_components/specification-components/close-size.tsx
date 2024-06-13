@@ -44,6 +44,10 @@ export default function CloseSize(props: {
     const value = e.target.value
     const lastChar = value.charAt(value.length - 1)
 
+    props.form.setValue('openSizeLength', 0)
+    props.form.setValue('openSizeWidth', 0)
+    props.form.setValue('openSizeName', 'Custom')
+
     if (lastChar === '"') {
       const numericValue = parseFloat(value.slice(0, -1))
       if (!isNaN(numericValue)) {

@@ -36,6 +36,8 @@ export type VariationData = {
   textLamination: string | undefined
   textPaperType: string | undefined
 
+  paperbackBookBinding: string | undefined
+
   createdAt: Date
   updatedAt: Date
   createdBy: string

@@ -274,6 +274,9 @@ export const variations = createTable('variations', {
   textLamination: varchar('text_lamination', { length: 256 }),
   textPaperType: varchar('text_paper_type', { length: 256 }),
 
+  //fabrication
+  paperbackBookBinding: varchar('paperback_book_binding', { length: 256 }),
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   createdBy: varchar('created_by', { length: 256 }).notNull(),
@@ -381,6 +384,11 @@ export const variationCalculation = createTable('variation_calculation', {
   }),
   textPlateRate: numeric('text_plate_rate', { precision: 7, scale: 2 }),
   textPrintingRate: numeric('text_printing_rate', { precision: 7, scale: 2 }),
+  textWorkingLength: numeric('text_working_length', {
+    precision: 7,
+    scale: 2,
+  }),
+  textWorkingWidth: numeric('text_working_width', { precision: 7, scale: 2 }),
 })
 
 // export const coverSheetsDataTable = createTable('cover_sheets_data_table', {

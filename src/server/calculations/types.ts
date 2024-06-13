@@ -24,5 +24,7 @@ export type VariationCalculationData =
       textWastageFactor?: number
       textPlateRate?: number
       textPrintingRate?: number
+      textWorkingLength?: number
+      textWorkingWidth?: number
     }
   | undefined

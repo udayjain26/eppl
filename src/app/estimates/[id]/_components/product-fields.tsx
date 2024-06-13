@@ -37,6 +37,7 @@ export default function ProductFields(props: {
             key={component}
             control={props.control}
             form={props.form}
+            product={props.product}
           />
         ) : null
       })}

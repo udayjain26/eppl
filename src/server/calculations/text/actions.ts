@@ -6,12 +6,30 @@ import { PaperData } from '@/server/paper/types'
 import { VariationData } from '@/server/variations/types'
 import { text } from 'stream/consumers'
 
+// export type PrintingSets = {
+//   totalSetsFB: number
+//   totalSheetsFB: number
+//   totalSetsWTHalf: number
+//   totalSheetsWTHalf: number
+//   totalSetsWTQuarter: number
+//   totalSheetsWTQuarter: number
+// }
+
+export type PrintingForms = {
+  totalFormsFB: number
+  totalForms2Ups: number
+  totalForms4Ups: number
+  TotalForms8Ups: number
+}
+
 export async function calculateTextCost(
   variationData?: VariationData,
   paperData?: PaperData,
   effectiveTextLength?: number,
   effectiveTextWidth?: number,
   grippers?: number,
+  textWorkingLength?: number,
+  textWorkingWidth?: number,
   paperCostPerKg?: number,
   wastageFactor?: number,
   textPlateRate?: number,
@@ -28,38 +46,46 @@ export async function calculateTextCost(
     !paperCostPerKg ||
     !textPlateRate ||
     !textPrintingRate ||
+    !textWorkingLength ||
+    !textWorkingWidth ||
     !variationData.textColors
   ) {
     return undefined
   }
-  const textUpsPerSheet = calculatePagesPerSheet(
-    paperData,
+  const textPagesPerSheet = calculatePagesPerSheet(
+    // paperData,
+    textWorkingLength,
+    textWorkingWidth,
     effectiveTextLength,
     effectiveTextWidth,
     grippers,
   )
 
-  if (!textUpsPerSheet) {
+  if (!textPagesPerSheet) {
     return undefined
   }
+
   const textColors = variationData.textColors
 
-  const textForms = calculateTextForms(variationData.textPages, textUpsPerSheet)
+  const textForms = calculateTextForms(
+    variationData.textPages,
+    textPagesPerSheet,
+  )
 
   const totalSetsUsed = calculateTotalSets(textForms)
 
   const paperAreaUsed = Number(
     (
-      ((effectiveTextLength * effectiveTextWidth * textUpsPerSheet) /
+      ((effectiveTextLength * effectiveTextWidth * textPagesPerSheet) /
         4 /
-        (paperData.paperLength * paperData.paperWidth)) *
+        (textWorkingLength * textWorkingWidth)) *
       100
     ).toFixed(2),
   )
 
   const textCostDataDict = variationData.variationQtysRates.map((o) => {
     const jobQuantity = o.quantity
-    const calculatedSheets = textForms * jobQuantity
+    const calculatedSheets = calculateSheets(jobQuantity, textForms)
     const wastageSheets = getWastageSheets(
       jobQuantity,
       wastageFactor,
@@ -69,23 +95,22 @@ export async function calculateTextCost(
     const totalSheets = calculatedSheets + wastageSheets
     const paperWeight = calculatePaperWeight(
       totalSheets,
-      paperData.paperLength,
-      paperData.paperWidth,
+      textWorkingLength,
+      textWorkingWidth,
       paperData.paperGrammage,
     )
     const paperCost = paperWeight * paperCostPerKg
     const plateCost = totalSetsUsed * textPlateRate * textColors
     const printingCost = calculatePrintingCost(
-      textPrintingRate,
       totalSetsUsed,
-      jobQuantity,
       textColors,
       totalSheets,
     )
     const laminationCost = calculateLaminationCost(
       variationData,
       jobQuantity,
-      paperData,
+      textWorkingLength,
+      textWorkingWidth,
     )
 
     const totalCost = paperCost + plateCost + printingCost + laminationCost
@@ -107,7 +132,7 @@ export async function calculateTextCost(
   })
 
   return {
-    textUpsPerSheet: textUpsPerSheet,
+    textUpsPerSheet: textPagesPerSheet,
     textForms: textForms,
     totalSets: totalSetsUsed,
     paperAreaUsed: paperAreaUsed,
@@ -118,10 +143,11 @@ export async function calculateTextCost(
 function calculateLaminationCost(
   variationData: VariationData,
   qtySheets: number,
-  paperData: PaperData,
+  textWorkingLength: number,
+  textWorkingWidth: number,
 ) {
-  const paperLengthInmm = paperData.paperLength
-  const paperWidthInmm = paperData.paperWidth
+  const paperLengthInmm = textWorkingLength
+  const paperWidthInmm = textWorkingWidth
   const laminationRate = laminations.find(
     (lam) => lam.label === variationData.textLamination,
   )?.rate!
@@ -139,20 +165,11 @@ function calculateLaminationCost(
 }
 
 function calculatePrintingCost(
-  textPrintingRate: number,
   totalSetsUsed: number,
-  jobQuantity: number,
   textColors: number,
   totalSheets: number,
 ) {
-  const minimumSheets = 2000 * totalSetsUsed
-  const printingRate = textPrintingRate / 1000
-
-  if (totalSheets <= minimumSheets) {
-    return minimumSheets * printingRate * textColors * 2
-  } else {
-    return totalSheets * printingRate * textColors * 2
-  }
+  return 0
 }
 
 function calculatePaperWeight(
@@ -172,67 +189,150 @@ function getWastageSheets(
   totalSetsUsed: number,
   textColors: number,
 ) {
-  if (textColors === 1) {
-    if (jobQuantity <= 0) {
-      return 0
-    } else if (jobQuantity <= 2100) {
-      return totalSetsUsed * wastageFactor * 75
-    } else if (jobQuantity <= 4200) {
-      return totalSetsUsed * wastageFactor * 100
-    } else if (jobQuantity <= 8400) {
-      return totalSetsUsed * wastageFactor * 125
-    } else {
-      return totalSetsUsed * wastageFactor * jobQuantity * 0.015
-    }
-  } else {
-    if (jobQuantity <= 0) {
-      return 0
-    } else if (jobQuantity <= 2100) {
-      return totalSetsUsed * wastageFactor * 75
-    } else if (jobQuantity <= 4200) {
-      return totalSetsUsed * wastageFactor * 100
-    } else if (jobQuantity <= 8400) {
-      return totalSetsUsed * wastageFactor * 125
-    } else {
-      return totalSetsUsed * wastageFactor * jobQuantity * 0.025
-    }
-  }
+  // if (textColors === 1) {
+  //   if (jobQuantity <= 0) {
+  //     return 0
+  //   } else if (jobQuantity <= 2100) {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * 75 +
+  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 50 +
+  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 25
+  //     )
+  //   } else if (jobQuantity <= 4200) {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * 100 +
+  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 75 +
+  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 50
+  //     )
+  //   } else if (jobQuantity <= 8400) {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * 125 +
+  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 100 +
+  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 75
+  //     )
+  //   } else {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * jobQuantity * 0.015 +
+  //       ((totalSetsUsed.totalSetsWTHalf * wastageFactor * jobQuantity) / 2) *
+  //         0.015 +
+  //       ((totalSetsUsed.totalSetsWTQuarter * wastageFactor * jobQuantity) / 4) *
+  //         0.015
+  //     )
+  //   }
+  // } else {
+  //   if (jobQuantity <= 0) {
+  //     return 0
+  //   } else if (jobQuantity <= 2100) {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * 75 +
+  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 50 +
+  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 25
+  //     )
+  //   } else if (jobQuantity <= 4200) {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * 100 +
+  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 75 +
+  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 50
+  //     )
+  //   } else if (jobQuantity <= 8400) {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * 125 +
+  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 100 +
+  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 75
+  //     )
+  //   } else {
+  //     return (
+  //       totalSetsUsed.totalSetsFB * wastageFactor * jobQuantity * 0.0175 +
+  //       ((totalSetsUsed.totalSetsWTHalf * wastageFactor * jobQuantity) / 2) *
+  //         0.0175 +
+  //       ((totalSetsUsed.totalSetsWTQuarter * wastageFactor * jobQuantity) / 4) *
+  //         0.0175
+  //     )
+  //   }
+  // }
+  return 0
 }
-function calculateTotalSets(textForms: number) {
+
+function calculateSheets(
+  jobQuantity: number,
+  textForms: PrintingForms,
+  // totalSetsUsed: number,
+) {
+  const totalSheetsFB = textForms.totalFormsFB * jobQuantity
+  const totalSheets2Ups = (textForms.totalForms2Ups * jobQuantity) / 2
+  const totalSheets4Ups = (textForms.totalForms4Ups * jobQuantity) / 4
+  const totalSheets8Ups = (textForms.TotalForms8Ups * jobQuantity) / 8
+
+  return totalSheetsFB + totalSheets2Ups + totalSheets4Ups + totalSheets8Ups
+}
+
+function calculateTotalSets(textForms: PrintingForms) {
+  // Calculate the number of complete forms
+  let totalSetsFB = textForms.totalFormsFB * 2
+
+  let totalSetsWT2Ups = textForms.totalForms2Ups
+  let totalSetsWT4Ups = textForms.totalForms4Ups
+  let totalSetsWT8Ups = textForms.TotalForms8Ups
+
+  return totalSetsFB + totalSetsWT2Ups + totalSetsWT4Ups + totalSetsWT8Ups
+}
+
+function calculateTextForms(
+  textPages: number,
+  textPagesPerSheet: number,
+): PrintingForms {
+  // // Calculate the number of forms required
+  const textForms = textPages / textPagesPerSheet
+  console.log('textForms', textForms)
+  // return textForms
+
   // Calculate the number of complete forms
   const completeForms = Math.floor(textForms)
-  let totalSets = completeForms * 2
+  let totalFormsFB = completeForms
+  let totalForms2Ups = 0
+  let totalForms4Ups = 0
+  let TotalForms8Ups = 0
 
   // Calculate the remaining fractional part
   const remainingFraction = textForms - completeForms
 
-  // Determine additional sets based on the remaining fraction
+  // Determine additional forms based on the remaining fraction
   if (remainingFraction > 0) {
-    if (remainingFraction > 0.5) {
-      totalSets += 2 // For 0.5 < fraction <= 1.0, add 2 sets
-    } else if (remainingFraction === 0.5) {
-      totalSets += 1 // For exactly 0.5, add 1 set
+    if (remainingFraction > 0.75) {
+      totalForms2Ups += 1 // For 0.75 < fraction <= 1.0
+      totalForms4Ups += 1
+      TotalForms8Ups += 1
+    } else if (remainingFraction > 0.5) {
+      totalForms2Ups += 1 // For exactly 0.5, add 1 form
+      totalForms4Ups += 1
     } else {
-      totalSets += 1 // For 0 < fraction < 0.5, add 1 set
+      totalForms2Ups += 1 // For 0 < fraction < 0.5, add 1 form
     }
   }
 
-  return totalSets
-}
-function calculateTextForms(textPages: number, textUpsPerSheet: number) {
-  // Calculate the number of forms required
-  const textForms = textPages / textUpsPerSheet
-  return textForms
+  console.log('totalFormsFB', totalFormsFB)
+  console.log('totalForms2Ups', totalForms2Ups)
+  console.log('totalForms4Ups', totalForms4Ups)
+  console.log('TotalForms8Ups', TotalForms8Ups)
+
+  return {
+    totalFormsFB,
+    totalForms2Ups,
+    totalForms4Ups,
+    TotalForms8Ups,
+  } as PrintingForms
 }
 
 function calculatePagesPerSheet(
-  paperData: PaperData,
+  // paperData: PaperData,
+  textWorkingLength: number,
+  textWorkingWidth: number,
   effectiveTextLength: number,
   effectiveTextWidth: number,
   grippers: number,
 ) {
-  const paperLength = paperData.paperLength - (grippers || 0)
-  const paperWidth = paperData.paperWidth
+  const paperLength = textWorkingLength - (grippers || 0)
+  const paperWidth = textWorkingWidth
   const textLength = effectiveTextLength
   const textWidth = effectiveTextWidth
 

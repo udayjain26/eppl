@@ -2,6 +2,7 @@
 interface ProductComponents {
   specificationComponents: string[]
   calculationComponents: string[]
+  fabricationComponents: string[]
 }
 
 // Define the main map type
@@ -21,10 +22,16 @@ export const productFieldMap: productFieldMapType = {
       'packaging',
       'dispatch',
     ],
-    calculationComponents: ['coverCalculation', 'textCalculation'],
+    calculationComponents: [
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+    ],
+    fabricationComponents: ['paperbackBookBinding'],
   },
   Posters: {
     specificationComponents: ['size'],
     calculationComponents: [],
+    fabricationComponents: [],
   },
 }

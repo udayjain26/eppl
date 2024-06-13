@@ -48,7 +48,6 @@ export async function createVariation(estimateUuid: string) {
     .insert(variations)
     .values({
       estimateUuid: estimateUuid,
-
       createdBy: user.userId,
       updatedBy: user.userId,
     })
@@ -69,6 +68,8 @@ export async function saveVariation(
   if (!user.userId) {
     throw new Error('User Unauthenitcated')
   }
+
+  console.log('formData', formData)
 
   const variationQtysRatesData: variationQtyRate[] = []
 

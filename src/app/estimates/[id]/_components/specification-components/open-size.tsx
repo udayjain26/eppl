@@ -22,6 +22,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { close } from 'inspector'
 import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { ChangeEvent, useState } from 'react'
@@ -30,6 +31,12 @@ import { UseFormReturn } from 'react-hook-form'
 export default function OpenSize(props: { control: any; form: UseFormReturn }) {
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
+
+  const closeSizeLengthWatch = props.form.watch('closeSizeLength')
+  const closeSizeWidthWatch = props.form.watch('closeSizeWidth')
+  const openSizeLengthWatch = props.form.watch('openSizeLength')
+  const openSizeWidthWatch = props.form.watch('openSizeWidth')
+  const closeSizeNameWatch = props.form.watch('closeSizeName')
 
   const [open, setOpen] = React.useState(false)
 
@@ -47,7 +54,6 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
         const mmValue = (numericValue * 25.4).toFixed(2) // Convert inches to mm
         field.onChange(mmValue)
         setInches(numericValue.toFixed(2))
-        props.form.setValue('openSizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
       } else {
         field.onChange(value.slice(0, -1))
         setInches('')
@@ -57,7 +63,6 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
       const numericValue = parseFloat(value)
       if (!isNaN(numericValue)) {
         setInches((numericValue / 25.4).toFixed(2)) // Convert mm to inches
-        props.form.setValue('openSizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
       } else {
         setInches('')
       }
@@ -81,13 +86,39 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
     const lengthValue = props.form.getValues('openSizeLength')
     const widthValue = props.form.getValues('openSizeWidth')
 
-    if (lengthValue) {
+    if (lengthValue || lengthValue === 0) {
       setLengthInInches((parseFloat(lengthValue) / 25.4).toFixed(2))
     }
-    if (widthValue) {
+    if (widthValue || widthValue === 0) {
       setWidthInInches((parseFloat(widthValue) / 25.4).toFixed(2))
     }
-  }, [props.form])
+  }, [openSizeLengthWatch, openSizeWidthWatch])
+
+  useEffect(() => {
+    console.log('closeSizeNameWatch', closeSizeNameWatch)
+
+    if (
+      closeSizeLengthWatch !== undefined &&
+      closeSizeWidthWatch !== undefined
+    ) {
+      const openSize = commonSizes.find(
+        (size) =>
+          size.length === Number(props.form.getValues('closeSizeLength')) &&
+          (size.width === Number(props.form.getValues('closeSizeWidth')) * 2 ||
+            size.width ===
+              Number(props.form.getValues('closeSizeWidth')) * 2 + 1 ||
+            size.width ===
+              Number(props.form.getValues('closeSizeWidth')) * 2 - 1),
+      )
+
+      props.form.setValue(
+        'openSizeName',
+        openSize?.label ? openSize.label : 'Custom',
+      )
+      props.form.setValue('openSizeLength', openSize?.length)
+      props.form.setValue('openSizeWidth', openSize?.width)
+    }
+  }, [closeSizeNameWatch])
 
   return (
     <div className="flex flex-col pt-4">

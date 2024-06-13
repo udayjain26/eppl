@@ -115,27 +115,26 @@ export default function Text(props: {
                         placeholder="Search laminations..."
                         className="h-10"
                       />
-                      <CommandEmpty>No size found.</CommandEmpty>
+                      <CommandEmpty>No lamination found.</CommandEmpty>
                       <CommandGroup>
                         <CommandList>
-                          {laminations.map((size) => (
+                          {laminations.map((lam) => (
                             <CommandItem
-                              key={size.label}
-                              value={size.label}
+                              key={lam.label}
+                              value={lam.label}
                               onSelect={() => {
-                                props.form.setValue(
-                                  'textLamination',
-                                  size.label,
-                                )
+                                props.form.setValue('textLamination', lam.label)
+                                field.onChange(lam.label)
+                                props.form.trigger('textLamination') // Trigger form validation and state update
 
                                 setOpenLamination(false)
                               }}
                             >
-                              {size.label}
+                              {lam.label}
                               <CheckIcon
                                 className={cn(
                                   'ml-auto h-4 w-4',
-                                  field.value === size.label
+                                  field.value === lam.label
                                     ? 'opacity-100'
                                     : 'opacity-0',
                                 )}
@@ -209,6 +208,8 @@ export default function Text(props: {
                             value={type.label}
                             onSelect={() => {
                               props.form.setValue('textPaperType', type.label)
+                              field.onChange(type.label)
+                              props.form.trigger('textPaperType') // Trigger form validation and state update
 
                               setOpenPaperType(false)
                             }}

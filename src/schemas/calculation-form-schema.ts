@@ -207,4 +207,32 @@ export const CalculationFormSchema = z.object({
       .optional()
       .transform((val) => val?.toString() || undefined),
   ),
+  textWorkingLength: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Length must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+  textWorkingWidth: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Width must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
 })

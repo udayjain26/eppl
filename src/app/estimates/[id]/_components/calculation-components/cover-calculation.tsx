@@ -27,10 +27,7 @@ import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { PaperData } from '@/server/paper/types'
 import { getPaperData } from '@/server/paper/queries'
-import {
-  PaperPiece,
-  calculateTotalCoverCostData as calculateTotalCoverCostData,
-} from '@/server/calculations/cover/actions'
+import { calculateCoverCost as calculateCoverCost } from '@/server/calculations/cover/actions'
 import { Input } from '@/components/ui/input'
 import { UseFormReturn, useFieldArray } from 'react-hook-form'
 import FormError from '@/app/_components/form-error'
@@ -52,7 +49,6 @@ import { useDebounce } from 'use-debounce'
 export type CoverCostData = {
   coverPiecesPerSheet: number
   pagesPerSheet: number
-  piecesPositions: PaperPiece[]
   percentageSheetUsed: number
   forms: number
   totalSets: number
@@ -123,15 +119,18 @@ export default function CoverCalculation(props: {
     )
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
+      props.form.setValue(
+        'coverPaperRate',
+        initialSelectedPaper.paperDefaultRate,
+      )
     }
   }, [props.form.watch('coverPaper')])
 
   useEffect(() => {
     const calculateCoverSheets = async () => {
-      const fetchCoverCostDataTable = await calculateTotalCoverCostData(
+      const fetchCoverCostDataTable = await calculateCoverCost(
         props.variationData,
         selectedPaper,
-        props.variationData.coverPages,
         effectiveCoverLength,
         effectiveCoverWidth,
         grippers,
@@ -363,30 +362,38 @@ export default function CoverCalculation(props: {
                       <CommandEmpty>No paper found.</CommandEmpty>
                       <CommandGroup>
                         <CommandList className="w-full">
-                          {props.paperData.map((paper) => (
-                            <CommandItem
-                              key={paper.paperName}
-                              value={paper.paperName}
-                              onSelect={() => {
-                                props.form.setValue(
-                                  'coverPaper',
-                                  paper.paperName,
-                                )
-                                setSelectedPaper(paper)
-                                setOpenPaper(false)
-                              }}
-                            >
-                              {paper.paperName}
-                              <CheckIcon
-                                className={cn(
-                                  'ml-auto h-4 w-4',
-                                  field.value === paper.paperName
-                                    ? 'opacity-100'
-                                    : 'opacity-0',
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
+                          {props.paperData
+                            .filter(
+                              (paper) =>
+                                paper.paperGrammage ===
+                                  props.variationData.coverGrammage &&
+                                paper.paperType ===
+                                  props.variationData.coverPaperType,
+                            )
+                            .map((paper) => (
+                              <CommandItem
+                                key={paper.paperName}
+                                value={paper.paperName}
+                                onSelect={() => {
+                                  props.form.setValue(
+                                    'coverPaper',
+                                    paper.paperName,
+                                  )
+                                  setSelectedPaper(paper)
+                                  setOpenPaper(false)
+                                }}
+                              >
+                                {paper.paperName}
+                                <CheckIcon
+                                  className={cn(
+                                    'ml-auto h-4 w-4',
+                                    field.value === paper.paperName
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
                         </CommandList>
                       </CommandGroup>
                     </Command>

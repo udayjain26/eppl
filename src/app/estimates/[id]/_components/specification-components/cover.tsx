@@ -132,24 +132,26 @@ export default function Cover(props: {
                       <CommandEmpty>No size found.</CommandEmpty>
                       <CommandGroup>
                         <CommandList>
-                          {laminations.map((size) => (
+                          {laminations.map((lam) => (
                             <CommandItem
-                              key={size.label}
-                              value={size.label}
+                              key={lam.label}
+                              value={lam.label}
                               onSelect={() => {
                                 props.form.setValue(
                                   'coverLamination',
-                                  size.label,
+                                  lam.label,
                                 )
+                                field.onChange(lam.label)
+                                props.form.trigger('coverLamination')
 
                                 setOpenLamination(false)
                               }}
                             >
-                              {size.label}
+                              {lam.label}
                               <CheckIcon
                                 className={cn(
                                   'ml-auto h-4 w-4',
-                                  field.value === size.label
+                                  field.value === lam.label
                                     ? 'opacity-100'
                                     : 'opacity-0',
                                 )}
@@ -223,6 +225,8 @@ export default function Cover(props: {
                             value={type.label}
                             onSelect={() => {
                               props.form.setValue('coverPaperType', type.label)
+                              field.onChange(type.label)
+                              props.form.trigger('coverPaperType')
 
                               setOpenPaperType(false)
                             }}
