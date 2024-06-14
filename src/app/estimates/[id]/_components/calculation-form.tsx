@@ -81,6 +81,21 @@ export default function CalculationFields(props: {
         coverPrintingType: data?.coverPrintingType
           ? data.coverPrintingType
           : 'frontBack',
+        coverPlateRateFactor: data?.coverPlateRateFactor
+          ? data.coverPlateRateFactor.toString()
+          : '1',
+        coverPrintingRateFactor: data?.coverPrintingRateFactor
+          ? data.coverPrintingRateFactor.toString()
+          : '1',
+        coverWorkingLength: data?.coverWorkingLength
+          ? data.coverWorkingLength.toString()
+          : '0',
+        coverWorkingWidth: data?.coverWorkingWidth
+          ? data.coverWorkingWidth.toString()
+          : '0',
+        coverPlateSize: data?.coverPlateSize
+          ? data.coverPlateSize.toString()
+          : 'Small',
         textGutters: data?.textGutters ? data.textGutters.toString() : '0',
         textBleed: data?.textBleed ? data.textBleed.toString() : '3',
         textGrippers: data?.textGrippers ? data.textGrippers.toString() : '10',
@@ -90,6 +105,12 @@ export default function CalculationFields(props: {
           : '90',
         textWastageFactor: data?.textWastageFactor
           ? data.textWastageFactor.toString()
+          : '1',
+        textPlateRateFactor: data?.textPlateRateFactor
+          ? data.textPlateRateFactor.toString()
+          : '1',
+        textPrintingRateFactor: data?.textPrintingRateFactor
+          ? data.textPrintingRateFactor.toString()
           : '1',
         textPlateRate: data?.textPlateRate
           ? data.textPlateRate.toString()
@@ -103,6 +124,9 @@ export default function CalculationFields(props: {
         textWorkingWidth: data?.textWorkingWidth
           ? data.textWorkingWidth.toString()
           : '0',
+        textPlateSize: data?.textPlateSize
+          ? data.textPlateSize.toString()
+          : 'Large',
       })
     }
     fetchCalculationData()

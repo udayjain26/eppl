@@ -38,6 +38,8 @@ export const paperMills: PaperMill[] = [
       'Sunshine Super Printing White',
       'TA Maplitho Premium',
       'TA Maplitho Natural Shade(High Bright)',
+      'C2S Art Paper Royal',
+      'C2S Art Card Royal',
       'Others',
     ],
   },

@@ -11,10 +11,13 @@ export async function calculateCoverCost(
   effectiveCoverLength?: number,
   effectiveCoverWidth?: number,
   grippers?: number,
+  coverWorkingLength?: number,
+  coverWorkingWidth?: number,
   paperCostPerKg?: number,
   wastageFactor?: number,
   coverPlateRate?: number,
-  coverPrintingRate?: number,
+  plateSize?: string,
+  printingRateFactor?: number,
   coverPrintingType?: string,
 ): Promise<CoverCostData | undefined> {
   if (
@@ -25,7 +28,6 @@ export async function calculateCoverCost(
     !paperCostPerKg ||
     !wastageFactor ||
     !coverPlateRate ||
-    !coverPrintingRate ||
     !coverPrintingType ||
     !grippers ||
     !variationData.coverPages

@@ -228,11 +228,7 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
                 <FormLabel>Paper Grammage(g/m^2)</FormLabel>
 
                 <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter values in grams"
-                    {...field}
-                  />
+                  <Input placeholder="Enter values in grams" {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -544,11 +540,7 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
                 <FormLabel>Paper Default Rate(&#x20B9;)</FormLabel>
 
                 <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter values in &#x20B9;"
-                    {...field}
-                  />
+                  <Input placeholder="Enter values in &#x20B9;" {...field} />
                 </FormControl>
               </FormItem>
             )}

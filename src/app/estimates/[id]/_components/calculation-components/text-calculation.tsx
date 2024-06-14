@@ -1,3 +1,4 @@
+import PercentageInput from '@/app/_components/percentage-inputs'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -32,6 +33,7 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import {
+  FormsSheetsDictType,
   PrintingForms,
   calculateTextCost,
 } from '@/server/calculations/text/actions'
@@ -41,7 +43,6 @@ import { set } from 'date-fns'
 import { CheckIcon } from 'lucide-react'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { text } from 'stream/consumers'
 import { useDebounce } from 'use-debounce'
 
 export type TextCostData = {
@@ -125,19 +126,23 @@ export default function TextCalculation(props: {
     ? props.variationData.openSizeWidth + bleed * 2 + gutters * 2
     : 0
   const wastageFactor = Number(props.form.watch('textWastageFactor'))
+  const plateFactor = Number(props.form.watch('textPlateRateFactor'))
+  const printingFactor = Number(props.form.watch('textPrintingFactor'))
+
   const paperRatePerkg = Number(props.form.watch('textPaperRate'))
   const plateRate = Number(props.form.watch('textPlateRate'))
-  const printingRate = Number(props.form.watch('textPrintingRate'))
   const textWorkingLength = Number(props.form.watch('textWorkingLength'))
   const textWorkingWidth = Number(props.form.watch('textWorkingWidth'))
   const watchPaperData = props.form.watch('textPaper')
+  const watchPlateSize = props.form.watch('textPlateSize')
+  const printingRateFactor = props.form.watch('textPrintingRateFactor')
 
-  const [debouncedWastageFactor] = useDebounce(wastageFactor, 2000)
-  const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 2000)
-  const [debouncedPlateRate] = useDebounce(plateRate, 2000)
-  const [debouncedPrintingRate] = useDebounce(printingRate, 2000)
-  const [debouncedTextWorkingLength] = useDebounce(textWorkingLength, 2000)
-  const [debouncedTextWorkingWidth] = useDebounce(textWorkingWidth, 2000)
+  const [debouncedWastageFactor] = useDebounce(wastageFactor, 1000)
+  const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 1000)
+  const [debouncedPlateRate] = useDebounce(plateRate, 1000)
+  const [debouncedTextWorkingLength] = useDebounce(textWorkingLength, 1000)
+  const [debouncedTextWorkingWidth] = useDebounce(textWorkingWidth, 1000)
+  const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
 
   useEffect(() => {
     const lengthValue = props.form.getValues('textWorkingLength')
@@ -169,6 +174,16 @@ export default function TextCalculation(props: {
   }, [watchPaperData])
 
   useEffect(() => {
+    if (textWorkingLength <= 508 && textWorkingWidth <= 762) {
+      props.form.setValue('textPlateSize', 'Small')
+      props.form.setValue('textPlateRate', 300 * plateFactor)
+    } else {
+      props.form.setValue('textPlateSize', 'Large')
+      props.form.setValue('textPlateRate', 500 * plateFactor)
+    }
+  }, [textWorkingLength, textWorkingWidth, plateFactor])
+
+  useEffect(() => {
     const calculateTextCostData = async () => {
       const fetchTextCostData = await calculateTextCost(
         props.variationData,
@@ -181,7 +196,8 @@ export default function TextCalculation(props: {
         debouncedPaperRatePerkg,
         debouncedWastageFactor,
         debouncedPlateRate,
-        debouncedPrintingRate,
+        watchPlateSize,
+        debouncedPrintingRateFactor,
       )
       setTextCostDataTable(fetchTextCostData)
     }
@@ -198,9 +214,10 @@ export default function TextCalculation(props: {
     debouncedPaperRatePerkg,
     debouncedWastageFactor,
     debouncedPlateRate,
-    debouncedPrintingRate,
     props.variationData,
     props.form,
+    watchPlateSize,
+    debouncedPrintingRateFactor,
   ])
 
   return (
@@ -416,21 +433,41 @@ export default function TextCalculation(props: {
             <FormField
               control={props.form.control}
               name="textWastageFactor"
-              render={({ field: { value, onChange } }) => (
+              render={({ field }) => (
                 <FormItem className="w-2/5">
                   <FormLabel>
-                    Text Wastage Factor: {(value * 100).toFixed(2)}%
+                    Text Wastage Factor {(field.value * 100).toFixed(2)}%
                   </FormLabel>
                   <FormControl>
-                    <Slider
-                      className="mt-2"
-                      min={0.01}
-                      max={2.0}
-                      step={0.01}
-                      defaultValue={[value]}
-                      onValueChange={onChange}
-                      name="textWastageFactor"
-                    />
+                    <Input type="number" step={0.001} {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="textPlateRateFactor"
+              render={({ field }) => (
+                <FormItem className="w-2/5">
+                  <FormLabel>
+                    Plate Rate Factor {(field.value * 100).toFixed(2)}%
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="number" step={0.001} {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="textPrintingRateFactor"
+              render={({ field }) => (
+                <FormItem className="w-2/5">
+                  <FormLabel>
+                    Printing Rate Factor {(field.value * 100).toFixed(2)}%
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="number" step={0.001} {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -440,7 +477,9 @@ export default function TextCalculation(props: {
               name="textWorkingLength"
               render={({ field }) => (
                 <FormItem className=" ">
-                  <FormLabel>Working Length(mm)</FormLabel>
+                  <FormLabel className=" font-bold">
+                    Working Length(mm)
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -460,7 +499,9 @@ export default function TextCalculation(props: {
               name="textWorkingWidth"
               render={({ field }) => (
                 <FormItem className=" ">
-                  <FormLabel>Working Width(mm)</FormLabel>
+                  <FormLabel className=" font-bold">
+                    Working Width(mm)
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -475,18 +516,18 @@ export default function TextCalculation(props: {
                 </FormItem>
               )}
             />
-            {/* <FormField
+            <FormField
               control={props.form.control}
-              name="textWorkingSheetUps"
+              name="textPlateSize"
               render={({ field }) => (
-                <FormItem className=" ">
-                  <FormLabel>Calculated Working Sheet Ups</FormLabel>
+                <FormItem className=" text-gray-500">
+                  <FormLabel>Text Plate Size</FormLabel>
                   <FormControl>
                     <Input readOnly={true} {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}
-            /> */}
+            />
           </div>
         </div>
         <div className="flex w-full max-w-[12rem] flex-col ">
@@ -501,15 +542,16 @@ export default function TextCalculation(props: {
 
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Text Forms</span>
-                {/* <span>{textCostDataTable?.textForms}</span> */}
+                <span>
+                  {textCostDataTable?.textForms.totalFormsFB! +
+                    textCostDataTable?.textForms.totalForms2Ups! / 2 +
+                    textCostDataTable?.textForms.totalForms4Ups! / 4 +
+                    textCostDataTable?.textForms.totalForms8Ups! / 8}
+                </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Total Sets</span>
-                <span>
-                  {/* {textCostDataTable?.totalSets.totalSetsFB! +
-                    textCostDataTable?.totalSets.totalSetsWTHalf! +
-                    textCostDataTable?.totalSets.totalSetsWTQuarter!} */}
-                </span>
+                <span>{textCostDataTable?.totalSets}</span>
               </li>
               <li
                 className={cn('flex items-center justify-between border-b-2', {
@@ -538,26 +580,45 @@ export default function TextCalculation(props: {
               control={props.form.control}
               name="textPlateRate"
               render={({ field }) => (
-                <FormItem className=" grow">
+                <FormItem className=" grow text-gray-500">
                   <FormLabel>Plate Rate(&#x20B9;)</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input readOnly {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}
             />
-            <FormField
-              control={props.form.control}
-              name="textPrintingRate"
-              render={({ field }) => (
-                <FormItem className=" grow">
-                  <FormLabel>Printing Rate(&#x20B9;)/Colors</FormLabel>
-                  <FormControl>
-                    <Input {...field}></Input>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <ol className="flex flex-col gap-x-2">
+              <li>Printing Planning: </li>
+              <li>
+                <span>
+                  {textCostDataTable?.textForms.totalFormsFB
+                    ? textCostDataTable?.textForms.totalFormsFB + 'x F/B'
+                    : ''}
+                </span>
+              </li>
+              <li>
+                <span>
+                  {textCostDataTable?.textForms.totalForms2Ups
+                    ? textCostDataTable?.textForms.totalForms2Ups + 'x W/T 2Ups'
+                    : ''}
+                </span>
+              </li>
+              <li>
+                <span>
+                  {textCostDataTable?.textForms.totalForms4Ups
+                    ? textCostDataTable?.textForms.totalForms4Ups + 'x W/T 4Ups'
+                    : ''}
+                </span>
+              </li>
+              <li>
+                <span>
+                  {textCostDataTable?.textForms.totalForms8Ups
+                    ? textCostDataTable?.textForms.totalForms8Ups + 'x W/T8Ups'
+                    : ''}
+                </span>
+              </li>
+            </ol>
           </div>
         </div>
       </div>

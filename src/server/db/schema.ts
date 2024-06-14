@@ -373,12 +373,34 @@ export const variationCalculation = createTable('variation_calculation', {
   coverPlateRate: numeric('cover_plate_rate', { precision: 7, scale: 2 }),
   coverPrintingRate: numeric('cover_printing_rate', { precision: 7, scale: 2 }),
   coverPrintingType: varchar('cover_printing_type', { length: 256 }),
+  coverPlateRateFactor: numeric('cover_plate_rate_factor', {
+    precision: 7,
+    scale: 2,
+  }),
+  coverPrintingRateFactor: numeric('cover_printing_rate_factor', {
+    precision: 7,
+    scale: 2,
+  }),
+  coverWorkingLength: numeric('cover_working_length', {
+    precision: 7,
+    scale: 2,
+  }),
+  coverWorkingWidth: numeric('cover_working_width', { precision: 7, scale: 2 }),
+
   textGutters: numeric('text_gutters', { precision: 7, scale: 2 }),
   textBleed: numeric('text_bleed', { precision: 7, scale: 2 }),
   textGrippers: numeric('text_grippers', { precision: 7, scale: 2 }),
   textPaper: varchar('text_paper', { length: 256 }),
   textPaperRate: numeric('text_paper_rate', { precision: 7, scale: 2 }),
   textWastageFactor: numeric('text_wastage_factor', {
+    precision: 7,
+    scale: 2,
+  }),
+  textPlateRateFactor: numeric('text_plate_rate_factor', {
+    precision: 7,
+    scale: 2,
+  }),
+  textPrintingRateFactor: numeric('text_printing_rate_factor', {
     precision: 7,
     scale: 2,
   }),

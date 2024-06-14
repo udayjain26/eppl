@@ -16,15 +16,23 @@ export type VariationCalculationData =
       coverPlateRate?: number
       coverPrintingRate?: number
       coverPrintingType?: string
+      coverPlateRateFactor?: number
+      coverPrintingRateFactor?: number
+      coverWorkingLength?: number
+      coverWorkingWidth?: number
+      coverPlateSize?: string
       textGutters?: number
       textBleed?: number
       textGrippers?: number
       textPaper?: string
       textPaperRate?: number
       textWastageFactor?: number
+      textPlateRateFactor?: number
+      textPrintingRateFactor?: number
       textPlateRate?: number
       textPrintingRate?: number
       textWorkingLength?: number
       textWorkingWidth?: number
+      textPlateSize?: string
     }
   | undefined

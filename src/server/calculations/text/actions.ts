@@ -2,24 +2,43 @@
 
 import { TextCostData } from '@/app/estimates/[id]/_components/calculation-components/text-calculation'
 import { laminations } from '@/app/settings/constants'
+import { printingRateCard } from '@/app/settings/printing-constants'
 import { PaperData } from '@/server/paper/types'
 import { VariationData } from '@/server/variations/types'
 import { text } from 'stream/consumers'
 
-// export type PrintingSets = {
-//   totalSetsFB: number
-//   totalSheetsFB: number
-//   totalSetsWTHalf: number
-//   totalSheetsWTHalf: number
-//   totalSetsWTQuarter: number
-//   totalSheetsWTQuarter: number
-// }
+export type FormsSheetsDictType = {
+  totalFormsFB: {
+    formsQty: number
+    sheetsQty: number
+    wastageSheets?: number
+    printingCost?: number
+  }
+  totalForms2Ups: {
+    formsQty: number
+    sheetsQty: number
+    wastageSheets?: number
+    printingCost?: number
+  }
+  totalForms4Ups: {
+    formsQty: number
+    sheetsQty: number
+    wastageSheets?: number
+    printingCost?: number
+  }
+  TotalForms8Ups: {
+    formsQty: number
+    sheetsQty: number
+    wastageSheets?: number
+    printingCost?: number
+  }
+}
 
 export type PrintingForms = {
   totalFormsFB: number
   totalForms2Ups: number
   totalForms4Ups: number
-  TotalForms8Ups: number
+  totalForms8Ups: number
 }
 
 export async function calculateTextCost(
@@ -33,7 +52,8 @@ export async function calculateTextCost(
   paperCostPerKg?: number,
   wastageFactor?: number,
   textPlateRate?: number,
-  textPrintingRate?: number,
+  plateSize?: string,
+  printingRateFactor?: number,
 ): Promise<TextCostData | undefined> {
   if (
     !variationData ||
@@ -45,10 +65,12 @@ export async function calculateTextCost(
     !variationData.textPages ||
     !paperCostPerKg ||
     !textPlateRate ||
-    !textPrintingRate ||
+    // !textPrintingRate ||
     !textWorkingLength ||
     !textWorkingWidth ||
-    !variationData.textColors
+    !variationData.textColors ||
+    !plateSize ||
+    !printingRateFactor
   ) {
     return undefined
   }
@@ -85,14 +107,17 @@ export async function calculateTextCost(
 
   const textCostDataDict = variationData.variationQtysRates.map((o) => {
     const jobQuantity = o.quantity
-    const calculatedSheets = calculateSheets(jobQuantity, textForms)
-    const wastageSheets = getWastageSheets(
+    const { calculatedSheets, formsSheetsDict } = calculateSheets(
       jobQuantity,
+      textForms,
+    )
+    const { totalWastageSheets } = getWastageSheets(
       wastageFactor,
-      totalSetsUsed,
+      formsSheetsDict,
       textColors,
     )
-    const totalSheets = calculatedSheets + wastageSheets
+
+    const totalSheets = calculatedSheets + totalWastageSheets
     const paperWeight = calculatePaperWeight(
       totalSheets,
       textWorkingLength,
@@ -102,13 +127,16 @@ export async function calculateTextCost(
     const paperCost = paperWeight * paperCostPerKg
     const plateCost = totalSetsUsed * textPlateRate * textColors
     const printingCost = calculatePrintingCost(
-      totalSetsUsed,
+      formsSheetsDict,
       textColors,
-      totalSheets,
+      totalSetsUsed,
+      plateSize,
+      variationData,
+      printingRateFactor,
     )
     const laminationCost = calculateLaminationCost(
       variationData,
-      jobQuantity,
+      totalSheets,
       textWorkingLength,
       textWorkingWidth,
     )
@@ -119,7 +147,7 @@ export async function calculateTextCost(
     return {
       jobQuantity: jobQuantity,
       calculatedSheets: Number(calculatedSheets.toFixed(0)),
-      wastageSheets: Number(wastageSheets.toFixed(0)),
+      wastageSheets: Number(totalWastageSheets.toFixed(0)),
       totalSheets: Number(totalSheets.toFixed(0)),
       paperWeight: Number(paperWeight.toFixed(2)),
       paperCost: Number(paperCost.toFixed(2)),
@@ -142,21 +170,22 @@ export async function calculateTextCost(
 
 function calculateLaminationCost(
   variationData: VariationData,
-  qtySheets: number,
+  totalSheets: number,
   textWorkingLength: number,
   textWorkingWidth: number,
 ) {
-  const paperLengthInmm = textWorkingLength
-  const paperWidthInmm = textWorkingWidth
+  const paperLengthInM = textWorkingLength / 1000
+  const paperWidthInM = textWorkingWidth / 1000
   const laminationRate = laminations.find(
     (lam) => lam.label === variationData.textLamination,
   )?.rate!
 
   if (laminationRate !== 0) {
     const laminationCost = (
-      (paperLengthInmm * paperWidthInmm * qtySheets) /
-      laminationRate /
-      100
+      paperLengthInM *
+      paperWidthInM *
+      totalSheets *
+      laminationRate
     ).toFixed(2)
     return Number(laminationCost)
   } else {
@@ -165,11 +194,99 @@ function calculateLaminationCost(
 }
 
 function calculatePrintingCost(
-  totalSetsUsed: number,
+  formsSheetsDataDict: FormsSheetsDictType,
   textColors: number,
-  totalSheets: number,
+  textSets: number,
+  plateSize: string,
+  variationData: VariationData,
+  printingRateFactor: number,
 ) {
-  return 0
+  const paper_type =
+    variationData.textPaperType === 'Maplitho A Grade'
+      ? 'Maplitho'
+      : variationData.textPaperType === 'Maplitho B Grade'
+        ? 'Maplitho'
+        : variationData.textPaperType === 'Maplitho C Grade'
+          ? 'Maplitho'
+          : variationData.textPaperType === 'Special Fine Paper'
+            ? 'FinePaper'
+            : variationData.textPaperType === 'Art Card'
+              ? 'ArtCard'
+              : variationData.textPaperType === 'Art Paper'
+                ? 'ArtPaper'
+                : 'Standard Paper'
+  const costCentre = plateSize === 'Small' ? 'Small Machine' : 'Large Machine'
+  const sets = textSets <= 5 ? 'lt5' : 'gt5'
+  let totalPrintingCost = 0
+
+  Object.entries(formsSheetsDataDict).forEach(([key, value]) => {
+    let printingCost = 0
+    const formsQty = value.formsQty
+    const printingSets = key === 'totalFormsFB' ? 2 : 1
+    const printingSheets =
+      key === 'totalFormsFB' ? value.sheetsQty : value.sheetsQty * 2
+
+    let printingSheetsCharge = 0
+    let ceilingPrintingSheets = 0
+
+    if (printingSheets <= 1200) {
+      printingSheetsCharge = 1200
+      ceilingPrintingSheets = 1000
+    } else if (printingSheets > 1200 && printingSheets <= 2200) {
+      printingSheetsCharge = 2200
+      ceilingPrintingSheets = 2000
+    } else if (printingSheets > 2200 && printingSheets <= 3200) {
+      printingSheetsCharge = 3200
+      ceilingPrintingSheets = 3000
+    } else if (printingSheets > 3200 && printingSheets <= 4200) {
+      printingSheetsCharge = 4200
+      ceilingPrintingSheets = 4000
+    } else if (printingSheets > 4200 && printingSheets <= 5200) {
+      printingSheetsCharge = 5200
+      ceilingPrintingSheets = 5000
+    } else if (printingSheets > 5200 && printingSheets <= 6200) {
+      printingSheetsCharge = 6200
+      ceilingPrintingSheets = 6000
+    } else if (printingSheets > 6200) {
+      printingSheetsCharge = 10200
+      ceilingPrintingSheets = printingSheets
+    }
+    const rateCardRow = printingRateCard.find(
+      (card) =>
+        card.costCentre === costCentre &&
+        card.sets === sets &&
+        card.qtyOfSheets === printingSheetsCharge,
+    )
+
+    let printingRatePerColor = 0
+
+    if (textColors === 1) {
+      printingRatePerColor = rateCardRow?.SingleColor!
+    } else if (paper_type === 'Maplitho') {
+      printingRatePerColor = rateCardRow?.Maplitho!
+    } else if (paper_type === 'ArtPaper') {
+      printingRatePerColor = rateCardRow?.ArtPaper!
+    } else if (paper_type === 'ArtCard') {
+      printingRatePerColor = rateCardRow?.ArtCard!
+    } else if (paper_type === 'FinePaper') {
+      printingRatePerColor = rateCardRow?.FinePaper!
+    } else {
+      printingRatePerColor = rateCardRow?.price!
+    }
+
+    printingCost =
+      (printingRatePerColor *
+        textColors *
+        printingRateFactor *
+        formsQty *
+        printingSets *
+        ceilingPrintingSheets) /
+      1000
+
+    totalPrintingCost += printingCost
+  })
+
+  return totalPrintingCost
 }
 
 function calculatePaperWeight(
@@ -184,73 +301,76 @@ function calculatePaperWeight(
 }
 
 function getWastageSheets(
-  jobQuantity: number,
   wastageFactor: number,
-  totalSetsUsed: number,
+  formsSheetsDict: FormsSheetsDictType,
   textColors: number,
 ) {
-  // if (textColors === 1) {
-  //   if (jobQuantity <= 0) {
-  //     return 0
-  //   } else if (jobQuantity <= 2100) {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * 75 +
-  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 50 +
-  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 25
-  //     )
-  //   } else if (jobQuantity <= 4200) {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * 100 +
-  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 75 +
-  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 50
-  //     )
-  //   } else if (jobQuantity <= 8400) {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * 125 +
-  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 100 +
-  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 75
-  //     )
-  //   } else {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * jobQuantity * 0.015 +
-  //       ((totalSetsUsed.totalSetsWTHalf * wastageFactor * jobQuantity) / 2) *
-  //         0.015 +
-  //       ((totalSetsUsed.totalSetsWTQuarter * wastageFactor * jobQuantity) / 4) *
-  //         0.015
-  //     )
-  //   }
-  // } else {
-  //   if (jobQuantity <= 0) {
-  //     return 0
-  //   } else if (jobQuantity <= 2100) {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * 75 +
-  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 50 +
-  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 25
-  //     )
-  //   } else if (jobQuantity <= 4200) {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * 100 +
-  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 75 +
-  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 50
-  //     )
-  //   } else if (jobQuantity <= 8400) {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * 125 +
-  //       totalSetsUsed.totalSetsWTHalf * wastageFactor * 100 +
-  //       totalSetsUsed.totalSetsWTQuarter * wastageFactor * 75
-  //     )
-  //   } else {
-  //     return (
-  //       totalSetsUsed.totalSetsFB * wastageFactor * jobQuantity * 0.0175 +
-  //       ((totalSetsUsed.totalSetsWTHalf * wastageFactor * jobQuantity) / 2) *
-  //         0.0175 +
-  //       ((totalSetsUsed.totalSetsWTQuarter * wastageFactor * jobQuantity) / 4) *
-  //         0.0175
-  //     )
-  //   }
-  // }
-  return 0
+  let totalWastageSheets = 0
+
+  const colorsFactor =
+    textColors === 1
+      ? 0.015
+      : textColors === 2
+        ? 0.0165
+        : textColors === 3
+          ? 0.017
+          : 0.0175
+
+  for (const [key, value] of Object.entries(formsSheetsDict)) {
+    const forms = value.formsQty
+    const sheets = value.sheetsQty
+    let wastage = 0
+    if (key === 'totalFormsFB') {
+      if (sheets <= 2100) {
+        wastage = forms * wastageFactor * 75
+      } else if (sheets <= 4200) {
+        wastage = forms * wastageFactor * 100
+      } else if (sheets <= 8400) {
+        wastage = forms * wastageFactor * 125
+      } else {
+        wastage = forms * wastageFactor * sheets * colorsFactor
+      }
+    }
+    if (key === 'totalForms2Ups') {
+      if (sheets <= 2100) {
+        wastage = forms * wastageFactor * 50
+      } else if (sheets <= 4200) {
+        wastage = forms * wastageFactor * 75
+      } else if (sheets <= 8400) {
+        wastage = forms * wastageFactor * 100
+      } else {
+        wastage = forms * wastageFactor * sheets * colorsFactor
+      }
+    }
+    if (key === 'totalForms4Ups') {
+      if (sheets <= 2100) {
+        wastage = forms * wastageFactor * 25
+      } else if (sheets <= 4200) {
+        wastage = forms * wastageFactor * 50
+      } else if (sheets <= 8400) {
+        wastage = forms * wastageFactor * 75
+      } else {
+        wastage = forms * wastageFactor * sheets * colorsFactor
+      }
+    }
+    if (key === 'TotalForms8Ups') {
+      if (sheets <= 2100) {
+        wastage = forms * wastageFactor * 15
+      } else if (sheets <= 4200) {
+        wastage = forms * wastageFactor * 30
+      } else if (sheets <= 8400) {
+        wastage = forms * wastageFactor * 40
+      } else {
+        wastage = forms * wastageFactor * sheets * colorsFactor
+      }
+    }
+    formsSheetsDict[key as keyof FormsSheetsDictType].wastageSheets = wastage
+
+    // Add to total wastage sheets
+    totalWastageSheets += wastage
+  }
+
+  return { totalWastageSheets, formsSheetsDict }
 }
 
 function calculateSheets(
@@ -261,9 +381,39 @@ function calculateSheets(
   const totalSheetsFB = textForms.totalFormsFB * jobQuantity
   const totalSheets2Ups = (textForms.totalForms2Ups * jobQuantity) / 2
   const totalSheets4Ups = (textForms.totalForms4Ups * jobQuantity) / 4
-  const totalSheets8Ups = (textForms.TotalForms8Ups * jobQuantity) / 8
+  const totalSheets8Ups = (textForms.totalForms8Ups * jobQuantity) / 8
 
-  return totalSheetsFB + totalSheets2Ups + totalSheets4Ups + totalSheets8Ups
+  const totalFormsFB = textForms.totalFormsFB
+  const totalForms2Ups = textForms.totalForms2Ups
+  const totalForms4Ups = textForms.totalForms4Ups
+  const TotalForms8Ups = textForms.totalForms8Ups
+
+  const totalSheets =
+    totalSheetsFB + totalSheets2Ups + totalSheets4Ups + totalSheets8Ups
+  const formsSheetsDict = {
+    totalFormsFB: {
+      formsQty: totalFormsFB,
+      sheetsQty:
+        totalSheetsFB / totalFormsFB ? totalSheetsFB / totalFormsFB : 0,
+    },
+    totalForms2Ups: {
+      formsQty: totalForms2Ups,
+      sheetsQty:
+        totalSheets2Ups / totalForms2Ups ? totalSheets2Ups / totalForms2Ups : 0,
+    },
+    totalForms4Ups: {
+      formsQty: totalForms4Ups,
+      sheetsQty:
+        totalSheets4Ups / totalForms4Ups ? totalSheets4Ups / totalForms4Ups : 0,
+    },
+    TotalForms8Ups: {
+      formsQty: TotalForms8Ups,
+      sheetsQty:
+        totalSheets8Ups / TotalForms8Ups ? totalSheets8Ups / TotalForms8Ups : 0,
+    },
+  } as FormsSheetsDictType
+
+  return { calculatedSheets: totalSheets, formsSheetsDict }
 }
 
 function calculateTotalSets(textForms: PrintingForms) {
@@ -272,7 +422,7 @@ function calculateTotalSets(textForms: PrintingForms) {
 
   let totalSetsWT2Ups = textForms.totalForms2Ups
   let totalSetsWT4Ups = textForms.totalForms4Ups
-  let totalSetsWT8Ups = textForms.TotalForms8Ups
+  let totalSetsWT8Ups = textForms.totalForms8Ups
 
   return totalSetsFB + totalSetsWT2Ups + totalSetsWT4Ups + totalSetsWT8Ups
 }
@@ -283,7 +433,6 @@ function calculateTextForms(
 ): PrintingForms {
   // // Calculate the number of forms required
   const textForms = textPages / textPagesPerSheet
-  console.log('textForms', textForms)
   // return textForms
 
   // Calculate the number of complete forms
@@ -291,7 +440,7 @@ function calculateTextForms(
   let totalFormsFB = completeForms
   let totalForms2Ups = 0
   let totalForms4Ups = 0
-  let TotalForms8Ups = 0
+  let totalForms8Ups = 0
 
   // Calculate the remaining fractional part
   const remainingFraction = textForms - completeForms
@@ -301,7 +450,7 @@ function calculateTextForms(
     if (remainingFraction > 0.75) {
       totalForms2Ups += 1 // For 0.75 < fraction <= 1.0
       totalForms4Ups += 1
-      TotalForms8Ups += 1
+      totalForms8Ups += 1
     } else if (remainingFraction > 0.5) {
       totalForms2Ups += 1 // For exactly 0.5, add 1 form
       totalForms4Ups += 1
@@ -310,16 +459,11 @@ function calculateTextForms(
     }
   }
 
-  console.log('totalFormsFB', totalFormsFB)
-  console.log('totalForms2Ups', totalForms2Ups)
-  console.log('totalForms4Ups', totalForms4Ups)
-  console.log('TotalForms8Ups', TotalForms8Ups)
-
   return {
     totalFormsFB,
     totalForms2Ups,
     totalForms4Ups,
-    TotalForms8Ups,
+    totalForms8Ups,
   } as PrintingForms
 }
 

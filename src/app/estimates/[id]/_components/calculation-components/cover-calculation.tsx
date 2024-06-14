@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/command'
 import { CheckIcon, Plus, Trash } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { PaperData } from '@/server/paper/types'
 import { getPaperData } from '@/server/paper/queries'
 import { calculateCoverCost as calculateCoverCost } from '@/server/calculations/cover/actions'
@@ -72,6 +72,36 @@ export default function CoverCalculation(props: {
   paperData: PaperData[]
   form: UseFormReturn
 }) {
+  const [lengthInInches, setLengthInInches] = useState('')
+  const [widthInInches, setWidthInInches] = useState('')
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: any,
+    setInches: (value: string) => void,
+  ) => {
+    const value = e.target.value
+    const lastChar = value.charAt(value.length - 1)
+
+    if (lastChar === '"') {
+      const numericValue = parseFloat(value.slice(0, -1))
+      if (!isNaN(numericValue)) {
+        const mmValue = (numericValue * 25.4).toFixed(2) // Convert inches to mm
+        field.onChange(mmValue)
+        setInches(numericValue.toFixed(2))
+      } else {
+        field.onChange(value.slice(0, -1))
+        setInches('')
+      }
+    } else {
+      field.onChange(value)
+      const numericValue = parseFloat(value)
+      if (!isNaN(numericValue)) {
+        setInches((numericValue / 25.4).toFixed(2)) // Convert mm to inches
+      } else {
+        setInches('')
+      }
+    }
+  }
   const [openPaper, setOpenPaper] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState<PaperData | undefined>(
     undefined,
@@ -102,7 +132,17 @@ export default function CoverCalculation(props: {
   const effectivePaperWidth = selectedPaper?.paperWidth
     ? selectedPaper.paperWidth
     : 0
+
   const wastageFactor = Number(props.form.watch('coverWastageFactor'))
+  const plateFactor = Number(props.form.watch('coverPlateRateFactor'))
+  const printingFactor = Number(props.form.watch('coverPrintingFactor'))
+
+  const coverWorkingLength = Number(props.form.watch('coverWorkingLength'))
+  const coverWorkingWidth = Number(props.form.watch('coverWorkingWidth'))
+  const watchPaperData = props.form.watch('coverPaper')
+  const watchPlateSize = props.form.watch('coverPlateSize')
+  const printingRateFactor = props.form.watch('coverPrintingRateFactor')
+
   const paperRatePerkg = Number(props.form.watch('coverPaperRate'))
   const plateRate = Number(props.form.watch('coverPlateRate'))
   const printingRate = Number(props.form.watch('coverPrintingRate'))
@@ -110,21 +150,51 @@ export default function CoverCalculation(props: {
   const [debouncedWastageFactor] = useDebounce(wastageFactor, 1000)
   const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 1000)
   const [debouncedPlateRate] = useDebounce(plateRate, 1000)
-  const [debouncedPrintingRate] = useDebounce(printingRate, 1000)
+  const [debouncedCoverWorkingLength] = useDebounce(coverWorkingLength, 1000)
+  const [debouncedCoverWorkingWidth] = useDebounce(coverWorkingWidth, 1000)
+  const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
+
+  useEffect(() => {
+    const lengthValue = props.form.getValues('coverWorkingLength')
+    const widthValue = props.form.getValues('coverWorkingWidth')
+
+    if (lengthValue || lengthValue === 0) {
+      setLengthInInches((parseFloat(lengthValue) / 25.4).toFixed(2))
+    }
+    if (widthValue || widthValue === 0) {
+      setWidthInInches((parseFloat(widthValue) / 25.4).toFixed(2))
+    }
+  }, [coverWorkingLength, coverWorkingWidth])
+
+  useEffect(() => {
+    if (coverWorkingLength <= 508 && coverWorkingWidth <= 762) {
+      props.form.setValue('coverPlateSize', 'Small')
+      props.form.setValue('coverPlateRate', 300 * plateFactor)
+    } else {
+      props.form.setValue('coverPlateSize', 'Large')
+      props.form.setValue('coverPlateRate', 500 * plateFactor)
+    }
+  }, [coverWorkingLength, coverWorkingWidth, plateFactor])
 
   useEffect(() => {
     const initialPaperName = props.form.getValues('coverPaper')
     const initialSelectedPaper = props.paperData.find(
       (paper) => paper.paperName === initialPaperName,
     )
+
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
       props.form.setValue(
         'coverPaperRate',
         initialSelectedPaper.paperDefaultRate,
       )
+      props.form.setValue(
+        'coverWorkingLength',
+        initialSelectedPaper.paperLength,
+      )
+      props.form.setValue('coverWorkingWidth', initialSelectedPaper.paperWidth)
     }
-  }, [props.form.watch('coverPaper')])
+  }, [watchPaperData])
 
   useEffect(() => {
     const calculateCoverSheets = async () => {
@@ -134,10 +204,13 @@ export default function CoverCalculation(props: {
         effectiveCoverLength,
         effectiveCoverWidth,
         grippers,
+        debouncedCoverWorkingLength,
+        debouncedCoverWorkingWidth,
         debouncedPaperRatePerkg,
         debouncedWastageFactor,
         debouncedPlateRate,
-        debouncedPrintingRate,
+        watchPlateSize,
+        debouncedPrintingRateFactor,
         coverPrintingType,
       )
       setCoverCostDataTable(fetchCoverCostDataTable)
@@ -148,13 +221,17 @@ export default function CoverCalculation(props: {
     effectiveCoverWidth,
     grippers,
     selectedPaper,
+    coverWorkingLength,
+    coverWorkingWidth,
+    debouncedCoverWorkingLength,
+    debouncedCoverWorkingWidth,
     debouncedPaperRatePerkg,
     debouncedWastageFactor,
     debouncedPlateRate,
-    debouncedPrintingRate,
-    coverPrintingType,
     props.variationData,
     props.form,
+    watchPlateSize,
+    debouncedPrintingRateFactor,
   ])
 
   return (
@@ -419,21 +496,41 @@ export default function CoverCalculation(props: {
             <FormField
               control={props.form.control}
               name="coverWastageFactor"
-              render={({ field: { value, onChange } }) => (
+              render={({ field }) => (
                 <FormItem className="w-2/5">
                   <FormLabel>
-                    Cover Wastage Factor: {(value * 100).toFixed(2)}%
+                    Cover Wastage Factor {(field.value * 100).toFixed(2)}%
                   </FormLabel>
                   <FormControl>
-                    <Slider
-                      className="mt-2"
-                      min={0.01}
-                      max={2.0}
-                      step={0.01}
-                      defaultValue={[value]}
-                      onValueChange={onChange}
-                      name="coverWastageFactor"
-                    />
+                    <Input type="number" step={0.001} {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverPlateRateFactor"
+              render={({ field }) => (
+                <FormItem className="w-2/5">
+                  <FormLabel>
+                    Plate Rate Factor {(field.value * 100).toFixed(2)}%
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="number" step={0.001} {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverPrintingRateFactor"
+              render={({ field }) => (
+                <FormItem className="w-2/5">
+                  <FormLabel>
+                    Printing Rate Factor {(field.value * 100).toFixed(2)}%
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="number" step={0.001} {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -443,10 +540,20 @@ export default function CoverCalculation(props: {
               name="coverWorkingLength"
               render={({ field }) => (
                 <FormItem className=" ">
-                  <FormLabel>Working Length(mm)</FormLabel>
+                  <FormLabel className=" font-bold">
+                    Working Length(mm)
+                  </FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input
+                      {...field}
+                      onChange={(e) =>
+                        handleInputChange(e, field, setLengthInInches)
+                      }
+                    ></Input>
                   </FormControl>
+                  <div className="pl-2 text-sm text-gray-500">
+                    {lengthInInches && `(${lengthInInches} in)`}
+                  </div>
                 </FormItem>
               )}
             />
@@ -455,19 +562,29 @@ export default function CoverCalculation(props: {
               name="coverWorkingWidth"
               render={({ field }) => (
                 <FormItem className=" ">
-                  <FormLabel>Working Width(mm)</FormLabel>
+                  <FormLabel className=" font-bold">
+                    Working Width(mm)
+                  </FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input
+                      {...field}
+                      onChange={(e) =>
+                        handleInputChange(e, field, setWidthInInches)
+                      }
+                    ></Input>
                   </FormControl>
+                  <div className="pl-2 text-sm text-gray-500">
+                    {widthInInches && `(${widthInInches} in)`}
+                  </div>
                 </FormItem>
               )}
             />
             <FormField
               control={props.form.control}
-              name="coverWorkingSheetUps"
+              name="coverPlateSize"
               render={({ field }) => (
-                <FormItem className=" ">
-                  <FormLabel>Calculated Working Sheet Ups</FormLabel>
+                <FormItem className=" text-gray-500">
+                  <FormLabel>Cover Plate Size</FormLabel>
                   <FormControl>
                     <Input readOnly={true} {...field}></Input>
                   </FormControl>
@@ -532,18 +649,6 @@ export default function CoverCalculation(props: {
               render={({ field }) => (
                 <FormItem className=" grow">
                   <FormLabel>Plate Rate(&#x20B9;)</FormLabel>
-                  <FormControl>
-                    <Input {...field}></Input>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={props.form.control}
-              name="coverPrintingRate"
-              render={({ field }) => (
-                <FormItem className=" grow">
-                  <FormLabel>Printing Rate(&#x20B9;)/Colors</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
                   </FormControl>

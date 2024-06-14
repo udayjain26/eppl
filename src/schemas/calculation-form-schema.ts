@@ -105,6 +105,65 @@ export const CalculationFormSchema = z.object({
 
   coverPrintingType: z.string(),
 
+  coverPlateRateFactor: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Plate Rate Factor must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+  coverPrintingRateFactor: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Printing Rate Factor must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+  coverPlateSize: z.string(),
+
+  coverWorkingLength: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Length must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+  coverWorkingWidth: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Width must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
   textBleed: z.preprocess(
     (val) => {
       if (typeof val === 'string') {
@@ -207,6 +266,36 @@ export const CalculationFormSchema = z.object({
       .optional()
       .transform((val) => val?.toString() || undefined),
   ),
+  textPlateRateFactor: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Plate Rate Factor must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+  textPrintingRateFactor: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Printing Rate Factor must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+  textPlateSize: z.string(),
+
   textWorkingLength: z.preprocess(
     (val) => {
       if (typeof val === 'string') {
