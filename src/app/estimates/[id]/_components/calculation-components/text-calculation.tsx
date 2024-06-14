@@ -46,7 +46,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { useDebounce } from 'use-debounce'
 
 export type TextCostData = {
-  textUpsPerSheet: number
+  pagesPerSheet: number
   textForms: PrintingForms
   totalSets: number
   paperAreaUsed: number
@@ -537,7 +537,7 @@ export default function TextCalculation(props: {
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Pages/Sheet</span>
-                <span>{textCostDataTable?.textUpsPerSheet}</span>
+                <span>{textCostDataTable?.pagesPerSheet}</span>
               </li>
 
               <li className="flex items-center justify-between border-b-2">

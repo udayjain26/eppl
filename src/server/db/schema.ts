@@ -368,25 +368,24 @@ export const variationCalculation = createTable('variation_calculation', {
   coverPaperRate: numeric('cover_paper_rate', { precision: 7, scale: 2 }),
   coverWastageFactor: numeric('cover_wastage_factor', {
     precision: 7,
-    scale: 2,
+    scale: 3,
   }),
   coverPlateRate: numeric('cover_plate_rate', { precision: 7, scale: 2 }),
   coverPrintingRate: numeric('cover_printing_rate', { precision: 7, scale: 2 }),
   coverPrintingType: varchar('cover_printing_type', { length: 256 }),
   coverPlateRateFactor: numeric('cover_plate_rate_factor', {
     precision: 7,
-    scale: 2,
+    scale: 3,
   }),
   coverPrintingRateFactor: numeric('cover_printing_rate_factor', {
     precision: 7,
-    scale: 2,
+    scale: 3,
   }),
   coverWorkingLength: numeric('cover_working_length', {
     precision: 7,
     scale: 2,
   }),
   coverWorkingWidth: numeric('cover_working_width', { precision: 7, scale: 2 }),
-
   textGutters: numeric('text_gutters', { precision: 7, scale: 2 }),
   textBleed: numeric('text_bleed', { precision: 7, scale: 2 }),
   textGrippers: numeric('text_grippers', { precision: 7, scale: 2 }),
@@ -394,15 +393,15 @@ export const variationCalculation = createTable('variation_calculation', {
   textPaperRate: numeric('text_paper_rate', { precision: 7, scale: 2 }),
   textWastageFactor: numeric('text_wastage_factor', {
     precision: 7,
-    scale: 2,
+    scale: 3,
   }),
   textPlateRateFactor: numeric('text_plate_rate_factor', {
     precision: 7,
-    scale: 2,
+    scale: 3,
   }),
   textPrintingRateFactor: numeric('text_printing_rate_factor', {
     precision: 7,
-    scale: 2,
+    scale: 3,
   }),
   textPlateRate: numeric('text_plate_rate', { precision: 7, scale: 2 }),
   textPrintingRate: numeric('text_printing_rate', { precision: 7, scale: 2 }),
@@ -412,16 +411,6 @@ export const variationCalculation = createTable('variation_calculation', {
   }),
   textWorkingWidth: numeric('text_working_width', { precision: 7, scale: 2 }),
 })
-
-// export const coverSheetsDataTable = createTable('cover_sheets_data_table', {
-//   uuid: uuid('uuid').defaultRandom().primaryKey(),
-//   variationCalculationUuid: uuid('variation_calculation_uuid')
-//     .references(() => variationCalculation.uuid, { onDelete: 'cascade' })
-//     .notNull(),
-//   quantity: numeric('quantity').notNull(),
-//   requiredSheets: numeric('required_sheets').notNull(),
-//   wastageSheets: numeric('wastage_sheets').notNull(),
-// })
 
 export const variationCalculationRelations = relations(
   variationCalculation,

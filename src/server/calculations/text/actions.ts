@@ -65,7 +65,6 @@ export async function calculateTextCost(
     !variationData.textPages ||
     !paperCostPerKg ||
     !textPlateRate ||
-    // !textPrintingRate ||
     !textWorkingLength ||
     !textWorkingWidth ||
     !variationData.textColors ||
@@ -75,7 +74,6 @@ export async function calculateTextCost(
     return undefined
   }
   const textPagesPerSheet = calculatePagesPerSheet(
-    // paperData,
     textWorkingLength,
     textWorkingWidth,
     effectiveTextLength,
@@ -87,7 +85,7 @@ export async function calculateTextCost(
     return undefined
   }
 
-  const textColors = variationData.textColors
+  const textColors = variationData.textColors || 0
 
   const textForms = calculateTextForms(
     variationData.textPages,
@@ -160,7 +158,7 @@ export async function calculateTextCost(
   })
 
   return {
-    textUpsPerSheet: textPagesPerSheet,
+    pagesPerSheet: textPagesPerSheet,
     textForms: textForms,
     totalSets: totalSetsUsed,
     paperAreaUsed: paperAreaUsed,

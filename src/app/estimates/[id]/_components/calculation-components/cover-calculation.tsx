@@ -45,25 +45,26 @@ import {
 } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { useDebounce } from 'use-debounce'
+import { PrintingForms } from '@/server/calculations/text/actions'
 
 export type CoverCostData = {
   coverPiecesPerSheet: number
   pagesPerSheet: number
-  percentageSheetUsed: number
-  forms: number
+  paperAreaUsed: number
+  coverForms: PrintingForms
   totalSets: number
   coverCostDataDict: {
-    quantity: number
+    jobQuantity: number
     calculatedSheets: number
     wastageSheets: number
     totalSheets: number
     paperWeight: number
     paperCost: number
-    platesCost: number
+    plateCost: number
     printingCost: number
     laminationCost: number
     totalCost: number
-    costPerPiece: number
+    costPerCover: number
   }[]
 }
 
@@ -232,6 +233,7 @@ export default function CoverCalculation(props: {
     props.form,
     watchPlateSize,
     debouncedPrintingRateFactor,
+    coverPrintingType,
   ])
 
   return (
@@ -611,7 +613,13 @@ export default function CoverCalculation(props: {
 
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Cover Forms</span>
-                <span>{coverCostDataTable?.forms}</span>
+                <span>
+                  {' '}
+                  {coverCostDataTable?.coverForms.totalFormsFB! +
+                    coverCostDataTable?.coverForms.totalForms2Ups! / 2 +
+                    coverCostDataTable?.coverForms.totalForms4Ups! / 4 +
+                    coverCostDataTable?.coverForms.totalForms8Ups! / 8}
+                </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Total Sets</span>
@@ -619,16 +627,13 @@ export default function CoverCalculation(props: {
               </li>
               <li
                 className={cn('flex items-center justify-between border-b-2', {
-                  ' text-red-500':
-                    coverCostDataTable?.percentageSheetUsed! < 90,
+                  ' text-red-500': coverCostDataTable?.paperAreaUsed! < 90,
                 })}
               >
                 <span className={cn('text-muted-foreground', {})}>
                   Paper Area Used
                 </span>
-                <span>
-                  {coverCostDataTable?.percentageSheetUsed?.toFixed(2)} %
-                </span>
+                <span>{coverCostDataTable?.paperAreaUsed?.toFixed(2)} %</span>
               </li>
             </ul>
             <FormField
@@ -655,6 +660,38 @@ export default function CoverCalculation(props: {
                 </FormItem>
               )}
             />
+            <ol className="flex flex-col gap-x-2">
+              <li>Printing Planning: </li>
+              <li>
+                <span>
+                  {coverCostDataTable?.coverForms.totalFormsFB
+                    ? coverCostDataTable?.coverForms.totalFormsFB + 'x F/B'
+                    : ''}
+                </span>
+              </li>
+              <li>
+                <span>
+                  {coverCostDataTable?.coverForms.totalForms2Ups
+                    ? coverCostDataTable?.coverForms.totalForms2Ups +
+                      'x W/T 2Ups'
+                    : ''}
+                </span>
+              </li>
+              {/* <li>
+                <span>
+                  {textCostDataTable?.textForms.totalForms4Ups
+                    ? textCostDataTable?.textForms.totalForms4Ups + 'x W/T 4Ups'
+                    : ''}
+                </span>
+              </li>
+              <li>
+                <span>
+                  {textCostDataTable?.textForms.totalForms8Ups
+                    ? textCostDataTable?.textForms.totalForms8Ups + 'x W/T8Ups'
+                    : ''}
+                </span>
+              </li> */}
+            </ol>
           </div>
         </div>
       </div>
@@ -678,18 +715,18 @@ export default function CoverCalculation(props: {
         <TableBody>
           {coverCostDataTable?.coverCostDataDict.map((item, index) => {
             return (
-              <TableRow key={item.quantity}>
-                <TableCell>{item.quantity}</TableCell>
+              <TableRow key={item.jobQuantity}>
+                <TableCell>{item.jobQuantity}</TableCell>
                 <TableCell>{item.calculatedSheets}</TableCell>
                 <TableCell>{item.wastageSheets}</TableCell>
                 <TableCell>{item.totalSheets}</TableCell>
                 <TableCell>{item.paperWeight}</TableCell>
                 <TableCell>{item.paperCost}&#x20B9;</TableCell>
-                <TableCell>{item.platesCost}&#x20B9;</TableCell>
+                <TableCell>{item.plateCost}&#x20B9;</TableCell>
                 <TableCell>{item.printingCost}&#x20B9;</TableCell>
                 <TableCell>{item.laminationCost}&#x20B9;</TableCell>
                 <TableCell>{item.totalCost}&#x20B9;</TableCell>
-                <TableCell>{item.costPerPiece}&#x20B9; </TableCell>
+                <TableCell>{item.costPerCover}&#x20B9; </TableCell>
               </TableRow>
             )
           })}
