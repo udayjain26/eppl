@@ -72,7 +72,12 @@ export default function CoverCalculation(props: {
   variationData: VariationData
   paperData: PaperData[]
   form: UseFormReturn
+  coverCostDataTable: CoverCostData | undefined
+  setCoverCostDataTable: React.Dispatch<
+    React.SetStateAction<CoverCostData | undefined>
+  >
 }) {
+  const coverCostDataTable = props.coverCostDataTable
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
   const handleInputChange = (
@@ -107,9 +112,7 @@ export default function CoverCalculation(props: {
   const [selectedPaper, setSelectedPaper] = useState<PaperData | undefined>(
     undefined,
   )
-  const [coverCostDataTable, setCoverCostDataTable] = useState<
-    CoverCostData | undefined
-  >(undefined)
+
   const effectiveCoverLength = props.variationData.openSizeLength
     ? props.variationData.openSizeLength +
       Number(props.form.watch('coverBleed')) * 2
@@ -214,7 +217,7 @@ export default function CoverCalculation(props: {
         debouncedPrintingRateFactor,
         coverPrintingType,
       )
-      setCoverCostDataTable(fetchCoverCostDataTable)
+      props.setCoverCostDataTable(fetchCoverCostDataTable)
     }
     calculateCoverSheets()
   }, [
@@ -454,9 +457,18 @@ export default function CoverCalculation(props: {
                                 key={paper.paperName}
                                 value={paper.paperName}
                                 onSelect={() => {
+                                  setSelectedPaper(undefined)
                                   props.form.setValue(
                                     'coverPaper',
                                     paper.paperName,
+                                  )
+                                  props.form.setValue(
+                                    'coverWorkingLength',
+                                    paper.paperLength,
+                                  )
+                                  props.form.setValue(
+                                    'coverWorkingWidth',
+                                    paper.paperWidth,
                                   )
                                   setSelectedPaper(paper)
                                   setOpenPaper(false)
@@ -677,20 +689,6 @@ export default function CoverCalculation(props: {
                     : ''}
                 </span>
               </li>
-              {/* <li>
-                <span>
-                  {textCostDataTable?.textForms.totalForms4Ups
-                    ? textCostDataTable?.textForms.totalForms4Ups + 'x W/T 4Ups'
-                    : ''}
-                </span>
-              </li>
-              <li>
-                <span>
-                  {textCostDataTable?.textForms.totalForms8Ups
-                    ? textCostDataTable?.textForms.totalForms8Ups + 'x W/T8Ups'
-                    : ''}
-                </span>
-              </li> */}
             </ol>
           </div>
         </div>

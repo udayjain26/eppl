@@ -23,6 +23,7 @@ export const productFieldMap: productFieldMapType = {
       'dispatch',
     ],
     calculationComponents: [
+      'totalCalculation',
       'coverCalculation',
       'textCalculation',
       'fabricationCalculation',

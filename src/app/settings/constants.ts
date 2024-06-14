@@ -156,7 +156,7 @@ export const commonSizes = [
 export const paperbackBindingTypes = [
   { label: 'Perfect', value: 'perfect_binding', rate: 200 },
   { label: 'Sewn and Perfect', value: 'sewn_and_perfect', rate: 400 },
-  { label: 'Side Pin and Perfect', value: 'side_pin_and_perfect', rate: 410 },
+  { label: 'Side Pin and Perfect', value: 'side_pin_and_perfect', rate: 225 },
 ]
 
 export const postpressProcesses = [

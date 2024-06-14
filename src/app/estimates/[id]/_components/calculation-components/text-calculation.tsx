@@ -70,6 +70,8 @@ export default function TextCalculation(props: {
   variationData: VariationData
   paperData: PaperData[]
   form: UseFormReturn
+  textCostDataTable: TextCostData | undefined
+  setTextCostDataTable: any
 }) {
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
@@ -105,9 +107,8 @@ export default function TextCalculation(props: {
   const [selectedPaper, setSelectedPaper] = useState<PaperData | undefined>(
     undefined,
   )
-  const [textCostDataTable, setTextCostDataTable] = useState<
-    TextCostData | undefined
-  >(undefined)
+
+  const textCostDataTable = props.textCostDataTable
   const grippers = Number(props.form.watch('textGrippers'))
   const bleed = Number(props.form.watch('textBleed'))
   const gutters = Number(props.form.watch('textGutters'))
@@ -199,7 +200,7 @@ export default function TextCalculation(props: {
         watchPlateSize,
         debouncedPrintingRateFactor,
       )
-      setTextCostDataTable(fetchTextCostData)
+      props.setTextCostDataTable(fetchTextCostData)
     }
     calculateTextCostData()
   }, [
@@ -379,7 +380,6 @@ export default function TextCalculation(props: {
                                 key={paper.paperName}
                                 value={paper.paperName}
                                 onSelect={() => {
-                                  console.log('triggered again')
                                   setSelectedPaper(undefined)
                                   props.form.setValue(
                                     'textPaper',
