@@ -7,30 +7,111 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { calculateFabricationCost } from '@/server/calculations/fabrication/actions'
 import { VariationData } from '@/server/variations/types'
+import { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { TextCostData } from './text-calculation'
+import { CoverCostData } from './cover-calculation'
 
-export type FabricationCostData = {
-  fabricationCostDataDict: {
-    jobQuantity: number
-    calculatedSheets: number
-    foldingCost?: number
-    gatheringCost?: number
-    perfectBindingCost?: number
-    stitchingCost?: number
-    sidePinCost?: number
-    totalCost: number
-    costPerPiece: number
-  }[]
+export type FabricationCostDataDict = {
+  jobQuantity: number
+  fabricationSheets?: number
+  foldingCost?: number
+  gatheringCost?: number
+  perfectBindingCost?: number
+  sewnAndPerfect?: number
+  sidePinAndPerfect?: number
+  totalCost: number
+  costPerPiece: number
 }
+
+export type FabricationCostData =
+  | {
+      fabricationForms: number
+      fabricationCostDataDict: FabricationCostDataDict[]
+    }
+  | undefined
 
 export default function FabricationCalculation(props: {
   variationData: VariationData
   form: UseFormReturn
+  setFabricationCostDataTable: React.Dispatch<
+    React.SetStateAction<FabricationCostData | undefined>
+  >
   fabricationCostDataTable: FabricationCostData | undefined
-  setFabricationCostDataTable: any
+  textCostDataTable: TextCostData
+  coverCostDataTable: CoverCostData
 }) {
-  const fabricationCostDataTable = props.fabricationCostDataTable
+  const {
+    variationData,
+    fabricationCostDataTable,
+    textCostDataTable,
+    coverCostDataTable,
+    setFabricationCostDataTable,
+  } = props
+
+  useEffect(() => {
+    const calculateFabrication = async () => {
+      const fetchFabricationCostDataTable = await calculateFabricationCost(
+        variationData,
+        textCostDataTable,
+        coverCostDataTable,
+      )
+      console.log('fetchFabricationCosts', fetchFabricationCostDataTable)
+      setFabricationCostDataTable(fetchFabricationCostDataTable)
+    }
+    calculateFabrication()
+  }, [
+    textCostDataTable,
+    coverCostDataTable,
+    variationData,
+    setFabricationCostDataTable,
+  ])
+
+  const headers: {
+    key: keyof FabricationCostDataDict
+    label: string | undefined
+  }[] = []
+  const rows: JSX.Element[] = []
+
+  const headerLabels: { [key in keyof FabricationCostDataDict]: string } = {
+    jobQuantity: 'Job Quantity',
+    fabricationSheets: 'Fabrication Sheets',
+    foldingCost: 'Folding',
+    gatheringCost: 'Gathering',
+    perfectBindingCost: 'Perfect Binding',
+    sewnAndPerfect: 'Sewn and Perfect',
+    sidePinAndPerfect: 'Side Pin and Perfect',
+    totalCost: 'Total Cost',
+    costPerPiece: 'Cost Per Piece',
+  }
+
+  if (
+    fabricationCostDataTable &&
+    fabricationCostDataTable.fabricationCostDataDict.length > 0
+  ) {
+    // Collect all defined headers
+    const firstItem = fabricationCostDataTable.fabricationCostDataDict[0]
+    for (const key in firstItem) {
+      if (firstItem[key as keyof FabricationCostDataDict] !== undefined) {
+        headers.push({
+          key: key as keyof FabricationCostDataDict,
+          label: headerLabels[key as keyof FabricationCostDataDict],
+        })
+      }
+    }
+
+    // Collect all rows with defined keys
+    rows.push(
+      ...fabricationCostDataTable.fabricationCostDataDict.map((item, index) => {
+        const row = headers.map(({ key }) => (
+          <TableCell key={key}>{item[key]}</TableCell>
+        ))
+        return <TableRow key={index}>{row}</TableRow>
+      }),
+    )
+  }
 
   return (
     <>
@@ -39,14 +120,18 @@ export default function FabricationCalculation(props: {
           <h1 className="underline">Fabrication Specifications</h1>
           <div className="text-sm">
             <ul className="flex flex-col gap-y-2">
-              {props.variationData?.paperbackBookBinding && (
+              {variationData?.paperbackBookBinding && (
                 <li className="flex items-center justify-between border-b-2">
                   <span className="text-muted-foreground">
                     Paperback Book Binding
                   </span>
-                  <span>{props.variationData?.paperbackBookBinding}</span>
+                  <span>{variationData?.paperbackBookBinding}</span>
                 </li>
               )}
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Fabrication Forms</span>
+                <span>{fabricationCostDataTable?.fabricationForms}</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -54,43 +139,20 @@ export default function FabricationCalculation(props: {
           <div className="flex flex-row gap-x-2">
             <Table>
               <TableCaption>Fabrication Costs</TableCaption>
-              <TableHeader>
-                {/* <TableRow>
-                  <TableHead>Text Quantity</TableHead>
-                  <TableHead>Calculated Sheets</TableHead>
-                  <TableHead>Wastage Sheets</TableHead>
-                  <TableHead>Total Sheets</TableHead>
-                  <TableHead>Paper Weight</TableHead>
-                  <TableHead>Paper Cost</TableHead>
-                  <TableHead>Plates Cost</TableHead>
-                  <TableHead>Printing Cost</TableHead>
-                  <TableHead>Lamination Cost</TableHead>
-                  <TableHead>Total Cost</TableHead>
-                  <TableHead>Cost/Text</TableHead>
-                </TableRow> */}
-              </TableHeader>
-              <TableBody>
-                {/* {textCostDataTable?.textCostDataDict.map((item, index) => {
-                  return (
-                    <TableRow key={item.jobQuantity}>
-                      <TableCell>{item.jobQuantity}</TableCell>
-                      <TableCell>{item.calculatedSheets}</TableCell>
-                      <TableCell>{item.wastageSheets}</TableCell>
-                      <TableCell>{item.totalSheets}</TableCell>
-                      <TableCell>{item.paperWeight}</TableCell>
-                      <TableCell>{item.paperCost}&#x20B9;</TableCell>
-                      <TableCell>{item.plateCost}&#x20B9;</TableCell>
-                      <TableCell>{item.printingCost}&#x20B9;</TableCell>
-                      <TableCell>{item.laminationCost}&#x20B9;</TableCell>
-                      <TableCell>{item.totalCost}&#x20B9;</TableCell>
-                      <TableCell>{item.costPerText}&#x20B9; </TableCell>
+              {headers.length > 0 && (
+                <>
+                  <TableHeader>
+                    <TableRow>
+                      {headers.map(({ key, label }) => (
+                        <TableHead key={key}>{label}</TableHead>
+                      ))}
                     </TableRow>
-                  )
-                })} */}
-              </TableBody>
+                  </TableHeader>
+                  <TableBody>{rows}</TableBody>
+                </>
+              )}
             </Table>
           </div>
-
           <div className="flex flex-row gap-x-2"></div>
         </div>
       </div>

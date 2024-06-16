@@ -21,6 +21,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import {
   Table,
@@ -137,6 +144,7 @@ export default function TextCalculation(props: {
   const watchPaperData = props.form.watch('textPaper')
   const watchPlateSize = props.form.watch('textPlateSize')
   const printingRateFactor = props.form.watch('textPrintingRateFactor')
+  const textPlateSize = props.form.watch('textPlateSize')
 
   const [debouncedWastageFactor] = useDebounce(wastageFactor, 1000)
   const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 1000)
@@ -144,6 +152,11 @@ export default function TextCalculation(props: {
   const [debouncedTextWorkingLength] = useDebounce(textWorkingLength, 1000)
   const [debouncedTextWorkingWidth] = useDebounce(textWorkingWidth, 1000)
   const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
+  const [debouncedPlateSize] = useDebounce(textPlateSize, 1000)
+
+  const isPlateSizeSmall =
+    watchPlateSize === 'Small' &&
+    (textWorkingLength > 508 || textWorkingWidth > 762)
 
   useEffect(() => {
     const lengthValue = props.form.getValues('textWorkingLength')
@@ -175,14 +188,12 @@ export default function TextCalculation(props: {
   }, [watchPaperData])
 
   useEffect(() => {
-    if (textWorkingLength <= 508 && textWorkingWidth <= 762) {
-      props.form.setValue('textPlateSize', 'Small')
+    if (watchPlateSize === 'Small') {
       props.form.setValue('textPlateRate', 300 * plateFactor)
-    } else {
-      props.form.setValue('textPlateSize', 'Large')
+    } else if (watchPlateSize === 'Large') {
       props.form.setValue('textPlateRate', 500 * plateFactor)
     }
-  }, [textWorkingLength, textWorkingWidth, plateFactor])
+  }, [watchPlateSize])
 
   useEffect(() => {
     const calculateTextCostData = async () => {
@@ -197,7 +208,7 @@ export default function TextCalculation(props: {
         debouncedPaperRatePerkg,
         debouncedWastageFactor,
         debouncedPlateRate,
-        watchPlateSize,
+        debouncedPlateSize,
         debouncedPrintingRateFactor,
       )
       props.setTextCostDataTable(fetchTextCostData)
@@ -217,7 +228,7 @@ export default function TextCalculation(props: {
     debouncedPlateRate,
     props.variationData,
     props.form,
-    watchPlateSize,
+    debouncedPlateSize,
     debouncedPrintingRateFactor,
   ])
 
@@ -385,6 +396,10 @@ export default function TextCalculation(props: {
                                     'textPaper',
                                     paper.paperName,
                                   )
+                                  field.onChange(paper.paperName)
+
+                                  props.form.trigger('textPaper') // Trigger form validation and state update
+
                                   props.form.setValue(
                                     'textWorkingLength',
                                     paper.paperLength,
@@ -520,11 +535,23 @@ export default function TextCalculation(props: {
               control={props.form.control}
               name="textPlateSize"
               render={({ field }) => (
-                <FormItem className=" text-gray-500">
+                <FormItem className={cn({ 'text-red-500': isPlateSizeSmall })}>
                   <FormLabel>Text Plate Size</FormLabel>
-                  <FormControl>
-                    <Input readOnly={true} {...field}></Input>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    {...field}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Large">Large</SelectItem>
+                      <SelectItem value="Small">Small</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />

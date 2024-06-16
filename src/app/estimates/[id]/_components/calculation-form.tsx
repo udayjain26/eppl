@@ -22,7 +22,9 @@ import TextCalculation, {
 import { VariationData } from '@/server/variations/types'
 import { useFormState, useFormStatus } from 'react-dom'
 import { PaperData } from '@/server/paper/types'
-import FabricationCalculation from './calculation-components/fabrication-calculation'
+import FabricationCalculation, {
+  FabricationCostData,
+} from './calculation-components/fabrication-calculation'
 import {
   useFieldArray,
   useFormState as useFormStateReactHookForm,
@@ -68,6 +70,9 @@ export default function CalculationFields(props: {
   >(undefined)
   const [textCostDataTable, setTextCostDataTable] = useState<
     TextCostData | undefined
+  >(undefined)
+  const [fabricationCostDataTable, setFabricationCostDataTable] = useState<
+    FabricationCostData | undefined
   >(undefined)
 
   const { isDirty } = useFormStateReactHookForm(form)
@@ -200,6 +205,8 @@ export default function CalculationFields(props: {
                   setCoverCostDataTable={setCoverCostDataTable}
                   textCostDataTable={textCostDataTable}
                   setTextCostDataTable={setTextCostDataTable}
+                  fabricationCostDataTable={fabricationCostDataTable}
+                  setFabricationCostDataTable={setFabricationCostDataTable}
                 />
               ) : null
             })}

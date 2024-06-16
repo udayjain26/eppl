@@ -46,6 +46,13 @@ import {
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { useDebounce } from 'use-debounce'
 import { PrintingForms } from '@/server/calculations/text/actions'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export type CoverCostData = {
   coverPiecesPerSheet: number
@@ -157,6 +164,11 @@ export default function CoverCalculation(props: {
   const [debouncedCoverWorkingLength] = useDebounce(coverWorkingLength, 1000)
   const [debouncedCoverWorkingWidth] = useDebounce(coverWorkingWidth, 1000)
   const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
+  const [debouncedPlateSize] = useDebounce(watchPlateSize, 1000)
+
+  const isPlateSizeSmall =
+    watchPlateSize === 'Small' &&
+    (coverWorkingLength > 508 || coverWorkingWidth > 762)
 
   useEffect(() => {
     const lengthValue = props.form.getValues('coverWorkingLength')
@@ -171,14 +183,12 @@ export default function CoverCalculation(props: {
   }, [coverWorkingLength, coverWorkingWidth])
 
   useEffect(() => {
-    if (coverWorkingLength <= 508 && coverWorkingWidth <= 762) {
-      props.form.setValue('coverPlateSize', 'Small')
+    if (watchPlateSize === 'Small') {
       props.form.setValue('coverPlateRate', 300 * plateFactor)
-    } else {
-      props.form.setValue('coverPlateSize', 'Large')
+    } else if (watchPlateSize === 'Large') {
       props.form.setValue('coverPlateRate', 500 * plateFactor)
     }
-  }, [coverWorkingLength, coverWorkingWidth, plateFactor])
+  }, [watchPlateSize])
 
   useEffect(() => {
     const initialPaperName = props.form.getValues('coverPaper')
@@ -213,7 +223,7 @@ export default function CoverCalculation(props: {
         debouncedPaperRatePerkg,
         debouncedWastageFactor,
         debouncedPlateRate,
-        watchPlateSize,
+        debouncedPlateSize,
         debouncedPrintingRateFactor,
         coverPrintingType,
       )
@@ -234,7 +244,7 @@ export default function CoverCalculation(props: {
     debouncedPlateRate,
     props.variationData,
     props.form,
-    watchPlateSize,
+    debouncedPlateSize,
     debouncedPrintingRateFactor,
     coverPrintingType,
   ])
@@ -462,6 +472,9 @@ export default function CoverCalculation(props: {
                                     'coverPaper',
                                     paper.paperName,
                                   )
+                                  field.onChange(paper.paperName)
+                                  props.form.trigger('coverPaper') // Trigger form validation and state update
+
                                   props.form.setValue(
                                     'coverWorkingLength',
                                     paper.paperLength,
@@ -597,11 +610,23 @@ export default function CoverCalculation(props: {
               control={props.form.control}
               name="coverPlateSize"
               render={({ field }) => (
-                <FormItem className=" text-gray-500">
+                <FormItem className={cn({ 'text-red-500': isPlateSizeSmall })}>
                   <FormLabel>Cover Plate Size</FormLabel>
-                  <FormControl>
-                    <Input readOnly={true} {...field}></Input>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    {...field}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Large">Large</SelectItem>
+                      <SelectItem value="Small">Small</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />

@@ -51,6 +51,10 @@ export default async function saveCalculationData(
   const validatedFields = CalculationFormSchema.safeParse(transformedData)
 
   if (!validatedFields.success) {
+    console.log(
+      'validatedFields.error.flatten().fieldErrors',
+      validatedFields.error.flatten().fieldErrors,
+    )
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message:

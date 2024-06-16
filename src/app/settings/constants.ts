@@ -161,6 +161,8 @@ export const paperbackBindingTypes = [
 
 export const postpressProcesses = [
   { label: 'None', value: 'none', rate: 0 },
-  { label: 'Folding', value: 'folding', rate: 70 },
-  { label: 'Gathering', value: 'gathering', rate: 50 },
+  { label: '1Fold', value: '1fold', rate: 100 },
+  { label: '2Fold', value: '2fold', rate: 100 },
+  { label: '3Fold', value: '3fold', rate: 125 },
+  { label: 'Gathering', value: 'gathering', rate: 60 },
 ]
