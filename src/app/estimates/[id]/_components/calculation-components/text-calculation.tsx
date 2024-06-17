@@ -196,6 +196,14 @@ export default function TextCalculation(props: {
   }, [watchPlateSize])
 
   useEffect(() => {
+    if (textWorkingLength <= 508 && textWorkingWidth <= 762) {
+      props.form.setValue('textPlateSize', 'Small')
+    } else {
+      props.form.setValue('textPlateSize', 'Large')
+    }
+  }, [textWorkingLength, textWorkingWidth])
+
+  useEffect(() => {
     const calculateTextCostData = async () => {
       const fetchTextCostData = await calculateTextCost(
         props.variationData,

@@ -120,6 +120,22 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
     }
   }, [closeSizeNameWatch])
 
+  function autoFillOpenSize() {
+    const closeSizeLength = props.form.getValues('closeSizeLength')
+    const closeSizeWidth = props.form.getValues('closeSizeWidth')
+
+    if (closeSizeLength && closeSizeWidth) {
+      const openSizeLength = closeSizeLength
+      const openSizeWidth = closeSizeWidth * 2
+
+      props.form.setValue('openSizeLength', openSizeLength.toString())
+      props.form.setValue('openSizeWidth', openSizeWidth.toString())
+
+      setLengthInInches((openSizeLength / 25.4).toFixed(2))
+      setWidthInInches((openSizeWidth / 25.4).toFixed(2))
+    }
+  }
+
   return (
     <div className="flex flex-col pt-4">
       <h1>Open Size Details</h1>
@@ -241,6 +257,11 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
               </FormItem>
             )}
           />
+        </div>
+        <div className="flex flex-col justify-center">
+          <Button type="button" onClick={autoFillOpenSize} variant={'outline'}>
+            Auto
+          </Button>
         </div>
       </div>
       <MySep />

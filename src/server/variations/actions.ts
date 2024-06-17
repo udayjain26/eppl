@@ -69,8 +69,6 @@ export async function saveVariation(
     throw new Error('User Unauthenitcated')
   }
 
-  console.log('formData', formData)
-
   const variationQtysRatesData: variationQtyRate[] = []
 
   formData.forEach((value, key) => {
@@ -103,6 +101,8 @@ export async function saveVariation(
   transformedData['variationQtysRates'] = variationQtysRatesData
 
   const validatedFields = Variation.safeParse(transformedData)
+
+  console.log('validatedFields', validatedFields)
 
   if (!validatedFields.success) {
     return {

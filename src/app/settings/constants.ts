@@ -152,11 +152,55 @@ export const commonSizes = [
 ]
 
 // rates are in rupees per 1000 qty per form
-
 export const paperbackBindingTypes = [
-  { label: 'Perfect', value: 'perfect_binding', rate: 200 },
-  { label: 'Sewn and Perfect', value: 'sewn_and_perfect', rate: 400 },
-  { label: 'Side Pin and Perfect', value: 'side_pin_and_perfect', rate: 225 },
+  { label: 'Perfect', value: 'perfect_binding', rate: 200, minimumPerBook: 2 },
+  {
+    label: 'Sewn and Perfect',
+    value: 'sewn_and_perfect',
+    rate: 400,
+    minimumPerBook: 4,
+  },
+  {
+    label: 'Side Pin and Perfect',
+    value: 'side_pin_and_perfect',
+    rate: 225,
+    minimumPerBook: 2.25,
+  },
+]
+
+export const packagingTypes = [
+  { label: 'Standard', value: 'none', rate: 2.25 },
+  { label: 'New Cartons', value: 'new_carton', rate: 4.5 },
+  { label: 'Shrink Wrap Induvidual', value: 'shrink_wrap_induvidual', rate: 3 },
+  { label: 'Shrink Wrap', value: 'Shrink Wrap', rate: 5 },
+]
+
+export const catalogBrochureBindingTypes = [
+  {
+    label: 'Centre Pin',
+    value: 'centre_pin',
+    rate: 0.5,
+    minimumPerBook: 1.5,
+  },
+
+  {
+    label: 'Perfect',
+    value: 'perfect_binding',
+    rate: 225,
+    minimumPerBook: 2.25,
+  },
+  {
+    label: 'Sewn and Perfect',
+    value: 'sewn_and_perfect',
+    rate: 450,
+    minimumPerBook: 4.5,
+  },
+  {
+    label: 'Side Pin and Perfect',
+    value: 'side_pin_and_perfect',
+    rate: 250,
+    minimumPerBook: 2.5,
+  },
 ]
 
 export const postpressProcesses = [
@@ -164,5 +208,70 @@ export const postpressProcesses = [
   { label: '1Fold', value: '1fold', rate: 100 },
   { label: '2Fold', value: '2fold', rate: 100 },
   { label: '3Fold', value: '3fold', rate: 125 },
-  { label: 'Gathering', value: 'gathering', rate: 60 },
+  { label: 'Gathering', value: 'gathering', rate: 75 },
+  { label: 'Insertion', value: 'insertion', rate: 250 },
+  // { label: 'Perforation', value: 'perforation', rate: 50 },
+  // { label: 'Punching', value: 'punching', rate: 50 },
+  // { label: 'Stapling', value: 'stapling', rate: 50 },
+  // { label: 'Trimming', value: 'trimming', rate: 50 },
+  // { label: 'Wire-O Binding', value: 'wire_o_binding', rate: 100 },
 ]
+
+// uvTypes rates are per qty
+export const uvTypes = [
+  { label: 'None', value: 'none', rate: 0 },
+  {
+    label: 'Spot UV',
+    value: 'spot_uv',
+    smallSheetRate: 2.0,
+    bigSheetRate: 2.5,
+    smallFixedCharge: 1500,
+    bigFixedCharge: 2500,
+  },
+  {
+    label: 'Full UV',
+    value: 'full_uv',
+    smallSheetRate: 1.5,
+    bigSheetRate: 3,
+    smallFixedCharge: 1000,
+    bigFixedCharge: 1500,
+  },
+  {
+    label: 'Hybrid UV',
+    value: 'hybrid_uv',
+    smallSheetRate: 2.5,
+    bigSheetRate: 5,
+    smallFixedCharge: 500,
+    bigFixedCharge: 500,
+  },
+  {
+    label: 'Crystal UV',
+    value: 'crystal_uv',
+    smallSheetRate: 1.5,
+    bigSheetRate: 2.5,
+    smallFixedCharge: 1500,
+    bigFixedCharge: 2500,
+  },
+]
+
+// rates are in rupees per 1000 qty
+export const embossingTypes = [
+  { label: 'None', value: 'none', rate: 0 },
+  { label: 'Embossing', value: 'embossing', rate: 350, blockRate: 1000 },
+  { label: 'Debossing', value: 'debossing', rate: 350, blockRate: 1000 },
+  {
+    label: 'Foil Embossing',
+    value: 'foil_embossing',
+    rate: 1500,
+    blockRate: 1000,
+  },
+]
+
+// rates are in rupees per qty
+export const vdpTypes = [
+  { label: 'VDP 1 Color', value: 'vdp_1_color', rate: 2 },
+  { label: 'VDP 4 Color', value: 'vdp_4_color', rate: 8 },
+  { label: 'VDP and Scratch', value: 'vdp_and_scratch', rate: 3 },
+]
+
+// { label: 'Gilding', value: 'gilding', rate: 25 },

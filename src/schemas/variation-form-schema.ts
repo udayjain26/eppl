@@ -204,6 +204,10 @@ export const VariationFormSchema = z.object({
   textPaperType: z.string().optional(),
 
   paperbackBookBinding: z.string().optional(),
+  catalogBrochureBinding: z.string().optional(),
+  coverUV: z.string().optional(),
+  vdp: z.string().optional(),
+  packagingType: z.string().optional(),
   // textPaper: z.string().optional(),
 
   // createdBy: z.string().uuid(),

@@ -85,6 +85,10 @@ export default function VariationForm(props: {
       textLamination: props.variationData.textLamination,
       textPaperType: props.variationData.textPaperType,
       paperbackBookBinding: props.variationData.paperbackBookBinding,
+      catalogBrochureBinding: props.variationData.catalogBrochureBinding,
+      coverUV: props.variationData.coverUV,
+      vdp: props.variationData.vdp,
+      packagingType: props.variationData.packagingType,
     },
   })
 
@@ -199,6 +203,9 @@ export default function VariationForm(props: {
           </div>
           <div className="flex min-w-56 flex-col justify-end gap-y-2">
             <div className="flex h-full w-full flex-col pt-2 ">
+              <div className="flex flex-row justify-end">
+                <SaveButton isDirty={isDirty} />
+              </div>
               <div className="h-full min-h-48 min-w-24">
                 <div className="flex flex-row items-center justify-between px-2 py-2">
                   <h1 className="text-center text-base font-bold">
@@ -269,9 +276,6 @@ export default function VariationForm(props: {
               </div>
             </div>
 
-            <div className="flex flex-row justify-end">
-              <SaveButton isDirty={isDirty} />
-            </div>
             <FormError state={state} errorKey="variationQtysRates"></FormError>
           </div>
         </div>

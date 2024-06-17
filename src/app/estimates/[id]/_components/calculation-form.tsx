@@ -31,6 +31,7 @@ import {
 } from 'react-hook-form'
 import { toast } from 'sonner'
 import TotalCalculation from './calculation-components/total-calculation'
+import PackagingCalculation from './calculation-components/packaging-calculation'
 
 function SaveButton(props: { isDirty: boolean }) {
   const { pending } = useFormStatus()
@@ -51,6 +52,7 @@ const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   coverCalculation: CoverCalculation,
   textCalculation: TextCalculation,
   fabricationCalculation: FabricationCalculation,
+  packagingCalculation: PackagingCalculation,
 }
 
 export default function CalculationFields(props: {
@@ -72,6 +74,9 @@ export default function CalculationFields(props: {
     TextCostData | undefined
   >(undefined)
   const [fabricationCostDataTable, setFabricationCostDataTable] = useState<
+    FabricationCostData | undefined
+  >(undefined)
+  const [packagingCostDataTable, setPackagingCostDataTable] = useState<
     FabricationCostData | undefined
   >(undefined)
 
@@ -156,6 +161,9 @@ export default function CalculationFields(props: {
         textPlateSize: data?.textPlateSize
           ? data.textPlateSize.toString()
           : 'Large',
+        profitPercentage: data?.profitPercentage
+          ? data.profitPercentage.toString()
+          : '10',
       })
     }
     fetchCalculationData()
@@ -190,9 +198,17 @@ export default function CalculationFields(props: {
           {...form.register('variationUuid')}
         ></input>
         <div className="flex flex-col">
+          <div className="flex w-full flex-row justify-between py-4">
+            <h1 className="text-3xl">{props.variationData.variationTitle}</h1>
+
+            <div className="w-52">
+              <SaveButton isDirty={isDirty} />
+            </div>
+          </div>
+
           <div>
-            <h1>Variation Title: {props.variationData.variationTitle}</h1>
             <Separator />
+
             {fields.map((component) => {
               const FieldComponent = calculationComponentMap[component]
               return FieldComponent ? (
@@ -207,14 +223,11 @@ export default function CalculationFields(props: {
                   setTextCostDataTable={setTextCostDataTable}
                   fabricationCostDataTable={fabricationCostDataTable}
                   setFabricationCostDataTable={setFabricationCostDataTable}
+                  packagingCostDataTable={packagingCostDataTable}
+                  setPackagingCostDataTable={setPackagingCostDataTable}
                 />
               ) : null
             })}
-          </div>
-          <div className="flex w-full flex-row justify-end pt-4">
-            <div className="w-52">
-              <SaveButton isDirty={isDirty} />
-            </div>
           </div>
         </div>
       </form>

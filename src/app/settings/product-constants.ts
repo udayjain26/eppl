@@ -27,12 +27,47 @@ export const productFieldMap: productFieldMapType = {
       'coverCalculation',
       'textCalculation',
       'fabricationCalculation',
+      'packagingCalculation',
     ],
-    fabricationComponents: ['paperbackBookBinding'],
+    fabricationComponents: ['paperbackBookBinding', 'coverUV', 'vdp'],
   },
-  Posters: {
-    specificationComponents: ['size'],
-    calculationComponents: [],
-    fabricationComponents: [],
+
+  Catalogs: {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'cover',
+      'text',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
+  },
+  Brochures: {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'cover',
+      'text',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
   },
 }

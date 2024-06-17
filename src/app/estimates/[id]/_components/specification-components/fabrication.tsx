@@ -4,6 +4,9 @@ import { productFieldMap } from '@/app/settings/product-constants'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import PaperbackBookBinding from './paperback-book-binding'
+import CoverUV from './cover-uv'
+import VDPComp from './vdp'
+import CatalogBrochureBinding from './catalog-brochure-binding'
 
 export default function Fabrication(props: {
   control: any
@@ -14,6 +17,9 @@ export default function Fabrication(props: {
 
   const fabricationComponentMap: { [key: string]: React.ComponentType<any> } = {
     paperbackBookBinding: PaperbackBookBinding,
+    catalogBrochureBinding: CatalogBrochureBinding,
+    coverUV: CoverUV,
+    vdp: VDPComp,
   }
   const fabricationFields =
     productFieldMap[props.product]['fabricationComponents'] || []
@@ -21,7 +27,7 @@ export default function Fabrication(props: {
   return (
     <div className="flex flex-col pt-4">
       <h1>Fabrication Details</h1>
-      <div className="flex min-h-fit flex-row flex-wrap gap-x-1">
+      <div className="flex min-h-fit flex-row flex-wrap gap-x-4">
         {fabricationFields.map((component) => {
           const FieldComponent = fabricationComponentMap[component]
           return FieldComponent ? (

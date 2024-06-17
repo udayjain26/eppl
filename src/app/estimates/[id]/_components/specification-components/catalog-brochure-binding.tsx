@@ -1,5 +1,8 @@
 import MySep from '@/app/_components/custom-sep'
-import { paperbackBindingTypes } from '@/app/settings/constants'
+import {
+  catalogBrochureBindingTypes,
+  paperbackBindingTypes,
+} from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -26,22 +29,33 @@ import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-export default function PaperbackBookBinding(props: {
+export default function CatalogBrochureBinding(props: {
   control: any
   form: UseFormReturn
+  product: string
 }) {
   const [open, setOpen] = React.useState(false)
+
+  let productName = ''
+
+  console.log('props.product', props.product)
+
+  if (props.product === 'Catalogs') {
+    productName = 'Catalog'
+  } else {
+    productName = 'Brochure'
+  }
 
   return (
     <FormField
       control={props.control}
-      name="paperbackBookBinding"
+      name="catalogBrochureBinding"
       render={({ field }) => (
         <FormItem
           className="flex flex-col
            gap-y-1 pt-[6px]"
         >
-          <FormLabel>Paperback Book Binding</FormLabel>
+          <FormLabel>{productName} Binding</FormLabel>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger className="" asChild>
@@ -57,7 +71,7 @@ export default function PaperbackBookBinding(props: {
                   value={field.value ? field.value : ''}
                 />
                 {field.value
-                  ? paperbackBindingTypes.find(
+                  ? catalogBrochureBindingTypes.find(
                       (size) => size.label === field.value,
                     )?.label
                   : 'Select'}
@@ -72,17 +86,17 @@ export default function PaperbackBookBinding(props: {
                 <CommandEmpty>No size found.</CommandEmpty>
                 <CommandGroup>
                   <CommandList>
-                    {paperbackBindingTypes.map((size) => (
+                    {catalogBrochureBindingTypes.map((size) => (
                       <CommandItem
                         key={size.label}
                         value={size.label}
                         onSelect={() => {
                           props.form.setValue(
-                            'paperbackBookBinding',
+                            'catalogBrochureBinding',
                             size.label,
                           )
                           field.onChange(size.label)
-                          props.form.trigger('paperbackBookBinding') // Trigger form validation and state update
+                          props.form.trigger('catalogBrochureBinding') // Trigger form validation and state update
 
                           setOpen(false)
                         }}

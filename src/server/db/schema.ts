@@ -276,6 +276,12 @@ export const variations = createTable('variations', {
 
   //fabrication
   paperbackBookBinding: varchar('paperback_book_binding', { length: 256 }),
+  catalogBrochureBinding: varchar('catalog_brochure_binding', { length: 256 }),
+  coverUV: varchar('cover_uv', { length: 256 }),
+  vdp: varchar('vdp', { length: 256 }),
+
+  //packaging
+  packagingType: varchar('packaging_type', { length: 256 }),
 
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -410,6 +416,7 @@ export const variationCalculation = createTable('variation_calculation', {
     scale: 2,
   }),
   textWorkingWidth: numeric('text_working_width', { precision: 7, scale: 2 }),
+  profitPercentage: numeric('profit_percentage', { precision: 7, scale: 2 }),
 })
 
 export const variationCalculationRelations = relations(

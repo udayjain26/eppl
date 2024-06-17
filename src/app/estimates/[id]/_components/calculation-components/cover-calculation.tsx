@@ -60,6 +60,8 @@ export type CoverCostData = {
   paperAreaUsed: number
   coverForms: PrintingForms
   totalSets: number
+  coverSheetlength: number
+  coverSheetWidth: number
   coverCostDataDict: {
     jobQuantity: number
     calculatedSheets: number

@@ -37,6 +37,11 @@ export type VariationData = {
   textPaperType: string | undefined
 
   paperbackBookBinding: string | undefined
+  catalogBrochureBinding: string | undefined
+  coverUV: string | undefined
+  vdp: string | undefined
+
+  packagingType: string | undefined
 
   createdAt: Date
   updatedAt: Date

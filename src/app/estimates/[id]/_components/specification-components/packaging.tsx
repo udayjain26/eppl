@@ -1,5 +1,5 @@
 import MySep from '@/app/_components/custom-sep'
-import { commonSizes } from '@/app/settings/constants'
+import { commonSizes, packagingTypes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -45,7 +45,7 @@ export default function Packaging(props: {
               className="flex flex-col
            gap-y-1 pt-[6px]"
             >
-              <FormLabel>Book Binding</FormLabel>
+              <FormLabel>Packaging</FormLabel>
 
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger className="" asChild>
@@ -61,26 +61,29 @@ export default function Packaging(props: {
                       value={field.value ? field.value : ''}
                     />
                     {field.value
-                      ? commonSizes.find((size) => size.label === field.value)
-                          ?.label
+                      ? packagingTypes.find(
+                          (size) => size.label === field.value,
+                        )?.label
                       : 'Select'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-0">
                   <Command>
                     <CommandInput
-                      placeholder="Search sizes..."
+                      placeholder="Search Packaging Types..."
                       className="h-10"
                     />
                     <CommandEmpty>No size found.</CommandEmpty>
                     <CommandGroup>
                       <CommandList>
-                        {commonSizes.map((size) => (
+                        {packagingTypes.map((size) => (
                           <CommandItem
                             key={size.label}
                             value={size.label}
                             onSelect={() => {
-                              props.form.setValue('openSizeName', size.label)
+                              props.form.setValue('packagingType', size.label)
+                              field.onChange(size.label)
+                              props.form.trigger('packagingType') // Trigger form validation and state update
 
                               setOpen(false)
                             }}

@@ -34,5 +34,6 @@ export type VariationCalculationData =
       textWorkingLength?: number
       textWorkingWidth?: number
       textPlateSize?: string
+      profitPercentage: number
     }
   | undefined

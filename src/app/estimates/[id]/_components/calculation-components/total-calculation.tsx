@@ -12,48 +12,81 @@ import {
 } from '@/components/ui/table'
 import { TextCostData } from './text-calculation'
 import { FabricationCostData } from './fabrication-calculation'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { PackagingCostData } from './packaging-calculation'
 
 interface CostDetails {
   jobQuantity: number
   costPerPiece: number
   totalCost: number
   platePaperRatio: number
+  profitPerPiece: number
+  totalProfit: number
+  sellingPrice: number
 }
 
 export default function TotalCalculation(props: {
   variationData: VariationData
   form: UseFormReturn
-  coverCostDataTable: CoverCostData | undefined
-  textCostDataTable: TextCostData | undefined
-  fabricationCostDataTable: FabricationCostData | undefined
+  coverCostDataTable: CoverCostData
+  textCostDataTable: TextCostData
+  fabricationCostDataTable: FabricationCostData
+  packagingCostDataTable: PackagingCostData
 }) {
-  const { coverCostDataTable, textCostDataTable, fabricationCostDataTable } =
-    props
+  const {
+    coverCostDataTable,
+    textCostDataTable,
+    fabricationCostDataTable,
+    packagingCostDataTable,
+  } = props
 
   // Function to calculate cost details for each item
   const calculateCostDetails = () => {
     const costDetails: CostDetails[] = []
 
-    if (textCostDataTable && coverCostDataTable && fabricationCostDataTable) {
+    if (
+      textCostDataTable &&
+      coverCostDataTable &&
+      fabricationCostDataTable &&
+      packagingCostDataTable
+    ) {
       coverCostDataTable.coverCostDataDict.forEach((item, index) => {
         const costPerPiece =
           item.costPerCover +
           textCostDataTable.textCostDataDict[index].costPerText +
-          fabricationCostDataTable.fabricationCostDataDict[index].costPerPiece
+          fabricationCostDataTable.fabricationCostDataDict[index].costPerPiece +
+          packagingCostDataTable.packagingCostDataDict[index].costPerPiece
 
         const totalCost = costPerPiece * item.jobQuantity
+
+        // Assume we get the profit percentage from the form data
+        const profitPercentage =
+          parseFloat(props.form.watch('profitPercentage')) / 100
+        const profitPerPiece = costPerPiece * profitPercentage
+        const totalProfit = profitPerPiece * item.jobQuantity
+        const sellingPrice = costPerPiece + profitPerPiece
+
         const platePaperRatio =
           (item.paperCost +
             item.plateCost +
             textCostDataTable.textCostDataDict[index].paperCost +
             textCostDataTable.textCostDataDict[index].plateCost) /
-          totalCost
+          (totalCost + totalProfit)
 
         costDetails.push({
           jobQuantity: item.jobQuantity,
           costPerPiece: parseFloat(costPerPiece.toFixed(2)),
           totalCost: parseFloat(totalCost.toFixed(2)),
           platePaperRatio: parseFloat(platePaperRatio.toFixed(2)),
+          profitPerPiece: parseFloat(profitPerPiece.toFixed(2)),
+          totalProfit: parseFloat(totalProfit.toFixed(2)),
+          sellingPrice: parseFloat(sellingPrice.toFixed(2)),
         })
       })
     }
@@ -69,29 +102,44 @@ export default function TotalCalculation(props: {
       <div className="flex flex-col gap-x-8 p-4 sm:flex-row">
         <div className="flex w-full max-w-[12rem] flex-col gap-y-2">
           <h1 className="underline">Total Cost Details</h1>
-          {/* <div className="text-sm">Total Cost</div> */}
+          <FormField
+            control={props.form.control}
+            name="profitPercentage"
+            render={({ field }) => (
+              <FormItem className="w-20">
+                <FormLabel>Profit %</FormLabel>
+                <FormControl>
+                  <Input {...field}></Input>
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <ul className="flex flex-col gap-y-2"></ul>
         </div>
-        <div className="flex  flex-col gap-y-2">
+        <div className="flex flex-col gap-y-2">
           <Table>
             <TableCaption>Total Costs</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Job Quantity</TableHead>
-                <TableHead className=" font-extrabold">Cost/Piece</TableHead>
-                <TableHead className=" ">Total Cost</TableHead>
-                <TableHead className=" ">PnP Ratio</TableHead>
+                <TableHead>PnP Ratio</TableHead>
+                <TableHead>Cost/Piece</TableHead>
+                <TableHead>Total Cost</TableHead>
+                <TableHead>Profit/Piece</TableHead>
+                <TableHead>Total Profit</TableHead>
+                <TableHead>Selling Price</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {costDetails.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>{item.jobQuantity}</TableCell>
-                  <TableCell className=" font-extrabold">
-                    {item.costPerPiece}
-                  </TableCell>
-                  <TableCell className=" ">{item.totalCost}</TableCell>
-                  <TableCell className=" ">{item.platePaperRatio}</TableCell>
+                  <TableCell>{item.platePaperRatio}</TableCell>
+                  <TableCell>{item.costPerPiece}</TableCell>
+                  <TableCell>{item.totalCost}</TableCell>
+                  <TableCell>{item.profitPerPiece}</TableCell>
+                  <TableCell>{item.totalProfit}</TableCell>
+                  <TableCell>{item.sellingPrice}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

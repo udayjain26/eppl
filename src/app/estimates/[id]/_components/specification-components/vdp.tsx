@@ -1,5 +1,5 @@
 import MySep from '@/app/_components/custom-sep'
-import { paperbackBindingTypes } from '@/app/settings/constants'
+import { vdpTypes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -26,22 +26,19 @@ import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-export default function PaperbackBookBinding(props: {
-  control: any
-  form: UseFormReturn
-}) {
+export default function VDPComp(props: { control: any; form: UseFormReturn }) {
   const [open, setOpen] = React.useState(false)
 
   return (
     <FormField
       control={props.control}
-      name="paperbackBookBinding"
+      name="vdp"
       render={({ field }) => (
         <FormItem
           className="flex flex-col
            gap-y-1 pt-[6px]"
         >
-          <FormLabel>Paperback Book Binding</FormLabel>
+          <FormLabel>VDP</FormLabel>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger className="" asChild>
@@ -57,32 +54,24 @@ export default function PaperbackBookBinding(props: {
                   value={field.value ? field.value : ''}
                 />
                 {field.value
-                  ? paperbackBindingTypes.find(
-                      (size) => size.label === field.value,
-                    )?.label
+                  ? vdpTypes.find((size) => size.label === field.value)?.label
                   : 'Select'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-48 p-0">
               <Command>
-                <CommandInput
-                  placeholder="Search Bindings..."
-                  className="h-10"
-                />
-                <CommandEmpty>No size found.</CommandEmpty>
+                <CommandInput placeholder="Search VDPs..." className="h-10" />
+                <CommandEmpty>No vdp found.</CommandEmpty>
                 <CommandGroup>
                   <CommandList>
-                    {paperbackBindingTypes.map((size) => (
+                    {vdpTypes.map((size) => (
                       <CommandItem
                         key={size.label}
                         value={size.label}
                         onSelect={() => {
-                          props.form.setValue(
-                            'paperbackBookBinding',
-                            size.label,
-                          )
+                          props.form.setValue('vdp', size.label)
                           field.onChange(size.label)
-                          props.form.trigger('paperbackBookBinding') // Trigger form validation and state update
+                          props.form.trigger('vdp') // Trigger form validation and state update
 
                           setOpen(false)
                         }}

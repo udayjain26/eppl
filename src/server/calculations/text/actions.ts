@@ -307,12 +307,14 @@ function getWastageSheets(
 
   const colorsFactor =
     textColors === 1
-      ? 0.015
+      ? 0.02
       : textColors === 2
-        ? 0.0165
+        ? 0.025
         : textColors === 3
-          ? 0.017
-          : 0.0175
+          ? 0.03
+          : 0.04
+
+  const colorsFactorWastage = textColors === 1 ? 1 : 2
 
   for (const [key, value] of Object.entries(formsSheetsDict)) {
     const forms = value.formsQty
@@ -320,44 +322,44 @@ function getWastageSheets(
     let wastage = 0
     if (key === 'totalFormsFB') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 75
+        wastage = forms * wastageFactor * 100 * colorsFactorWastage
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 100
+        wastage = forms * wastageFactor * 150 * colorsFactorWastage
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 125
+        wastage = forms * wastageFactor * 200 * colorsFactorWastage
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }
     }
     if (key === 'totalForms2Ups') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 50
+        wastage = forms * wastageFactor * 75 * colorsFactorWastage
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 75
+        wastage = forms * wastageFactor * 100 * colorsFactorWastage
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 100
+        wastage = forms * wastageFactor * 125 * colorsFactorWastage
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }
     }
     if (key === 'totalForms4Ups') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 25
+        wastage = forms * wastageFactor * 50 * colorsFactorWastage
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 50
+        wastage = forms * wastageFactor * 75 * colorsFactorWastage
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 75
+        wastage = forms * wastageFactor * 100 * colorsFactorWastage
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }
     }
     if (key === 'TotalForms8Ups') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 15
+        wastage = forms * wastageFactor * 30 * colorsFactorWastage
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 30
+        wastage = forms * wastageFactor * 60 * colorsFactorWastage
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 40
+        wastage = forms * wastageFactor * 80 * colorsFactorWastage
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }

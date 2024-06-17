@@ -1,5 +1,5 @@
 import MySep from '@/app/_components/custom-sep'
-import { paperbackBindingTypes } from '@/app/settings/constants'
+import { paperbackBindingTypes, uvTypes } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -26,22 +26,19 @@ import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-export default function PaperbackBookBinding(props: {
-  control: any
-  form: UseFormReturn
-}) {
+export default function CoverUV(props: { control: any; form: UseFormReturn }) {
   const [open, setOpen] = React.useState(false)
 
   return (
     <FormField
       control={props.control}
-      name="paperbackBookBinding"
+      name="coverUV"
       render={({ field }) => (
         <FormItem
           className="flex flex-col
            gap-y-1 pt-[6px]"
         >
-          <FormLabel>Paperback Book Binding</FormLabel>
+          <FormLabel>Cover UV</FormLabel>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger className="" asChild>
@@ -57,32 +54,24 @@ export default function PaperbackBookBinding(props: {
                   value={field.value ? field.value : ''}
                 />
                 {field.value
-                  ? paperbackBindingTypes.find(
-                      (size) => size.label === field.value,
-                    )?.label
+                  ? uvTypes.find((size) => size.label === field.value)?.label
                   : 'Select'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-48 p-0">
               <Command>
-                <CommandInput
-                  placeholder="Search Bindings..."
-                  className="h-10"
-                />
+                <CommandInput placeholder="Search UVs..." className="h-10" />
                 <CommandEmpty>No size found.</CommandEmpty>
                 <CommandGroup>
                   <CommandList>
-                    {paperbackBindingTypes.map((size) => (
+                    {uvTypes.map((size) => (
                       <CommandItem
                         key={size.label}
                         value={size.label}
                         onSelect={() => {
-                          props.form.setValue(
-                            'paperbackBookBinding',
-                            size.label,
-                          )
+                          props.form.setValue('coverUV', size.label)
                           field.onChange(size.label)
-                          props.form.trigger('paperbackBookBinding') // Trigger form validation and state update
+                          props.form.trigger('coverUV') // Trigger form validation and state update
 
                           setOpen(false)
                         }}

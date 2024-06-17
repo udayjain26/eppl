@@ -68,7 +68,7 @@ export async function calculateCoverCost(
       (
         ((effectiveCoverLength * effectiveCoverWidth * coverPagesPerSheet) /
           variationData.coverPages /
-          (paperData.paperLength * paperData.paperWidth)) *
+          (coverWorkingLength * coverWorkingWidth)) *
         100
       ).toFixed(2),
     )
@@ -137,6 +137,8 @@ export async function calculateCoverCost(
       coverForms: coverForms,
       totalSets: totalSetsUsed,
       paperAreaUsed: paperAreaUsed,
+      coverSheetlength: coverWorkingLength,
+      coverSheetWidth: coverWorkingWidth,
       coverCostDataDict: coverCostDataDict,
     }
 
@@ -310,15 +312,17 @@ function getWastageSheets(
   const totalColors = coverFrontColors + coverBackColors
 
   const colorsFactor =
-    totalColors <= 3
-      ? 0.017
-      : totalColors === 4
-        ? 0.0175
-        : totalColors === 5
-          ? 0.019
-          : totalColors === 6
-            ? 0.02
-            : 0.025
+    totalColors === 4
+      ? 0.04
+      : totalColors === 5
+        ? 0.05
+        : totalColors === 6
+          ? 0.06
+          : totalColors === 7
+            ? 0.07
+            : 0.08
+
+  const colorsFactorFixed = totalColors > 4 ? 2 : 1
 
   for (const [key, value] of Object.entries(formsSheetsDict)) {
     const forms = value.formsQty
@@ -326,44 +330,44 @@ function getWastageSheets(
     let wastage = 0
     if (key === 'totalFormsFB') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 150
+        wastage = forms * wastageFactor * 150 * colorsFactorFixed
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 200
+        wastage = forms * wastageFactor * 200 * colorsFactorFixed
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 300
+        wastage = forms * wastageFactor * 300 * colorsFactorFixed
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }
     }
     if (key === 'totalForms2Ups') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 150
+        wastage = forms * wastageFactor * 125 * colorsFactorFixed
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 200
+        wastage = forms * wastageFactor * 175 * colorsFactorFixed
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 300
+        wastage = forms * wastageFactor * 250 * colorsFactorFixed
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }
     }
     if (key === 'totalForms4Ups') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 150
+        wastage = forms * wastageFactor * 100 * colorsFactorFixed
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 200
+        wastage = forms * wastageFactor * 125 * colorsFactorFixed
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 300
+        wastage = forms * wastageFactor * 200 * colorsFactorFixed
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }
     }
     if (key === 'TotalForms8Ups') {
       if (sheets <= 2100) {
-        wastage = forms * wastageFactor * 150
+        wastage = forms * wastageFactor * 75 * colorsFactorFixed
       } else if (sheets <= 4200) {
-        wastage = forms * wastageFactor * 200
+        wastage = forms * wastageFactor * 125 * colorsFactorFixed
       } else if (sheets <= 8400) {
-        wastage = forms * wastageFactor * 300
+        wastage = forms * wastageFactor * 200 * colorsFactorFixed
       } else {
         wastage = forms * wastageFactor * sheets * colorsFactor
       }

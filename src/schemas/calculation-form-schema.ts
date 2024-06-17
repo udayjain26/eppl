@@ -324,4 +324,18 @@ export const CalculationFormSchema = z.object({
       .optional()
       .transform((val) => val?.toString() || undefined),
   ),
+  profitPercentage: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Profit must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
 })

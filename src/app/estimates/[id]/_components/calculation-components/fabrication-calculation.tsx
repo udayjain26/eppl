@@ -22,6 +22,9 @@ export type FabricationCostDataDict = {
   perfectBindingCost?: number
   sewnAndPerfect?: number
   sidePinAndPerfect?: number
+  centrePin?: number
+  coverUV?: number
+  vdp?: number
   totalCost: number
   costPerPiece: number
 }
@@ -76,13 +79,16 @@ export default function FabricationCalculation(props: {
   const rows: JSX.Element[] = []
 
   const headerLabels: { [key in keyof FabricationCostDataDict]: string } = {
-    jobQuantity: 'Job Quantity',
-    fabricationSheets: 'Fabrication Sheets',
+    jobQuantity: 'Job Qty',
+    fabricationSheets: 'Sheets',
     foldingCost: 'Folding',
     gatheringCost: 'Gathering',
-    perfectBindingCost: 'Perfect Binding',
-    sewnAndPerfect: 'Sewn and Perfect',
-    sidePinAndPerfect: 'Side Pin and Perfect',
+    perfectBindingCost: 'Perfect',
+    sewnAndPerfect: 'Sewn & Perfect',
+    sidePinAndPerfect: 'Side Pin Perfect',
+    centrePin: 'Centre Pin',
+    coverUV: 'Cover UV',
+    vdp: 'VDP',
     totalCost: 'Total Cost',
     costPerPiece: 'Cost Per Piece',
   }
@@ -113,6 +119,8 @@ export default function FabricationCalculation(props: {
     )
   }
 
+  console.log('variationData', variationData.coverUV)
+
   return (
     <>
       <div className="flex flex-col gap-x-8 p-4 sm:flex-row">
@@ -120,18 +128,41 @@ export default function FabricationCalculation(props: {
           <h1 className="underline">Fabrication Specifications</h1>
           <div className="text-sm">
             <ul className="flex flex-col gap-y-2">
-              {variationData?.paperbackBookBinding && (
-                <li className="flex items-center justify-between border-b-2">
-                  <span className="text-muted-foreground">
-                    Paperback Book Binding
-                  </span>
-                  <span>{variationData?.paperbackBookBinding}</span>
-                </li>
-              )}
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Fabrication Forms</span>
                 <span>{fabricationCostDataTable?.fabricationForms}</span>
               </li>
+              {variationData?.paperbackBookBinding !== 'None' &&
+                variationData?.paperbackBookBinding !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Paperback Book Binding
+                    </span>
+                    <span>{variationData?.paperbackBookBinding}</span>
+                  </li>
+                )}
+              {variationData?.catalogBrochureBinding !== 'None' &&
+                variationData?.catalogBrochureBinding !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Catalog/Brochure Binding
+                    </span>
+                    <span>{variationData?.catalogBrochureBinding}</span>
+                  </li>
+                )}
+              {variationData?.coverUV !== 'None' &&
+                variationData?.coverUV !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Cover UV</span>
+                    <span>{variationData?.coverUV}</span>
+                  </li>
+                )}
+              {variationData?.vdp !== 'None' && variationData?.vdp !== null && (
+                <li className="flex items-center justify-between border-b-2">
+                  <span className="text-muted-foreground">VDP</span>
+                  <span>{variationData?.vdp}</span>
+                </li>
+              )}
             </ul>
           </div>
         </div>
