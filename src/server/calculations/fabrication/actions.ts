@@ -264,7 +264,11 @@ function getGummingCost(qty: number, variationData: VariationData) {
     return 0
   }
 
-  gummingCost = gummingCharges * qty
+  const posterWidthInInches = (variationData.openSizeWidth || 0) / 25.4
+
+  const totalWidth = posterWidthInInches * qty
+
+  gummingCost = (gummingCharges / 100) * totalWidth
 
   return gummingCost
 }

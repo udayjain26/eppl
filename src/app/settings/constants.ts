@@ -276,7 +276,11 @@ export const vdpTypes = [
 
 export const gummingTypes = [
   { label: 'None', value: 'none', rate: 0 },
-  { label: '1 Strip Gumming', value: 'one_strip_gumming', rate: 1.5 },
+  {
+    label: '1 Strip Gumming 1 inch',
+    value: 'one_strip_gumming_1_inch',
+    rate: 1.5,
+  },
   {
     label: '2 Strip Gumming 1 inch',
     value: 'two_strip_gumming_1_inch',
