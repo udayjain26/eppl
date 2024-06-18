@@ -1,3 +1,4 @@
+import { gummingTypes } from '@/app/settings/constants'
 import { relations } from 'drizzle-orm'
 import {
   uuid,
@@ -249,9 +250,6 @@ export const variations = createTable('variations', {
   clientEnquiry: text('client_enquiry'),
 
   //sizes
-  sizeName: varchar('size_name', { length: 256 }),
-  sizeLength: numeric('size_length', { precision: 7, scale: 2 }),
-  sizeWidth: numeric('size_width', { precision: 7, scale: 2 }),
   closeSizeName: varchar('close_size_name', { length: 256 }),
   closeSizeLength: numeric('close_size_length', { precision: 7, scale: 2 }),
   closeSizeWidth: numeric('close_size_width', { precision: 7, scale: 2 }),
@@ -275,10 +273,10 @@ export const variations = createTable('variations', {
   textPaperType: varchar('text_paper_type', { length: 256 }),
 
   //fabrication
-  paperbackBookBinding: varchar('paperback_book_binding', { length: 256 }),
-  catalogBrochureBinding: varchar('catalog_brochure_binding', { length: 256 }),
+  binding: varchar('binding', { length: 256 }),
   coverUV: varchar('cover_uv', { length: 256 }),
   vdp: varchar('vdp', { length: 256 }),
+  gummingType: varchar('gumming_type', { length: 256 }),
 
   //packaging
   packagingType: varchar('packaging_type', { length: 256 }),

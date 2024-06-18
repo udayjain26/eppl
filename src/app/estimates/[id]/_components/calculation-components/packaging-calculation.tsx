@@ -13,6 +13,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { TextCostData } from './text-calculation'
 import { CoverCostData } from './cover-calculation'
 import { calculatePackagingCost } from '@/server/calculations/packaging/actions'
+import { Separator } from '@/components/ui/separator'
 
 export type PackagingCostDataDict = {
   jobQuantity: number
@@ -138,9 +139,9 @@ export default function PackagingCalculation(props: {
               )}
             </Table>
           </div>
-          <div className="flex flex-row gap-x-2"></div>
         </div>
       </div>
+      <Separator />
     </>
   )
 }

@@ -32,6 +32,8 @@ import {
 import { toast } from 'sonner'
 import TotalCalculation from './calculation-components/total-calculation'
 import PackagingCalculation from './calculation-components/packaging-calculation'
+import { Sheet } from 'lucide-react'
+import SheetPrintingCalculation from './calculation-components/sheet-printing-calculation'
 
 function SaveButton(props: { isDirty: boolean }) {
   const { pending } = useFormStatus()
@@ -51,6 +53,7 @@ const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   totalCalculation: TotalCalculation,
   coverCalculation: CoverCalculation,
   textCalculation: TextCalculation,
+  sheetPrintingCalculation: SheetPrintingCalculation,
   fabricationCalculation: FabricationCalculation,
   packagingCalculation: PackagingCalculation,
 }

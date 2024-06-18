@@ -11,10 +11,6 @@ export type VariationData = {
     rate: number
   }[]
 
-  sizeName: string | undefined
-  sizeLength: number | undefined
-  sizeWidth: number | undefined
-
   closeSizeName: string | undefined
   closeSizeLength: number | undefined
   closeSizeWidth: number | undefined
@@ -36,12 +32,13 @@ export type VariationData = {
   textLamination: string | undefined
   textPaperType: string | undefined
 
-  paperbackBookBinding: string | undefined
-  catalogBrochureBinding: string | undefined
+  binding: string | undefined
+  // catalogBrochureBinding: string | undefined
   coverUV: string | undefined
   vdp: string | undefined
 
   packagingType: string | undefined
+  gummingType: string | undefined
 
   createdAt: Date
   updatedAt: Date

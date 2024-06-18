@@ -35,7 +35,7 @@ export default function PaperbackBookBinding(props: {
   return (
     <FormField
       control={props.control}
-      name="paperbackBookBinding"
+      name="binding"
       render={({ field }) => (
         <FormItem
           className="flex flex-col
@@ -78,11 +78,11 @@ export default function PaperbackBookBinding(props: {
                         value={size.label}
                         onSelect={() => {
                           props.form.setValue(
-                            'paperbackBookBinding',
+                            'binding',
                             size.label,
                           )
                           field.onChange(size.label)
-                          props.form.trigger('paperbackBookBinding') // Trigger form validation and state update
+                          props.form.trigger('binding') // Trigger form validation and state update
 
                           setOpen(false)
                         }}

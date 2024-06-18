@@ -6,6 +6,7 @@ import { VariationData } from '../../variations/types'
 import { laminations } from '@/app/settings/constants'
 import { FormsSheetsDictType, PrintingForms } from '../text/actions'
 import { printingRateCard } from '@/app/settings/printing-constants'
+import { pages } from 'next/dist/build/templates/app-page'
 
 export async function calculateCoverCost(
   variationData?: VariationData,
@@ -40,12 +41,14 @@ export async function calculateCoverCost(
   ) {
     return undefined
   } else {
+    const pagesPerCover = variationData.coverPages
     const coverPagesPerSheet = calculatePagesPerSheet(
       coverWorkingLength,
       coverWorkingWidth,
       effectiveCoverLength,
       effectiveCoverWidth,
       grippers,
+      pagesPerCover,
     )
 
     if (!coverPagesPerSheet) {
@@ -157,6 +160,7 @@ function calculatePagesPerSheet(
   effectiveCoverLength: number,
   effectiveCoverWidth: number,
   grippers: number,
+  pagesPerCover: number,
 ) {
   const paperLength = coverWorkingLength - (grippers || 0)
   const paperWidth = coverWorkingWidth
@@ -181,9 +185,9 @@ function calculatePagesPerSheet(
     numPiecesLengthwiseRotated * numPiecesWidthwiseRotated
 
   if (totalPiecesWithoutRotation >= totalPiecesWithRotation) {
-    return totalPiecesWithoutRotation * 4
+    return totalPiecesWithoutRotation * pagesPerCover
   } else {
-    return totalPiecesWithRotation * 4
+    return totalPiecesWithRotation * pagesPerCover
   }
 }
 

@@ -294,7 +294,7 @@ export const CalculationFormSchema = z.object({
       .optional()
       .transform((val) => val?.toString() || undefined),
   ),
-  textPlateSize: z.string(),
+  textPlateSize: z.string().optional(),
 
   textWorkingLength: z.preprocess(
     (val) => {

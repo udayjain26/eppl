@@ -1,7 +1,8 @@
 import MySep from '@/app/_components/custom-sep'
 import {
-  catalogBrochureBindingTypes,
+  gummingTypes,
   paperbackBindingTypes,
+  uvTypes,
 } from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,33 +30,19 @@ import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-export default function CatalogBrochureBinding(props: {
-  control: any
-  form: UseFormReturn
-  product: string
-}) {
+export default function Gumming(props: { control: any; form: UseFormReturn }) {
   const [open, setOpen] = React.useState(false)
-
-  let productName = ''
-
-  console.log('props.product', props.product)
-
-  if (props.product === 'Catalogs') {
-    productName = 'Catalog'
-  } else {
-    productName = 'Brochure'
-  }
 
   return (
     <FormField
       control={props.control}
-      name="binding"
+      name="gummingType"
       render={({ field }) => (
         <FormItem
           className="flex flex-col
            gap-y-1 pt-[6px]"
         >
-          <FormLabel>{productName} Binding</FormLabel>
+          <FormLabel>Gumming</FormLabel>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger className="" asChild>
@@ -71,29 +58,28 @@ export default function CatalogBrochureBinding(props: {
                   value={field.value ? field.value : ''}
                 />
                 {field.value
-                  ? catalogBrochureBindingTypes.find(
-                      (size) => size.label === field.value,
-                    )?.label
+                  ? gummingTypes.find((size) => size.label === field.value)
+                      ?.label
                   : 'Select'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-48 p-0">
               <Command>
                 <CommandInput
-                  placeholder="Search Bindings..."
+                  placeholder="Search Gumming..."
                   className="h-10"
                 />
                 <CommandEmpty>No size found.</CommandEmpty>
                 <CommandGroup>
                   <CommandList>
-                    {catalogBrochureBindingTypes.map((size) => (
+                    {gummingTypes.map((size) => (
                       <CommandItem
                         key={size.label}
                         value={size.label}
                         onSelect={() => {
-                          props.form.setValue('binding', size.label)
+                          props.form.setValue('gumminType', size.label)
                           field.onChange(size.label)
-                          props.form.trigger('binding') // Trigger form validation and state update
+                          props.form.trigger('gummingType') // Trigger form validation and state update
 
                           setOpen(false)
                         }}

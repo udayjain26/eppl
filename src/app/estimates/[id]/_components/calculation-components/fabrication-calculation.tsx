@@ -13,6 +13,7 @@ import { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { TextCostData } from './text-calculation'
 import { CoverCostData } from './cover-calculation'
+import { Separator } from '@/components/ui/separator'
 
 export type FabricationCostDataDict = {
   jobQuantity: number
@@ -25,6 +26,7 @@ export type FabricationCostDataDict = {
   centrePin?: number
   coverUV?: number
   vdp?: number
+  gumming?: number
   totalCost: number
   costPerPiece: number
 }
@@ -89,6 +91,7 @@ export default function FabricationCalculation(props: {
     centrePin: 'Centre Pin',
     coverUV: 'Cover UV',
     vdp: 'VDP',
+    gumming: 'Gumming',
     totalCost: 'Total Cost',
     costPerPiece: 'Cost Per Piece',
   }
@@ -132,22 +135,11 @@ export default function FabricationCalculation(props: {
                 <span className="text-muted-foreground">Fabrication Forms</span>
                 <span>{fabricationCostDataTable?.fabricationForms}</span>
               </li>
-              {variationData?.paperbackBookBinding !== 'None' &&
-                variationData?.paperbackBookBinding !== null && (
+              {variationData?.binding !== 'None' &&
+                variationData?.binding !== null && (
                   <li className="flex items-center justify-between border-b-2">
-                    <span className="text-muted-foreground">
-                      Paperback Book Binding
-                    </span>
-                    <span>{variationData?.paperbackBookBinding}</span>
-                  </li>
-                )}
-              {variationData?.catalogBrochureBinding !== 'None' &&
-                variationData?.catalogBrochureBinding !== null && (
-                  <li className="flex items-center justify-between border-b-2">
-                    <span className="text-muted-foreground">
-                      Catalog/Brochure Binding
-                    </span>
-                    <span>{variationData?.catalogBrochureBinding}</span>
+                    <span className="text-muted-foreground">Binding</span>
+                    <span>{variationData?.binding}</span>
                   </li>
                 )}
               {variationData?.coverUV !== 'None' &&
@@ -163,6 +155,13 @@ export default function FabricationCalculation(props: {
                   <span>{variationData?.vdp}</span>
                 </li>
               )}
+              {variationData?.gummingType !== 'None' &&
+                variationData?.gummingType !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Gumming Type</span>
+                    <span>{variationData?.gummingType}</span>
+                  </li>
+                )}
             </ul>
           </div>
         </div>
@@ -184,9 +183,9 @@ export default function FabricationCalculation(props: {
               )}
             </Table>
           </div>
-          <div className="flex flex-row gap-x-2"></div>
         </div>
       </div>
+      <Separator />
     </>
   )
 }

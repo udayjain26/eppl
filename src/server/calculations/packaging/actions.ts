@@ -16,10 +16,6 @@ export async function calculatePackagingCost(
   textCostDataTable: TextCostData,
   coverCostDataTable: CoverCostData,
 ): Promise<PackagingCostData> {
-  if (textCostDataTable === undefined || coverCostDataTable === undefined) {
-    return undefined
-  }
-
   const packagingCostDataDict = calculatePackagingCostDict(
     variationData,
     textCostDataTable,
@@ -29,8 +25,6 @@ export async function calculatePackagingCost(
   return {
     packagingCostDataDict: packagingCostDataDict,
   }
-
-  return undefined
 }
 
 function calculatePackagingCostDict(
@@ -42,13 +36,15 @@ function calculatePackagingCostDict(
     let totalCost: number = 0
 
     const jobQuantity = o.quantity
-    let totalTextKgs = textCostDataTable.textCostDataDict.find(
-      (row) => row.jobQuantity === jobQuantity,
-    )?.paperWeight
+    let totalTextKgs =
+      textCostDataTable?.textCostDataDict.find(
+        (row) => row.jobQuantity === jobQuantity,
+      )?.paperWeight || 0
 
-    let totalCoverKgs = coverCostDataTable.coverCostDataDict.find(
-      (row) => row.jobQuantity === jobQuantity,
-    )?.paperWeight
+    let totalCoverKgs =
+      coverCostDataTable?.coverCostDataDict.find(
+        (row) => row.jobQuantity === jobQuantity,
+      )?.paperWeight || 0
 
     const totalJobKgs = (totalTextKgs || 0) + (totalCoverKgs || 0)
 

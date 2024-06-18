@@ -12,6 +12,25 @@ type productFieldMapType = {
 
 // Create the productFieldMap object with the correct type
 export const productFieldMap: productFieldMapType = {
+  'Annual Reports': {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'cover',
+      'text',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['paperbackBookBinding', 'coverUV', 'vdp'],
+  },
   'Paperback Books': {
     specificationComponents: [
       'closeSize',
@@ -69,5 +88,21 @@ export const productFieldMap: productFieldMapType = {
       'packagingCalculation',
     ],
     fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
+  },
+  Posters: {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['gumming', 'coverUV'],
   },
 }

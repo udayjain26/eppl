@@ -42,8 +42,6 @@ export default async function saveCalculationData(
     throw new Error('User Unauthenticated')
   }
 
-  console.log('formData', formData)
-
   const transformedData: TransformedData = {}
   formData.forEach((value, key) => {
     transformedData[key] = emptyStringToUndefinedTransformer(value)
@@ -66,7 +64,6 @@ export default async function saveCalculationData(
       ...validatedFields.data,
       userId: user.userId,
     }
-    console.log('dataWithUserIds', dataWithUserIds)
 
     const variationCalculationExists = await db
       .select()

@@ -34,7 +34,7 @@ export default function Dispatch(props: { control: any; form: UseFormReturn }) {
     <div className="flex flex-col pt-4">
       <h1>Dispatch Details</h1>
       <div className="flex h-20 flex-row gap-x-1">
-        <FormField
+        {/* <FormField
           control={props.control}
           name="dispatchType"
           render={({ field }) => (
@@ -100,7 +100,7 @@ export default function Dispatch(props: { control: any; form: UseFormReturn }) {
               </Popover>
             </FormItem>
           )}
-        />
+        /> */}
       </div>
       <MySep />
     </div>

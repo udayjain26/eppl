@@ -8,6 +8,7 @@ import { UseFormReturn } from 'react-hook-form'
 import Fabrication from './specification-components/fabrication'
 import Packaging from './specification-components/packaging'
 import Dispatch from './specification-components/dispatch'
+import SheetPrinting from './specification-components/sheet-printing'
 
 const specificationComponentMap: { [key: string]: React.ComponentType<any> } = {
   size: Size,
@@ -15,6 +16,7 @@ const specificationComponentMap: { [key: string]: React.ComponentType<any> } = {
   openSize: OpenSize,
   cover: Cover,
   text: Text,
+  sheetPrinting: SheetPrinting,
   fabrication: Fabrication,
   packaging: Packaging,
   dispatch: Dispatch,

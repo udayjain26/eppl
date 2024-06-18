@@ -8,6 +8,7 @@ import {
 import { TextCostData } from '@/app/estimates/[id]/_components/calculation-components/text-calculation'
 import {
   catalogBrochureBindingTypes,
+  gummingTypes,
   paperbackBindingTypes,
   postpressProcesses,
   uvTypes,
@@ -15,6 +16,7 @@ import {
 } from '@/app/settings/constants'
 import { VariationData } from '@/server/variations/types'
 import { get } from 'http'
+import { Row } from 'react-day-picker'
 import { text } from 'stream/consumers'
 
 export async function calculateFabricationCost(
@@ -22,17 +24,20 @@ export async function calculateFabricationCost(
   textCostDataTable: TextCostData,
   coverCostDataTable: CoverCostData,
 ): Promise<FabricationCostData> {
-  if (textCostDataTable === undefined || coverCostDataTable === undefined) {
-    return undefined
-  }
   let fabricationForms =
-    textCostDataTable?.textForms.totalFormsFB! +
-    textCostDataTable?.textForms.totalForms2Ups! / 2 +
-    textCostDataTable?.textForms.totalForms4Ups! / 4 +
-    textCostDataTable?.textForms.totalForms8Ups! / 8
+    textCostDataTable?.textForms.totalFormsFB +
+    textCostDataTable?.textForms.totalForms2Ups / 2 +
+    textCostDataTable?.textForms.totalForms4Ups / 4 +
+    textCostDataTable?.textForms.totalForms8Ups / 8
 
-  if (textCostDataTable.pagesPerSheet > 16) {
-    fabricationForms = fabricationForms * 2
+  if (typeof textCostDataTable?.pagesPerSheet === 'number') {
+    if (textCostDataTable?.pagesPerSheet > 16) {
+      fabricationForms = fabricationForms * 2
+    }
+  }
+
+  if (!fabricationForms) {
+    fabricationForms = 0
   }
 
   const fabricationCostDataDict = getFabricationCostsDict(
@@ -55,30 +60,25 @@ function getFabricationCostsDict(
 ): FabricationCostDataDict[] {
   const data = variationData.variationQtysRates.map((o) => {
     const jobQuantity = o.quantity
-    let totalSheets = textCostDataTable.textCostDataDict.find(
+    let coverTotalSheets = 0
+    let totalSheets = textCostDataTable?.textCostDataDict.find(
       (row) => row.jobQuantity === jobQuantity,
     )?.totalSheets
 
-    const coverTotalSheets = coverCostDataTable.coverCostDataDict.find(
-      (row) => row.jobQuantity === jobQuantity,
-    )?.totalSheets
+    coverTotalSheets =
+      coverCostDataTable?.coverCostDataDict.find(
+        (row) => row.jobQuantity === jobQuantity,
+      )?.totalSheets || 0
 
-    if (totalSheets === undefined || coverTotalSheets === undefined) {
-      return {
-        jobQuantity: jobQuantity,
-        totalCost: 0,
-        costPerPiece: 0,
-      }
-    }
     let fabricationSheets: number
-    if (textCostDataTable.pagesPerSheet > 16) {
-      fabricationSheets = totalSheets * 2
+    if (textCostDataTable?.pagesPerSheet > 16) {
+      fabricationSheets = (totalSheets || 0) * 2
     } else {
-      fabricationSheets = totalSheets
+      fabricationSheets = totalSheets || 0
     }
 
-    const coverWorkingLength = coverCostDataTable.coverSheetlength
-    const coverWorkingWidth = coverCostDataTable.coverSheetWidth
+    const coverWorkingLength = coverCostDataTable?.coverSheetlength
+    const coverWorkingWidth = coverCostDataTable?.coverSheetWidth
 
     const foldingCost = getFoldingCost(textCostDataTable, fabricationSheets)
     const gatheringCost = getGatheringCost(fabricationSheets)
@@ -89,11 +89,9 @@ function getFabricationCostsDict(
     let centrePin: number | undefined
     let coverUV: number | undefined
     let vdp: number | undefined
+    let gumming: number | undefined
 
-    if (
-      variationData.paperbackBookBinding === 'Perfect' ||
-      variationData.catalogBrochureBinding === 'Perfect'
-    ) {
+    if (variationData.binding === 'Perfect') {
       const perfectCharges = paperbackBindingTypes.find(
         (row) => row.label === 'Perfect',
       )?.rate!
@@ -103,10 +101,7 @@ function getFabricationCostsDict(
       if (perfectBindingCost / jobQuantity < 2) {
         perfectBindingCost = 2 * jobQuantity
       }
-    } else if (
-      variationData.paperbackBookBinding === 'Sewn and Perfect' ||
-      variationData.catalogBrochureBinding === 'Sewn and Perfect'
-    ) {
+    } else if (variationData.binding === 'Sewn and Perfect') {
       const sewnAndPerfectCharges = paperbackBindingTypes.find(
         (row) => row.label === 'Sewn and Perfect',
       )?.rate!
@@ -117,10 +112,7 @@ function getFabricationCostsDict(
       if (sewnAndPerfect / jobQuantity < 4) {
         sewnAndPerfect = 4 * jobQuantity
       }
-    } else if (
-      variationData.paperbackBookBinding === 'Side Pin and Perfect' ||
-      variationData.catalogBrochureBinding === 'Side Pin and Perfect'
-    ) {
+    } else if (variationData.binding === 'Side Pin and Perfect') {
       const sidePinAndPerfectCharges = paperbackBindingTypes.find(
         (row) => row.label === 'Side Pin and Perfect',
       )?.rate!
@@ -132,8 +124,8 @@ function getFabricationCostsDict(
       }
     }
 
-    //Options only specfic to catalogBookBindingType
-    else if (variationData.catalogBrochureBinding === 'Centre Pin') {
+    //Use catalog brochure binding types need to make it so that it matches this condition
+    else if (variationData.binding === 'Centre Pin') {
       const centrePinCharges = catalogBrochureBindingTypes.find(
         (row) => row.label === 'Centre Pin',
       )?.rate!
@@ -184,6 +176,10 @@ function getFabricationCostsDict(
       vdp = vdpCharges * jobQuantity
     }
 
+    if (typeof variationData.gummingType === 'string') {
+      gumming = getGummingCost(jobQuantity, variationData)
+    }
+
     const totalCost =
       foldingCost +
       gatheringCost +
@@ -192,7 +188,8 @@ function getFabricationCostsDict(
       (sidePinAndPerfect || 0) +
       (centrePin || 0) +
       (coverUV || 0) +
-      (vdp || 0)
+      (vdp || 0) +
+      (gumming || 0)
 
     const costPerPiece = totalCost / jobQuantity
 
@@ -217,6 +214,7 @@ function getFabricationCostsDict(
       centrePin: centrePin ? Number(centrePin.toFixed(0)) : undefined,
       coverUV: coverUV ? Number(coverUV.toFixed(0)) : undefined,
       vdp: vdp ? Number(vdp.toFixed(0)) : undefined,
+      gumming: gumming ? Number(gumming.toFixed(0)) : undefined,
       totalCost: Number(totalCost.toFixed(0)),
       costPerPiece: Number(costPerPiece.toFixed(2)),
     }
@@ -229,11 +227,11 @@ function getFoldingCost(
   fabricationSheets: number,
 ) {
   let foldingCost = 0
-  if (textCostDataTable.pagesPerSheet >= 16) {
+  if (textCostDataTable?.pagesPerSheet >= 16) {
     foldingCost = postpressProcesses.find((row) => row.label === '3Fold')?.rate!
-  } else if (textCostDataTable.pagesPerSheet === 8) {
+  } else if (textCostDataTable?.pagesPerSheet === 8) {
     foldingCost = postpressProcesses.find((row) => row.label === '2Fold')?.rate!
-  } else if (textCostDataTable.pagesPerSheet === 4) {
+  } else if (textCostDataTable?.pagesPerSheet === 4) {
     foldingCost = postpressProcesses.find((row) => row.label === '1Fold')?.rate!
   } else {
     foldingCost = 0
@@ -253,4 +251,20 @@ function getGatheringCost(fabricationSheets: number) {
   const gatheringCharges = (gatheringCost * fabricationSheets) / 1000
 
   return gatheringCharges
+}
+
+function getGummingCost(qty: number, variationData: VariationData) {
+  let gummingCost = 0
+
+  let gummingCharges = gummingTypes.find(
+    (row) => row.label === variationData.gummingType,
+  )?.rate
+
+  if (gummingCharges === undefined) {
+    return 0
+  }
+
+  gummingCost = gummingCharges * qty
+
+  return gummingCost
 }

@@ -24,17 +24,6 @@ export const VariationFormSchema = z.object({
     .optional(),
 
   //Details for the variation
-  sizeName: z.string().optional(),
-  sizeLength: z.coerce
-    .number()
-    .nonnegative({ message: 'Length must be non-negative' })
-    .optional()
-    .transform((val) => val?.toString() || undefined),
-  sizeWidth: z.coerce
-    .number()
-    .nonnegative({ message: 'Width must be non-negative' })
-    .optional()
-    .transform((val) => val?.toString() || undefined),
 
   closeSizeName: z.string().optional(),
   closeSizeLength: z.preprocess(
@@ -203,11 +192,12 @@ export const VariationFormSchema = z.object({
   textLamination: z.string().optional(),
   textPaperType: z.string().optional(),
 
-  paperbackBookBinding: z.string().optional(),
-  catalogBrochureBinding: z.string().optional(),
+  binding: z.string().optional(),
+  // catalogBrochureBinding: z.string().optional(),
   coverUV: z.string().optional(),
   vdp: z.string().optional(),
   packagingType: z.string().optional(),
+  gummingType: z.string().optional(),
   // textPaper: z.string().optional(),
 
   // createdBy: z.string().uuid(),

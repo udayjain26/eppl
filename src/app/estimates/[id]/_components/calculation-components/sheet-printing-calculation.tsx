@@ -1,4 +1,18 @@
-import PercentageInput from '@/app/_components/percentage-inputs'
+'use client'
+
+import { VariationData } from '@/server/variations/types'
+import { Separator } from '@/components/ui/separator'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -8,28 +22,18 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form'
+import { CheckIcon, Plus, Trash } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { PaperData } from '@/server/paper/types'
+import { getPaperData } from '@/server/paper/queries'
+import { calculateCoverCost as calculateCoverCost } from '@/server/calculations/cover/actions'
 import { Input } from '@/components/ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
+import { UseFormReturn, useFieldArray } from 'react-hook-form'
+import FormError from '@/app/_components/form-error'
 import { Slider } from '@/components/ui/slider'
+import { Stage, Layer, Rect, Text, Circle, Line } from 'react-konva'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Table,
   TableBody,
@@ -39,27 +43,26 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
-import {
-  FormsSheetsDictType,
-  PrintingForms,
-  calculateTextCost,
-} from '@/server/calculations/text/actions'
-import { PaperData } from '@/server/paper/types'
-import { VariationData } from '@/server/variations/types'
-import { set } from 'date-fns'
-import { CheckIcon } from 'lucide-react'
-import { ChangeEvent, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { useDebounce } from 'use-debounce'
+import { PrintingForms } from '@/server/calculations/text/actions'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
-export type TextCostData = {
+export type CoverCostData = {
+  coverPiecesPerSheet: number
   pagesPerSheet: number
-  textForms: PrintingForms
-  totalSets: number
   paperAreaUsed: number
-
-  textCostDataDict: {
+  coverForms: PrintingForms
+  totalSets: number
+  coverSheetlength: number
+  coverSheetWidth: number
+  coverCostDataDict: {
     jobQuantity: number
     calculatedSheets: number
     wastageSheets: number
@@ -70,17 +73,20 @@ export type TextCostData = {
     printingCost: number
     laminationCost: number
     totalCost: number
-    costPerText: number
+    costPerCover: number
   }[]
 }
 
-export default function TextCalculation(props: {
+export default function SheetPrintingCalculation(props: {
   variationData: VariationData
   paperData: PaperData[]
   form: UseFormReturn
-  textCostDataTable: TextCostData | undefined
-  setTextCostDataTable: any
+  coverCostDataTable: CoverCostData | undefined
+  setCoverCostDataTable: React.Dispatch<
+    React.SetStateAction<CoverCostData | undefined>
+  >
 }) {
+  const coverCostDataTable = props.coverCostDataTable
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
   const handleInputChange = (
@@ -116,10 +122,22 @@ export default function TextCalculation(props: {
     undefined,
   )
 
-  const textCostDataTable = props.textCostDataTable
-  const grippers = Number(props.form.watch('textGrippers'))
-  const bleed = Number(props.form.watch('textBleed'))
-  const gutters = Number(props.form.watch('textGutters'))
+  const effectiveCoverLength = props.variationData.openSizeLength
+    ? props.variationData.openSizeLength +
+      Number(props.form.watch('coverBleed')) * 2
+    : 0
+  const effectiveCoverWidth = props.variationData.openSizeWidth
+    ? props.variationData.openSizeWidth +
+      // Number(props.form.watch('coverSpine')) +
+      Number(props.form.watch('coverBleed')) * 2
+    : 0
+  const coverPrintingType = props.form.watch('coverPrintingType')
+  let grippers: number
+  grippers = Number(props.form.watch('coverGrippers'))
+
+  if (coverPrintingType === 'workAndTumble') {
+    grippers = Number(props.form.watch('coverGrippers')) * 2
+  }
 
   const effectivePaperLength = selectedPaper?.paperLength
     ? selectedPaper.paperLength - grippers
@@ -128,40 +146,35 @@ export default function TextCalculation(props: {
     ? selectedPaper.paperWidth
     : 0
 
-  const effectiveTextLength = props.variationData.openSizeLength
-    ? props.variationData.openSizeLength + bleed * 2
-    : 0
-  const effectiveTextWidth = props.variationData.openSizeWidth
-    ? props.variationData.openSizeWidth + bleed * 2 + gutters * 2
-    : 0
-  const wastageFactor = Number(props.form.watch('textWastageFactor'))
-  const plateFactor = Number(props.form.watch('textPlateRateFactor'))
-  const printingFactor = Number(props.form.watch('textPrintingFactor'))
+  const wastageFactor = Number(props.form.watch('coverWastageFactor'))
+  const plateFactor = Number(props.form.watch('coverPlateRateFactor'))
+  const printingFactor = Number(props.form.watch('coverPrintingFactor'))
 
-  const paperRatePerkg = Number(props.form.watch('textPaperRate'))
-  const plateRate = Number(props.form.watch('textPlateRate'))
-  const textWorkingLength = Number(props.form.watch('textWorkingLength'))
-  const textWorkingWidth = Number(props.form.watch('textWorkingWidth'))
-  const watchPaperData = props.form.watch('textPaper')
-  const watchPlateSize = props.form.watch('textPlateSize')
-  const printingRateFactor = props.form.watch('textPrintingRateFactor')
-  const textPlateSize = props.form.watch('textPlateSize')
+  const coverWorkingLength = Number(props.form.watch('coverWorkingLength'))
+  const coverWorkingWidth = Number(props.form.watch('coverWorkingWidth'))
+  const watchPaperData = props.form.watch('coverPaper')
+  const watchPlateSize = props.form.watch('coverPlateSize')
+  const printingRateFactor = props.form.watch('coverPrintingRateFactor')
+
+  const paperRatePerkg = Number(props.form.watch('coverPaperRate'))
+  const plateRate = Number(props.form.watch('coverPlateRate'))
+  const printingRate = Number(props.form.watch('coverPrintingRate'))
 
   const [debouncedWastageFactor] = useDebounce(wastageFactor, 1000)
   const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 1000)
   const [debouncedPlateRate] = useDebounce(plateRate, 1000)
-  const [debouncedTextWorkingLength] = useDebounce(textWorkingLength, 1000)
-  const [debouncedTextWorkingWidth] = useDebounce(textWorkingWidth, 1000)
+  const [debouncedCoverWorkingLength] = useDebounce(coverWorkingLength, 1000)
+  const [debouncedCoverWorkingWidth] = useDebounce(coverWorkingWidth, 1000)
   const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
-  const [debouncedPlateSize] = useDebounce(textPlateSize, 1000)
+  const [debouncedPlateSize] = useDebounce(watchPlateSize, 1000)
 
   const isPlateSizeSmall =
     watchPlateSize === 'Small' &&
-    (textWorkingLength > 508 || textWorkingWidth > 762)
+    (coverWorkingLength > 508 || coverWorkingWidth > 762)
 
   useEffect(() => {
-    const lengthValue = props.form.getValues('textWorkingLength')
-    const widthValue = props.form.getValues('textWorkingWidth')
+    const lengthValue = props.form.getValues('coverWorkingLength')
+    const widthValue = props.form.getValues('coverWorkingWidth')
 
     if (lengthValue || lengthValue === 0) {
       setLengthInInches((parseFloat(lengthValue) / 25.4).toFixed(2))
@@ -169,10 +182,18 @@ export default function TextCalculation(props: {
     if (widthValue || widthValue === 0) {
       setWidthInInches((parseFloat(widthValue) / 25.4).toFixed(2))
     }
-  }, [textWorkingLength, textWorkingWidth])
+  }, [coverWorkingLength, coverWorkingWidth])
 
   useEffect(() => {
-    const initialPaperName = props.form.getValues('textPaper')
+    if (watchPlateSize === 'Small') {
+      props.form.setValue('coverPlateRate', 300 * plateFactor)
+    } else if (watchPlateSize === 'Large') {
+      props.form.setValue('coverPlateRate', 500 * plateFactor)
+    }
+  }, [watchPlateSize])
+
+  useEffect(() => {
+    const initialPaperName = props.form.getValues('coverPaper')
     const initialSelectedPaper = props.paperData.find(
       (paper) => paper.paperName === initialPaperName,
     )
@@ -180,58 +201,46 @@ export default function TextCalculation(props: {
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
       props.form.setValue(
-        'textPaperRate',
+        'coverPaperRate',
         initialSelectedPaper.paperDefaultRate,
       )
-      props.form.setValue('textWorkingLength', initialSelectedPaper.paperLength)
-      props.form.setValue('textWorkingWidth', initialSelectedPaper.paperWidth)
+      props.form.setValue(
+        'coverWorkingLength',
+        initialSelectedPaper.paperLength,
+      )
+      props.form.setValue('coverWorkingWidth', initialSelectedPaper.paperWidth)
     }
   }, [watchPaperData])
 
   useEffect(() => {
-    if (watchPlateSize === 'Small') {
-      props.form.setValue('textPlateRate', 300 * plateFactor)
-    } else if (watchPlateSize === 'Large') {
-      props.form.setValue('textPlateRate', 500 * plateFactor)
-    }
-  }, [watchPlateSize])
-
-  useEffect(() => {
-    if (textWorkingLength <= 508 && textWorkingWidth <= 762) {
-      props.form.setValue('textPlateSize', 'Small')
-    } else {
-      props.form.setValue('textPlateSize', 'Large')
-    }
-  }, [textWorkingLength, textWorkingWidth])
-
-  useEffect(() => {
-    const calculateTextCostData = async () => {
-      const fetchTextCostData = await calculateTextCost(
+    const calculateCoverSheets = async () => {
+      const fetchCoverCostDataTable = await calculateCoverCost(
         props.variationData,
         selectedPaper,
-        effectiveTextLength,
-        effectiveTextWidth,
+        effectiveCoverLength,
+        effectiveCoverWidth,
         grippers,
-        debouncedTextWorkingLength,
-        debouncedTextWorkingWidth,
+        debouncedCoverWorkingLength,
+        debouncedCoverWorkingWidth,
         debouncedPaperRatePerkg,
         debouncedWastageFactor,
         debouncedPlateRate,
         debouncedPlateSize,
         debouncedPrintingRateFactor,
+        coverPrintingType,
       )
-      props.setTextCostDataTable(fetchTextCostData)
+      props.setCoverCostDataTable(fetchCoverCostDataTable)
     }
-    calculateTextCostData()
+    calculateCoverSheets()
   }, [
-    effectiveTextLength,
-    effectiveTextWidth,
+    effectiveCoverLength,
+    effectiveCoverWidth,
     grippers,
     selectedPaper,
-    textWorkingLength,
-    textWorkingWidth,
-    debouncedTextWorkingLength,
-    debouncedTextWorkingWidth,
+    coverWorkingLength,
+    coverWorkingWidth,
+    debouncedCoverWorkingLength,
+    debouncedCoverWorkingWidth,
     debouncedPaperRatePerkg,
     debouncedWastageFactor,
     debouncedPlateRate,
@@ -239,65 +248,68 @@ export default function TextCalculation(props: {
     props.form,
     debouncedPlateSize,
     debouncedPrintingRateFactor,
+    coverPrintingType,
   ])
 
   return (
     <>
       <div className="flex flex-col gap-x-8 p-4 sm:flex-row">
         <div className="flex w-full max-w-[12rem] flex-col gap-y-2">
-          <h1 className="underline">Text Specifications</h1>
+          <h1 className="underline">Sheet Specifications</h1>
           <div className="text-sm">
             <ul className="flex flex-col gap-y-2">
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Close Length</span>
-                <span>{props.variationData?.closeSizeLength} mm</span>
+                <span className="text-muted-foreground">Open Length</span>
+                <span>{props.variationData?.openSizeLength} mm</span>
               </li>
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Close Width</span>
-                <span>{props.variationData?.closeSizeWidth} mm</span>
+                <span className="text-muted-foreground">Open Width</span>
+                <span>{props.variationData?.openSizeWidth} mm</span>
               </li>
-
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Grammage</span>
-                <span>{props.variationData?.textGrammage} gsm</span>
+                <span>{props.variationData?.coverGrammage} gsm</span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Paper Type</span>
-                <span>{props.variationData?.textPaperType}</span>
+                <span>{props.variationData?.coverPaperType}</span>
               </li>
 
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Colors</span>
-                <span>{props.variationData?.textColors}</span>
+                <span>
+                  {props.variationData?.coverFrontColors} +{' '}
+                  {props.variationData?.coverBackColors}
+                </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Pages</span>
-                <span>{props.variationData?.textPages} </span>
+                <span>{props.variationData?.coverPages} </span>
               </li>
               <li className="flex items-center justify-between text-right">
                 <span className="text-muted-foreground">Lamination</span>
-                <span>{props.variationData?.textLamination} </span>
+                <span>{props.variationData?.coverLamination} </span>
               </li>
             </ul>
           </div>
         </div>
         <div className="flex w-full flex-col gap-y-2">
           <div className="flex flex-row gap-x-2">
-            <FormField
+            {/* <FormField
               control={props.form.control}
-              name="textGutters"
+              name="coverSpine"
               render={({ field }) => (
                 <FormItem className=" ">
-                  <FormLabel>Gutters(mm)</FormLabel>
+                  <FormLabel>Spine(mm)</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={props.form.control}
-              name="textBleed"
+              name="coverBleed"
               render={({ field }) => (
                 <FormItem className=" ">
                   <FormLabel>Bleed(mm)</FormLabel>
@@ -309,7 +321,7 @@ export default function TextCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="textGrippers"
+              name="coverGrippers"
               render={({ field }) => (
                 <FormItem className=" ">
                   <FormLabel>Grippers(mm)</FormLabel>
@@ -319,7 +331,6 @@ export default function TextCalculation(props: {
                 </FormItem>
               )}
             />
-
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="mt-6" variant="outline">
@@ -332,12 +343,12 @@ export default function TextCalculation(props: {
           <div className="flex w-full flex-row gap-x-2">
             <ul className="flex flex-row gap-x-2 text-xs">
               <li>
-                Effective Open Length: {effectiveTextLength}(mm) /{' '}
-                {(effectiveTextLength / 25.4).toFixed(2)}(in)
+                Effective Open Length: {effectiveCoverLength}(mm) /{' '}
+                {(effectiveCoverLength / 25.4).toFixed(2)}(in)
               </li>
               <li>
-                Effective Open Width: {effectiveTextWidth}(mm) /{' '}
-                {(effectiveTextWidth / 25.4).toFixed(2)}(in)
+                Effective Open Width: {effectiveCoverWidth}(mm) /{' '}
+                {(effectiveCoverWidth / 25.4).toFixed(2)}(in)
               </li>
               <li>
                 Effective Paper Length: {effectivePaperLength}(mm) /{' '}
@@ -351,7 +362,57 @@ export default function TextCalculation(props: {
           </div>
           <FormField
             control={props.form.control}
-            name="textPaper"
+            name="coverPrintingType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Printing Type</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-row gap-x-4"
+                    {...field}
+                  >
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem value="frontBack" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Front Back</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem value="workAndTurn" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Work and Turn
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem value="workAndTumble" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Work and Tumble
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-x-1 ">
+                      <FormControl>
+                        <RadioGroupItem
+                          disabled={props.variationData.coverBackColors !== 0}
+                          value="singleSide"
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal">Single Side</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={props.form.control}
+            name="coverPaper"
             render={({ field }) => (
               <FormItem
                 className="flex 
@@ -391,9 +452,9 @@ export default function TextCalculation(props: {
                             .filter(
                               (paper) =>
                                 paper.paperGrammage ===
-                                  props.variationData.textGrammage &&
+                                  props.variationData.coverGrammage &&
                                 paper.paperType ===
-                                  props.variationData.textPaperType,
+                                  props.variationData.coverPaperType,
                             )
                             .map((paper) => (
                               <CommandItem
@@ -402,19 +463,18 @@ export default function TextCalculation(props: {
                                 onSelect={() => {
                                   setSelectedPaper(undefined)
                                   props.form.setValue(
-                                    'textPaper',
+                                    'coverPaper',
                                     paper.paperName,
                                   )
                                   field.onChange(paper.paperName)
-
-                                  props.form.trigger('textPaper') // Trigger form validation and state update
+                                  props.form.trigger('coverPaper') // Trigger form validation and state update
 
                                   props.form.setValue(
-                                    'textWorkingLength',
+                                    'coverWorkingLength',
                                     paper.paperLength,
                                   )
                                   props.form.setValue(
-                                    'textWorkingWidth',
+                                    'coverWorkingWidth',
                                     paper.paperWidth,
                                   )
                                   setSelectedPaper(paper)
@@ -456,11 +516,11 @@ export default function TextCalculation(props: {
           <div className="flex flex-row gap-x-2">
             <FormField
               control={props.form.control}
-              name="textWastageFactor"
+              name="coverWastageFactor"
               render={({ field }) => (
                 <FormItem className="w-2/5">
                   <FormLabel>
-                    Text Wastage Factor {(field.value * 100).toFixed(2)}%
+                    Wastage Factor {(field.value * 100).toFixed(2)}%
                   </FormLabel>
                   <FormControl>
                     <Input type="number" step={0.001} {...field}></Input>
@@ -470,7 +530,7 @@ export default function TextCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="textPlateRateFactor"
+              name="coverPlateRateFactor"
               render={({ field }) => (
                 <FormItem className="w-2/5">
                   <FormLabel>
@@ -484,7 +544,7 @@ export default function TextCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="textPrintingRateFactor"
+              name="coverPrintingRateFactor"
               render={({ field }) => (
                 <FormItem className="w-2/5">
                   <FormLabel>
@@ -498,7 +558,7 @@ export default function TextCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="textWorkingLength"
+              name="coverWorkingLength"
               render={({ field }) => (
                 <FormItem className=" ">
                   <FormLabel className=" font-bold">
@@ -520,7 +580,7 @@ export default function TextCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="textWorkingWidth"
+              name="coverWorkingWidth"
               render={({ field }) => (
                 <FormItem className=" ">
                   <FormLabel className=" font-bold">
@@ -542,10 +602,10 @@ export default function TextCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="textPlateSize"
+              name="coverPlateSize"
               render={({ field }) => (
                 <FormItem className={cn({ 'text-red-500': isPlateSizeSmall })}>
-                  <FormLabel>Text Plate Size</FormLabel>
+                  <FormLabel>Printing Plate Size</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -572,37 +632,42 @@ export default function TextCalculation(props: {
           <div className="flex  flex-col gap-y-1 text-sm">
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Pieces/Sheet</span>
+                <span>{coverCostDataTable?.coverPiecesPerSheet}</span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Pages/Sheet</span>
-                <span>{textCostDataTable?.pagesPerSheet}</span>
+                <span>{coverCostDataTable?.pagesPerSheet}</span>
               </li>
 
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Text Forms</span>
+                <span className="text-muted-foreground">Forms</span>
                 <span>
-                  {textCostDataTable?.textForms.totalFormsFB! +
-                    textCostDataTable?.textForms.totalForms2Ups! / 2 +
-                    textCostDataTable?.textForms.totalForms4Ups! / 4 +
-                    textCostDataTable?.textForms.totalForms8Ups! / 8}
+                  {' '}
+                  {coverCostDataTable?.coverForms.totalFormsFB! +
+                    coverCostDataTable?.coverForms.totalForms2Ups! / 2 +
+                    coverCostDataTable?.coverForms.totalForms4Ups! / 4 +
+                    coverCostDataTable?.coverForms.totalForms8Ups! / 8}
                 </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Total Sets</span>
-                <span>{textCostDataTable?.totalSets}</span>
+                <span>{coverCostDataTable?.totalSets}</span>
               </li>
               <li
                 className={cn('flex items-center justify-between border-b-2', {
-                  ' text-red-500': textCostDataTable?.paperAreaUsed! < 90,
+                  ' text-red-500': coverCostDataTable?.paperAreaUsed! < 90,
                 })}
               >
                 <span className={cn('text-muted-foreground', {})}>
                   Paper Area Used
                 </span>
-                <span>{textCostDataTable?.paperAreaUsed} %</span>
+                <span>{coverCostDataTable?.paperAreaUsed?.toFixed(2)} %</span>
               </li>
             </ul>
             <FormField
               control={props.form.control}
-              name="textPaperRate"
+              name="coverPaperRate"
               render={({ field }) => (
                 <FormItem className=" grow">
                   <FormLabel>Paper Rate(&#x20B9;)/Kg</FormLabel>
@@ -614,12 +679,12 @@ export default function TextCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="textPlateRate"
+              name="coverPlateRate"
               render={({ field }) => (
-                <FormItem className=" grow text-gray-500">
+                <FormItem className=" grow">
                   <FormLabel>Plate Rate(&#x20B9;)</FormLabel>
                   <FormControl>
-                    <Input readOnly {...field}></Input>
+                    <Input {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -628,29 +693,16 @@ export default function TextCalculation(props: {
               <li>Printing Planning: </li>
               <li>
                 <span>
-                  {textCostDataTable?.textForms.totalFormsFB
-                    ? textCostDataTable?.textForms.totalFormsFB + 'x F/B'
+                  {coverCostDataTable?.coverForms.totalFormsFB
+                    ? coverCostDataTable?.coverForms.totalFormsFB + 'x F/B'
                     : ''}
                 </span>
               </li>
               <li>
                 <span>
-                  {textCostDataTable?.textForms.totalForms2Ups
-                    ? textCostDataTable?.textForms.totalForms2Ups + 'x W/T 2Ups'
-                    : ''}
-                </span>
-              </li>
-              <li>
-                <span>
-                  {textCostDataTable?.textForms.totalForms4Ups
-                    ? textCostDataTable?.textForms.totalForms4Ups + 'x W/T 4Ups'
-                    : ''}
-                </span>
-              </li>
-              <li>
-                <span>
-                  {textCostDataTable?.textForms.totalForms8Ups
-                    ? textCostDataTable?.textForms.totalForms8Ups + 'x W/T8Ups'
+                  {coverCostDataTable?.coverForms.totalForms2Ups
+                    ? coverCostDataTable?.coverForms.totalForms2Ups +
+                      'x W/T 2Ups'
                     : ''}
                 </span>
               </li>
@@ -659,10 +711,10 @@ export default function TextCalculation(props: {
         </div>
       </div>
       <Table>
-        <TableCaption>Text Paper, Plates and Printing Data</TableCaption>
+        <TableCaption>Paper, Plates and Printing Data</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Text Quantity</TableHead>
+            <TableHead>Quantity</TableHead>
             <TableHead>Calculated Sheets</TableHead>
             <TableHead>Wastage Sheets</TableHead>
             <TableHead>Total Sheets</TableHead>
@@ -672,11 +724,11 @@ export default function TextCalculation(props: {
             <TableHead>Printing Cost</TableHead>
             <TableHead>Lamination Cost</TableHead>
             <TableHead>Total Cost</TableHead>
-            <TableHead>Cost/Text</TableHead>
+            <TableHead>Cost/Piece</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {textCostDataTable?.textCostDataDict.map((item, index) => {
+          {coverCostDataTable?.coverCostDataDict.map((item, index) => {
             return (
               <TableRow key={item.jobQuantity}>
                 <TableCell>{item.jobQuantity}</TableCell>
@@ -689,12 +741,13 @@ export default function TextCalculation(props: {
                 <TableCell>{item.printingCost}&#x20B9;</TableCell>
                 <TableCell>{item.laminationCost}&#x20B9;</TableCell>
                 <TableCell>{item.totalCost}&#x20B9;</TableCell>
-                <TableCell>{item.costPerText}&#x20B9; </TableCell>
+                <TableCell>{item.costPerCover}&#x20B9; </TableCell>
               </TableRow>
             )
           })}
         </TableBody>
       </Table>
+
       <Separator />
     </>
   )

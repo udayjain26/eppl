@@ -52,6 +52,7 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
       const numericValue = parseFloat(value.slice(0, -1))
       if (!isNaN(numericValue)) {
         const mmValue = (numericValue * 25.4).toFixed(2) // Convert inches to mm
+        props.form.setValue('openSizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
         field.onChange(mmValue)
         setInches(numericValue.toFixed(2))
       } else {
@@ -63,6 +64,7 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
       const numericValue = parseFloat(value)
       if (!isNaN(numericValue)) {
         setInches((numericValue / 25.4).toFixed(2)) // Convert mm to inches
+        props.form.setValue('openSizeName', 'Custom') // Set combobox to "Custom" when custom size is entered
       } else {
         setInches('')
       }

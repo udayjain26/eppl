@@ -179,8 +179,8 @@ export const catalogBrochureBindingTypes = [
   {
     label: 'Centre Pin',
     value: 'centre_pin',
-    rate: 0.5,
-    minimumPerBook: 1.5,
+    rate: 0.25,
+    minimumPerBook: 1,
   },
 
   {
@@ -272,6 +272,51 @@ export const vdpTypes = [
   { label: 'VDP 1 Color', value: 'vdp_1_color', rate: 2 },
   { label: 'VDP 4 Color', value: 'vdp_4_color', rate: 8 },
   { label: 'VDP and Scratch', value: 'vdp_and_scratch', rate: 3 },
+]
+
+export const gummingTypes = [
+  { label: 'None', value: 'none', rate: 0 },
+  { label: '1 Strip Gumming', value: 'one_strip_gumming', rate: 1.5 },
+  {
+    label: '2 Strip Gumming 1 inch',
+    value: 'two_strip_gumming_1_inch',
+    rate: 3,
+  },
+  {
+    label: '3 Strip Gumming 1 inch',
+    value: 'three_strip_gumming_1_inch',
+    rate: 4.5,
+  },
+  {
+    label: '1 Strip Gumming 1.5 inch',
+    value: 'one_strip_gumming_1_5_inch',
+    rate: 2.25,
+  },
+  {
+    label: '2 Strip Gumming 1.5 inches',
+    value: 'two_strip_gumming_1_5_inch',
+    rate: 4.5,
+  },
+  {
+    label: '3 Strip Gumming 1.5 inches',
+    value: 'three_strip_gumming_1_5_inch',
+    rate: 6.75,
+  },
+  {
+    label: '1 Strip Gumming 2 inch',
+    value: 'one_strip_gumming_2_inch',
+    rate: 3,
+  },
+  {
+    label: '2 Strip Gumming 2 inches',
+    value: 'two_strip_gumming_2_inch',
+    rate: 6,
+  },
+  {
+    label: '3 Strip Gumming 2 inches',
+    value: 'three_strip_gumming_2_inch',
+    rate: 9,
+  },
 ]
 
 // { label: 'Gilding', value: 'gilding', rate: 25 },

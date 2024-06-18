@@ -50,46 +50,40 @@ export default function TotalCalculation(props: {
   const calculateCostDetails = () => {
     const costDetails: CostDetails[] = []
 
-    if (
-      textCostDataTable &&
-      coverCostDataTable &&
-      fabricationCostDataTable &&
-      packagingCostDataTable
-    ) {
-      coverCostDataTable.coverCostDataDict.forEach((item, index) => {
-        const costPerPiece =
-          item.costPerCover +
-          textCostDataTable.textCostDataDict[index].costPerText +
-          fabricationCostDataTable.fabricationCostDataDict[index].costPerPiece +
-          packagingCostDataTable.packagingCostDataDict[index].costPerPiece
+    coverCostDataTable?.coverCostDataDict.forEach((item, index) => {
+      const costPerPiece =
+        item.costPerCover +
+        (textCostDataTable?.textCostDataDict[index].costPerText || 0) +
+        (fabricationCostDataTable?.fabricationCostDataDict[index]
+          .costPerPiece || 0) +
+        (packagingCostDataTable?.packagingCostDataDict[index].costPerPiece || 0)
 
-        const totalCost = costPerPiece * item.jobQuantity
+      const totalCost = costPerPiece * item.jobQuantity
 
-        // Assume we get the profit percentage from the form data
-        const profitPercentage =
-          parseFloat(props.form.watch('profitPercentage')) / 100
-        const profitPerPiece = costPerPiece * profitPercentage
-        const totalProfit = profitPerPiece * item.jobQuantity
-        const sellingPrice = costPerPiece + profitPerPiece
+      // Assume we get the profit percentage from the form data
+      const profitPercentage =
+        parseFloat(props.form.watch('profitPercentage')) / 100
+      const profitPerPiece = costPerPiece * profitPercentage
+      const totalProfit = profitPerPiece * item.jobQuantity
+      const sellingPrice = costPerPiece + profitPerPiece
 
-        const platePaperRatio =
-          (item.paperCost +
-            item.plateCost +
-            textCostDataTable.textCostDataDict[index].paperCost +
-            textCostDataTable.textCostDataDict[index].plateCost) /
-          (totalCost + totalProfit)
+      const platePaperRatio =
+        (item.paperCost +
+          item.plateCost +
+          (textCostDataTable?.textCostDataDict[index].paperCost || 0) +
+          (textCostDataTable?.textCostDataDict[index].plateCost || 0)) /
+        (totalCost + totalProfit)
 
-        costDetails.push({
-          jobQuantity: item.jobQuantity,
-          costPerPiece: parseFloat(costPerPiece.toFixed(2)),
-          totalCost: parseFloat(totalCost.toFixed(2)),
-          platePaperRatio: parseFloat(platePaperRatio.toFixed(2)),
-          profitPerPiece: parseFloat(profitPerPiece.toFixed(2)),
-          totalProfit: parseFloat(totalProfit.toFixed(2)),
-          sellingPrice: parseFloat(sellingPrice.toFixed(2)),
-        })
+      costDetails.push({
+        jobQuantity: item.jobQuantity,
+        costPerPiece: parseFloat(costPerPiece.toFixed(2)),
+        totalCost: parseFloat(totalCost.toFixed(2)),
+        platePaperRatio: parseFloat(platePaperRatio.toFixed(2)),
+        profitPerPiece: parseFloat(profitPerPiece.toFixed(2)),
+        totalProfit: parseFloat(totalProfit.toFixed(2)),
+        sellingPrice: parseFloat(sellingPrice.toFixed(2)),
       })
-    }
+    })
 
     return costDetails
   }

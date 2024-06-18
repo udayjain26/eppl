@@ -7,6 +7,7 @@ import PaperbackBookBinding from './paperback-book-binding'
 import CoverUV from './cover-uv'
 import VDPComp from './vdp'
 import CatalogBrochureBinding from './catalog-brochure-binding'
+import Gumming from './gumming'
 
 export default function Fabrication(props: {
   control: any
@@ -20,6 +21,7 @@ export default function Fabrication(props: {
     catalogBrochureBinding: CatalogBrochureBinding,
     coverUV: CoverUV,
     vdp: VDPComp,
+    gumming: Gumming,
   }
   const fabricationFields =
     productFieldMap[props.product]['fabricationComponents'] || []
