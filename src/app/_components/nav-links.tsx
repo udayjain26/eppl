@@ -24,31 +24,31 @@ const links = [
     href: '/estimates',
     icon: CalculatorIcon,
   },
-  {
-    name: 'Production',
-    href: '/production',
-    icon: FileCog,
-  },
-  {
-    name: 'Logistics',
-    href: '/logistics',
-    icon: Truck,
-  },
-  {
-    name: 'Finance',
-    href: '/finance',
-    icon: HandCoins,
-  },
-  {
-    name: 'Invoices',
-    href: '/invoices',
-    icon: IndianRupee,
-  },
-  {
-    name: 'Settings',
-    href: '/settings',
-    icon: Settings,
-  },
+  // {
+  //   name: 'Production',
+  //   href: '/production',
+  //   icon: FileCog,
+  // },
+  // {
+  //   name: 'Logistics',
+  //   href: '/logistics',
+  //   icon: Truck,
+  // },
+  // {
+  //   name: 'Finance',
+  //   href: '/finance',
+  //   icon: HandCoins,
+  // },
+  // {
+  //   name: 'Invoices',
+  //   href: '/invoices',
+  //   icon: IndianRupee,
+  // },
+  // {
+  //   name: 'Settings',
+  //   href: '/settings',
+  //   icon: Settings,
+  // },
 ]
 
 export default function NavLinks() {
