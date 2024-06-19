@@ -30,7 +30,9 @@ import {
   useFormState as useFormStateReactHookForm,
 } from 'react-hook-form'
 import { toast } from 'sonner'
-import TotalCalculation from './calculation-components/total-calculation'
+import TotalCalculation, {
+  TotalCostDetails,
+} from './calculation-components/total-calculation'
 import PackagingCalculation from './calculation-components/packaging-calculation'
 import { Sheet } from 'lucide-react'
 import SheetPrintingCalculation from './calculation-components/sheet-printing-calculation'
@@ -83,6 +85,10 @@ export default function CalculationFields(props: {
     FabricationCostData | undefined
   >(undefined)
 
+  const [totalCostDataTable, setTotalCostDataTable] = useState<
+    TotalCostDetails | undefined
+  >(undefined)
+
   const { isDirty } = useFormStateReactHookForm(form)
 
   const initialState: CalculationFormState = {
@@ -90,8 +96,18 @@ export default function CalculationFields(props: {
     errors: {},
     actionSuccess: null,
   }
-  const [state, formAction] = useFormState(saveCalculationData, initialState)
 
+  const [state, formAction] = useFormState(
+    async (previousState: CalculationFormState, formData: FormData) => {
+      // Pass totalCostDataTable along with formData to saveCalculationData
+      return await saveCalculationData(
+        previousState,
+        formData,
+        totalCostDataTable,
+      )
+    },
+    initialState,
+  )
   useEffect(() => {
     const fetchCalculationData = async () => {
       const data = await getVariationCalculation(props.variationData.uuid)
@@ -190,10 +206,11 @@ export default function CalculationFields(props: {
   if (!variationCalculationData) {
     return <div>Loading...</div>
   }
+  const formActionWithTotalCostData = formAction.bind(totalCostDataTable)
 
   return (
     <Form {...form}>
-      <form action={formAction}>
+      <form action={formActionWithTotalCostData}>
         <input
           readOnly
           hidden
@@ -228,6 +245,8 @@ export default function CalculationFields(props: {
                   setFabricationCostDataTable={setFabricationCostDataTable}
                   packagingCostDataTable={packagingCostDataTable}
                   setPackagingCostDataTable={setPackagingCostDataTable}
+                  totalCostDataTable={totalCostDataTable}
+                  setTotalCostDataTable={setTotalCostDataTable}
                 />
               ) : null
             })}

@@ -99,10 +99,16 @@ export async function calculateCoverCost(
         paperData.paperGrammage,
       )
       const paperCost = paperWeight * paperCostPerKg
-      const plateCost = coverPlateRate * (coverFrontColors + coverBackColors)
+      const plateCost = calculatePlatesCost(
+        formsSheetsDict,
+        coverPlateRate,
+        coverFrontColors,
+        coverBackColors,
+      )
       const printingCost = calculatePrintingCost(
         formsSheetsDict,
-        coverFrontColors + coverBackColors,
+        coverFrontColors,
+        coverBackColors,
         totalSetsUsed,
         plateSize,
         variationData,
@@ -145,12 +151,7 @@ export async function calculateCoverCost(
       coverCostDataDict: coverCostDataDict,
     }
 
-    // console.log(coverPagesPerSheet)
-    // console.log('coverForms', coverForms)
-    // console.log('totalSetsUsed', totalSetsUsed)
-    // console.log('coverPiecesPerSheets', coverPiecesPerSheets)
-    // console.log('paperAreaUsed', paperAreaUsed)
-    // console.log('coverCostDataDict', coverCostDataDict)
+
   }
 }
 
@@ -396,13 +397,44 @@ function calculatePaperWeight(
   return paperWeight / 1000
 }
 
+function calculatePlatesCost(
+  formsSheetsDict: FormsSheetsDictType,
+  coverPlateRate: number,
+  coverFrontColors: number,
+  coverBackColors: number,
+) {
+  let totalPlatesCost = 0
+  Object.entries(formsSheetsDict).forEach(([key, value]) => {
+    const forms = value.formsQty
+    const sheets = value.sheetsQty
+    let plates = 0
+    if (key === 'totalFormsFB' && sheets > 0) {
+      plates = coverFrontColors + coverBackColors
+    } else if (key === 'totalForms2Ups' && sheets > 0) {
+      plates = coverFrontColors
+    } else if (key === 'totalForms4Ups' && sheets > 0) {
+      plates = coverFrontColors
+    } else if (key === 'TotalForms8Ups' && sheets > 0) {
+      plates = coverFrontColors
+    }
+
+    const plateCost = plates * coverPlateRate
+
+    totalPlatesCost += plateCost
+  })
+
+  return totalPlatesCost
+}
+
 function calculatePrintingCost(
   formsSheetsDataDict: FormsSheetsDictType,
-  coverColors: number,
+  coverFrontColors: number,
+  coverBackColors: number,
   coverSets: number,
   plateSize: string,
   variationData: VariationData,
   printingRateFactor: number,
+  coverPrintingType?: string,
 ) {
   const paper_type =
     variationData.coverPaperType === 'Maplitho A Grade'
@@ -426,6 +458,8 @@ function calculatePrintingCost(
     let printingCost = 0
     const formsQty = value.formsQty
     const printingSets = key === 'totalFormsFB' ? 2 : 1
+    const coverColors =
+      coverFrontColors > coverBackColors ? coverFrontColors : coverBackColors
 
     const printingSheets =
       key === 'totalFormsFB' ? value.sheetsQty : value.sheetsQty * 2
@@ -484,6 +518,8 @@ function calculatePrintingCost(
     if (printingSheets === 0) {
       printingRatePerColor = 0
     }
+
+
 
     printingCost =
       (printingRatePerColor *

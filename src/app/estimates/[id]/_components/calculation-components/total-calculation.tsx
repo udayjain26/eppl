@@ -20,8 +20,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PackagingCostData } from './packaging-calculation'
+import { useDebounce } from 'use-debounce'
+import { useEffect, useState } from 'react'
+import { watch } from 'fs'
 
-interface CostDetails {
+export type TotalCostDetails = {
   jobQuantity: number
   costPerPiece: number
   totalCost: number
@@ -29,7 +32,7 @@ interface CostDetails {
   profitPerPiece: number
   totalProfit: number
   sellingPrice: number
-}
+}[]
 
 export default function TotalCalculation(props: {
   variationData: VariationData
@@ -38,31 +41,51 @@ export default function TotalCalculation(props: {
   textCostDataTable: TextCostData
   fabricationCostDataTable: FabricationCostData
   packagingCostDataTable: PackagingCostData
+  totalCostDataTable: TotalCostDetails
+  setTotalCostDataTable: React.Dispatch<TotalCostDetails>
 }) {
   const {
     coverCostDataTable,
     textCostDataTable,
     fabricationCostDataTable,
     packagingCostDataTable,
+    totalCostDataTable,
+    setTotalCostDataTable,
   } = props
+
+  // Debounce value
+  const [debouncedCoverCostDataTable] = useDebounce(coverCostDataTable, 500)
+  const [debouncedTextCostDataTable] = useDebounce(textCostDataTable, 500)
+  const [debouncedFabricationCostDataTable] = useDebounce(
+    fabricationCostDataTable,
+    500,
+  )
+  const [debouncedPackagingCostDataTable] = useDebounce(
+    packagingCostDataTable,
+    500,
+  )
+  const [debouncedProfitPercentage] = useDebounce(
+    props.form.watch('profitPercentage'),
+    500,
+  ) // Watch only profitPercentage
 
   // Function to calculate cost details for each item
   const calculateCostDetails = () => {
-    const costDetails: CostDetails[] = []
+    const costDetails: TotalCostDetails = []
 
-    coverCostDataTable?.coverCostDataDict.forEach((item, index) => {
+    debouncedCoverCostDataTable?.coverCostDataDict.forEach((item, index) => {
       const costPerPiece =
         item.costPerCover +
-        (textCostDataTable?.textCostDataDict[index].costPerText || 0) +
-        (fabricationCostDataTable?.fabricationCostDataDict[index]
-          .costPerPiece || 0) +
-        (packagingCostDataTable?.packagingCostDataDict[index].costPerPiece || 0)
+        (debouncedTextCostDataTable?.textCostDataDict[index]?.costPerText ||
+          0) +
+        (debouncedFabricationCostDataTable?.fabricationCostDataDict[index]
+          ?.costPerPiece || 0) +
+        (debouncedPackagingCostDataTable?.packagingCostDataDict[index]
+          ?.costPerPiece || 0)
 
       const totalCost = costPerPiece * item.jobQuantity
 
-      // Assume we get the profit percentage from the form data
-      const profitPercentage =
-        parseFloat(props.form.watch('profitPercentage')) / 100
+      const profitPercentage = parseFloat(debouncedProfitPercentage) / 100
       const profitPerPiece = costPerPiece * profitPercentage
       const totalProfit = profitPerPiece * item.jobQuantity
       const sellingPrice = costPerPiece + profitPerPiece
@@ -70,8 +93,10 @@ export default function TotalCalculation(props: {
       const platePaperRatio =
         (item.paperCost +
           item.plateCost +
-          (textCostDataTable?.textCostDataDict[index].paperCost || 0) +
-          (textCostDataTable?.textCostDataDict[index].plateCost || 0)) /
+          (debouncedTextCostDataTable?.textCostDataDict[index]?.paperCost ||
+            0) +
+          (debouncedTextCostDataTable?.textCostDataDict[index]?.plateCost ||
+            0)) /
         (totalCost + totalProfit)
 
       costDetails.push({
@@ -85,11 +110,18 @@ export default function TotalCalculation(props: {
       })
     })
 
-    return costDetails
+    setTotalCostDataTable(costDetails)
   }
 
-  // Retrieve calculated cost details
-  const costDetails = calculateCostDetails()
+  useEffect(() => {
+    calculateCostDetails()
+  }, [
+    debouncedCoverCostDataTable,
+    debouncedTextCostDataTable,
+    debouncedFabricationCostDataTable,
+    debouncedPackagingCostDataTable,
+    debouncedProfitPercentage,
+  ])
 
   return (
     <>
@@ -125,7 +157,7 @@ export default function TotalCalculation(props: {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {costDetails.map((item, index) => (
+              {totalCostDataTable?.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>{item.jobQuantity}</TableCell>
                   <TableCell>{item.platePaperRatio}</TableCell>

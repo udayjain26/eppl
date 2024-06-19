@@ -1,4 +1,3 @@
-import PercentageInput from '@/app/_components/percentage-inputs'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -41,13 +40,11 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import {
-  FormsSheetsDictType,
   PrintingForms,
   calculateTextCost,
 } from '@/server/calculations/text/actions'
 import { PaperData } from '@/server/paper/types'
 import { VariationData } from '@/server/variations/types'
-import { set } from 'date-fns'
 import { CheckIcon } from 'lucide-react'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -228,8 +225,6 @@ export default function TextCalculation(props: {
     effectiveTextWidth,
     grippers,
     selectedPaper,
-    textWorkingLength,
-    textWorkingWidth,
     debouncedTextWorkingLength,
     debouncedTextWorkingWidth,
     debouncedPaperRatePerkg,

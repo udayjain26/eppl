@@ -97,7 +97,6 @@ export default function OpenSize(props: { control: any; form: UseFormReturn }) {
   }, [openSizeLengthWatch, openSizeWidthWatch])
 
   useEffect(() => {
-    console.log('closeSizeNameWatch', closeSizeNameWatch)
 
     if (
       closeSizeLengthWatch !== undefined &&

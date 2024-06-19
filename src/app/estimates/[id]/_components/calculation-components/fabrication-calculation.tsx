@@ -63,7 +63,6 @@ export default function FabricationCalculation(props: {
         textCostDataTable,
         coverCostDataTable,
       )
-      console.log('fetchFabricationCosts', fetchFabricationCostDataTable)
       setFabricationCostDataTable(fetchFabricationCostDataTable)
     }
     calculateFabrication()
@@ -121,8 +120,6 @@ export default function FabricationCalculation(props: {
       }),
     )
   }
-
-  console.log('variationData', variationData.coverUV)
 
   return (
     <>

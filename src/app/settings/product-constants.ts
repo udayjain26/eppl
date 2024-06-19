@@ -89,6 +89,25 @@ export const productFieldMap: productFieldMapType = {
     ],
     fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
   },
+  Magazines: {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'cover',
+      'text',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
+  },
   Posters: {
     specificationComponents: [
       'openSize',
@@ -104,5 +123,21 @@ export const productFieldMap: productFieldMapType = {
       'packagingCalculation',
     ],
     fabricationComponents: ['gumming', 'coverUV'],
+  },
+  Leaflets: {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverUV'],
   },
 }

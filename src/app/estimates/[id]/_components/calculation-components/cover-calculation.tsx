@@ -237,8 +237,6 @@ export default function CoverCalculation(props: {
     effectiveCoverWidth,
     grippers,
     selectedPaper,
-    coverWorkingLength,
-    coverWorkingWidth,
     debouncedCoverWorkingLength,
     debouncedCoverWorkingWidth,
     debouncedPaperRatePerkg,

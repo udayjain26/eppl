@@ -4,9 +4,11 @@ import { auth } from '@clerk/nextjs/server'
 import { CalculationFormState } from './types'
 import { error } from 'console'
 import { CalculationFormSchema } from '@/schemas/calculation-form-schema'
-import { variationCalculation } from '../db/schema'
+import { variationCalculation, variationQtysRates } from '../db/schema'
 import { db } from '../db'
 import { eq } from 'drizzle-orm'
+import { TotalCostDetails } from '@/app/estimates/[id]/_components/calculation-components/total-calculation'
+import { revalidatePath } from 'next/cache'
 
 function emptyStringToUndefinedTransformer(data: any) {
   if (typeof data === 'string' && data === '') {
@@ -36,11 +38,14 @@ export async function createEmptyCalculationData(variationUuid: string) {
 export default async function saveCalculationData(
   previousState: CalculationFormState,
   formData: FormData,
+  totalCostDataTable: TotalCostDetails | undefined,
 ) {
   const user = auth()
   if (!user.userId) {
     throw new Error('User Unauthenticated')
   }
+
+  console.log('PLEASE', totalCostDataTable)
 
   const transformedData: TransformedData = {}
   formData.forEach((value, key) => {
@@ -49,10 +54,6 @@ export default async function saveCalculationData(
   const validatedFields = CalculationFormSchema.safeParse(transformedData)
 
   if (!validatedFields.success) {
-    console.log(
-      'validatedFields.error.flatten().fieldErrors',
-      validatedFields.error.flatten().fieldErrors,
-    )
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message:
@@ -83,7 +84,28 @@ export default async function saveCalculationData(
     } else {
       await db.insert(variationCalculation).values(dataWithUserIds)
     }
+    await db.transaction(async (trx) => {
+      await trx
+        .delete(variationQtysRates)
+        .where(
+          eq(
+            variationQtysRates.variationUuid,
+            formData.get('variationUuid') as string,
+          ),
+        )
+
+      // Insert new variationQtysRates
+      for (const qtyRate of totalCostDataTable || []) {
+        await trx.insert(variationQtysRates).values({
+          variationUuid: formData.get('variationUuid') as string,
+          quantity: qtyRate.jobQuantity.toString(),
+          rate: qtyRate.sellingPrice.toString(),
+        })
+      }
+    })
   }
+
+  revalidatePath('/estimates/[id]')
 
   return {
     actionSuccess: true,

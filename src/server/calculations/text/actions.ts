@@ -271,6 +271,9 @@ function calculatePrintingCost(
     } else {
       printingRatePerColor = rateCardRow?.price!
     }
+    if (printingSheets === 0) {
+      printingRatePerColor = 0
+    }
 
     printingCost =
       (printingRatePerColor *

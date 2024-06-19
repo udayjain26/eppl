@@ -12,7 +12,6 @@ import {
 } from '../estimates/actions'
 import { eq } from 'drizzle-orm'
 import { VariationFormSchema } from '@/schemas/variation-form-schema'
-import { create } from 'domain'
 import { createEmptyCalculationData } from '../calculations/actions'
 
 const Variation = VariationFormSchema.omit({
@@ -102,8 +101,6 @@ export async function saveVariation(
 
   const validatedFields = Variation.safeParse(transformedData)
 
-  console.log('validatedFields', validatedFields)
-
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -113,7 +110,6 @@ export async function saveVariation(
     } as VariationFormState
   } else {
     try {
-      // console.log('validatedFields.data', validatedFields.data)
       await db.transaction(async (trx) => {
         // Update the variation
         await trx

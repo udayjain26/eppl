@@ -41,7 +41,6 @@ export async function getEstimatesDataForTable(): Promise<EstimateTableRow[]> {
 
     return data
   } catch (error) {
-    console.error(error)
     throw new Error('Failed to fetch estimates data')
   }
 }

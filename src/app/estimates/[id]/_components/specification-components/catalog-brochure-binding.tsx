@@ -38,12 +38,12 @@ export default function CatalogBrochureBinding(props: {
 
   let productName = ''
 
-  console.log('props.product', props.product)
-
   if (props.product === 'Catalogs') {
     productName = 'Catalog'
+  } else if (props.product === 'Brochures') {
+    productName = 'Brochures'
   } else {
-    productName = 'Brochure'
+    productName = 'Magazines'
   }
 
   return (

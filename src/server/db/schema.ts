@@ -383,6 +383,8 @@ export const variationCalculation = createTable('variation_calculation', {
     scale: 3,
   }),
   coverPlateRate: numeric('cover_plate_rate', { precision: 7, scale: 2 }),
+  coverPlateSize: varchar('cover_plate_size', { length: 256 }),
+
   coverPrintingRate: numeric('cover_printing_rate', { precision: 7, scale: 2 }),
   coverPrintingType: varchar('cover_printing_type', { length: 256 }),
   coverWorkingLength: numeric('cover_working_length', {
@@ -408,6 +410,7 @@ export const variationCalculation = createTable('variation_calculation', {
     scale: 3,
   }),
   textPlateRate: numeric('text_plate_rate', { precision: 7, scale: 2 }),
+  textPlateSize: varchar('text_plate_size', { length: 256 }),
   textPrintingRate: numeric('text_printing_rate', { precision: 7, scale: 2 }),
   textWorkingLength: numeric('text_working_length', {
     precision: 7,
