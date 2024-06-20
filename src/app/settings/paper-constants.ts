@@ -108,7 +108,7 @@ export const paperMills: PaperMill[] = [
   { label: 'Star', qualities: ['Others'] },
   { label: 'Sangal', qualities: ['Others'] },
   { label: 'Fedregoni', qualities: ['Others'] },
-  { label: 'Cordenons', qualities: ['Others'] },
+  { label: 'Cordenons', qualities: ['Astropremium White', 'Others'] },
   { label: 'Sappi', qualities: ['Others'] },
   { label: 'Stora Enso', qualities: ['Others'] },
   {

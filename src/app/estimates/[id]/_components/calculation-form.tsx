@@ -25,10 +25,7 @@ import { PaperData } from '@/server/paper/types'
 import FabricationCalculation, {
   FabricationCostData,
 } from './calculation-components/fabrication-calculation'
-import {
-  useFieldArray,
-  useFormState as useFormStateReactHookForm,
-} from 'react-hook-form'
+import { useFormState as useFormStateReactHookForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import TotalCalculation, {
   TotalCostDetails,
@@ -72,6 +69,8 @@ export default function CalculationFields(props: {
     resolver: zodResolver(CalculationFormSchema),
   })
 
+  const { dirtyFields } = form.formState
+
   const [coverCostDataTable, setCoverCostDataTable] = useState<
     CoverCostData | undefined
   >(undefined)
@@ -90,6 +89,10 @@ export default function CalculationFields(props: {
   >(undefined)
 
   const { isDirty } = useFormStateReactHookForm(form)
+  
+  useEffect(() => {
+    console.log('Dirty Fields:', dirtyFields)
+  }, [dirtyFields])
 
   const initialState: CalculationFormState = {
     message: null,
@@ -148,7 +151,7 @@ export default function CalculationFields(props: {
           : '0',
         coverPlateSize: data?.coverPlateSize
           ? data.coverPlateSize.toString()
-          : 'Small',
+          : 'YIKES',
         textGutters: data?.textGutters ? data.textGutters.toString() : '0',
         textBleed: data?.textBleed ? data.textBleed.toString() : '3',
         textGrippers: data?.textGrippers ? data.textGrippers.toString() : '10',
@@ -225,7 +228,6 @@ export default function CalculationFields(props: {
               <SaveButton isDirty={isDirty} />
             </div>
           </div>
-
           <div>
             <Separator />
 

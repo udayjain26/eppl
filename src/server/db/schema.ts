@@ -243,7 +243,7 @@ export const salesRepsRelations = relations(salesReps, ({ many }) => ({
 export const variations = createTable('variations', {
   uuid: uuid('uuid').defaultRandom().primaryKey(),
   estimateUuid: uuid('estimate_uuid')
-    .references(() => estimates.uuid)
+    .references(() => estimates.uuid, { onDelete: 'cascade' })
     .notNull(),
   variationTitle: varchar('variation_title', { length: 256 }),
   variationNotes: text('variation_notes'),
