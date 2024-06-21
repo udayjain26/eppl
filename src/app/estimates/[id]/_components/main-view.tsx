@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { useState } from 'react'
 import {
   Menubar,
   MenubarContent,
@@ -10,11 +9,12 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from '@/components/ui/menubar'
-import { EstimateTableRow } from '@/schemas/schema-table-types'
-import { createVariation, deleteVariation } from '@/server/variations/actions'
 import { ChevronDown, Plus, SaveAll, Trash } from 'lucide-react'
-import VariationForm from './variation-form'
+import { EstimateTableRow } from '@/schemas/schema-table-types'
 import { VariationData } from '@/server/variations/types'
+import VariationForm from './variation-form'
+import CalculationFields from './calculation-form'
+import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import {
   AlertDialog,
@@ -26,7 +26,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Button, buttonVariants } from '@/components/ui/button'
 import { toast } from 'sonner'
 import {
   Sheet,
@@ -34,12 +33,10 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@/components/ui/sheet'
 import CreatePaperForm from '@/app/settings/_components/create-paper-form'
+import { createVariation, deleteVariation } from '@/server/variations/actions'
 import { PaperData } from '@/server/paper/types'
-import CalculationForm from './calculation-form'
-import CalculationFields from './calculation-form'
 
 export default function MainView(props: {
   estimateData: EstimateTableRow
@@ -50,10 +47,35 @@ export default function MainView(props: {
   const [selectedVariation, setSelectedVariation] = useState<string>()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [openPaperSheet, setOpenPaperSheet] = useState(false)
-  const [selectedView, setSelectedView] = useState('specifications') // State for selected view
+  const [selectedView, setSelectedView] = useState('specifications')
 
   const closeDialog = () => {
     setOpenPaperSheet(false)
+  }
+
+  const viewPdf = async () => {
+    try {
+      // Example: Fetch PDF data from a server endpoint
+      const response = await fetch('/api/generate-quotation') // Assuming you have an API route to generate PDF
+
+      console.log(response)
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch PDF')
+      }
+
+      // Read the PDF content as a blob
+      const blob = await response.blob()
+
+      // Create a URL for the blob object
+      const url = URL.createObjectURL(blob)
+
+      // Open the PDF in a new tab
+      window.open(url, '_blank')
+    } catch (error) {
+      console.error('Error fetching PDF:', error)
+      toast.error('Failed to fetch PDF')
+    }
   }
 
   return (
@@ -97,8 +119,6 @@ export default function MainView(props: {
                 </span>
                 Save All
               </MenubarItem>
-              {/* <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem> */}
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -119,10 +139,6 @@ export default function MainView(props: {
                 </span>{' '}
                 Delete Variation{' '}
               </MenubarItem>
-              {/* <MenubarSeparator />
-              <MenubarItem>Option 2</MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem> */}
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -140,8 +156,8 @@ export default function MainView(props: {
               <MenubarItem onClick={() => setSelectedView('calculation')}>
                 Calculation View
               </MenubarItem>
-              {/* <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem> */}
+              <MenubarSeparator />
+              <MenubarItem onClick={viewPdf}>View PDF</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -159,69 +175,55 @@ export default function MainView(props: {
                 </span>
                 Create New Paper
               </MenubarItem>
-              {/* <MenubarSeparator />
-              <MenubarItem>Option 2</MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem>Option 3</MenubarItem> */}
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
       </div>
-      {selectedView === 'specifications' ? (
+      {selectedView === 'specifications' && (
         <div className="flex h-fit w-full flex-col gap-y-2 overflow-scroll rounded-xl p-1">
-          {loading ? <div>Loading...</div> : null}
-          {props.variationsData.map((variation) => {
-            return (
-              <Card
-                className={cn('cursor-pointer hover:bg-slate-50', {
-                  'border-2 border-slate-500 hover:bg-transparent':
-                    selectedVariation === variation.uuid,
-                })}
-                key={variation.uuid}
-                onClick={() => {
-                  setSelectedVariation(variation.uuid)
-                }}
-              >
-                <CardContent>
-                  <VariationForm
-                    variationData={variation}
-                    product={props.estimateData.product.productName}
-                  ></VariationForm>
-                </CardContent>
-              </Card>
-            )
-          })}
+          {loading && <div>Loading...</div>}
+          {props.variationsData.map((variation) => (
+            <Card
+              className={cn('cursor-pointer hover:bg-slate-50', {
+                'border-2 border-slate-500 hover:bg-transparent':
+                  selectedVariation === variation.uuid,
+              })}
+              key={variation.uuid}
+              onClick={() => setSelectedVariation(variation.uuid)}
+            >
+              <CardContent>
+                <VariationForm
+                  variationData={variation}
+                  product={props.estimateData.product.productName}
+                />
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      ) : null}
-
-      {selectedView === 'calculation' ? (
+      )}
+      {selectedView === 'calculation' && (
         <div className="flex h-fit w-full flex-col gap-y-2 overflow-scroll rounded-xl p-1">
-          {loading ? <div>Loading...</div> : null}
-          {props.variationsData.map((variation) => {
-            return (
-              <Card
-                className={cn('cursor-pointer hover:bg-slate-50', {
-                  'border-2 border-slate-500 hover:bg-transparent':
-                    selectedVariation === variation.uuid,
-                })}
-                key={variation.uuid}
-                onClick={() => {
-                  setSelectedVariation(variation.uuid)
-                }}
-              >
-                <CardContent>
-                  <CalculationFields
-                    variationData={variation}
-                    product={props.estimateData.product.productName}
-                    paperData={props.paperData}
-                  ></CalculationFields>
-                </CardContent>
-              </Card>
-            )
-          })}
+          {loading && <div>Loading...</div>}
+          {props.variationsData.map((variation) => (
+            <Card
+              className={cn('cursor-pointer hover:bg-slate-50', {
+                'border-2 border-slate-500 hover:bg-transparent':
+                  selectedVariation === variation.uuid,
+              })}
+              key={variation.uuid}
+              onClick={() => setSelectedVariation(variation.uuid)}
+            >
+              <CardContent>
+                <CalculationFields
+                  variationData={variation}
+                  product={props.estimateData.product.productName}
+                  paperData={props.paperData}
+                />
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      ) : null}
-
+      )}
       <AlertDialog open={deleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -249,7 +251,7 @@ export default function MainView(props: {
               onClick={async () => {
                 const deleteResponse = await deleteVariation(selectedVariation!)
                 setDeleteDialogOpen(false)
-                if (deleteResponse.actionSuccess == true) {
+                if (deleteResponse.actionSuccess) {
                   setSelectedVariation(undefined)
                   toast.info(deleteResponse.message)
                 }
@@ -264,17 +266,15 @@ export default function MainView(props: {
       <Sheet open={openPaperSheet} onOpenChange={setOpenPaperSheet}>
         <SheetContent
           className="flex h-full flex-col"
-          onInteractOutside={(event) => {
-            event.preventDefault()
-          }}
+          onInteractOutside={(event) => event.preventDefault()}
         >
-          <SheetHeader className="">
+          <SheetHeader>
             <SheetTitle>Create New Paper</SheetTitle>
             <SheetDescription>
               Please fill out the form below to add a paper to the system.
             </SheetDescription>
           </SheetHeader>
-          <CreatePaperForm closeDialog={closeDialog}></CreatePaperForm>
+          <CreatePaperForm closeDialog={closeDialog} />
         </SheetContent>
       </Sheet>
     </div>

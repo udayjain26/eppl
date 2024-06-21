@@ -1,3 +1,5 @@
+import { workerData } from 'worker_threads'
+
 export const paperTypes = [
   { label: 'Art Card', value: 'art_card' },
   { label: 'Art Paper', value: 'art_paper' },
@@ -116,6 +118,7 @@ export const paperMills: PaperMill[] = [
     qualities: ['Holmen High Bulk', 'Others'],
   },
   { label: 'Smurfit Kappa', qualities: ['Others'] },
+  { label: 'Galgo', qualities: ['Rendezvous Hi Print White', 'Others'] },
   { label: 'Reel Cut', qualities: ['Standard', 'Others'] },
   { label: 'Prime', qualities: ['Standard', 'Others'] },
 ]
@@ -128,4 +131,110 @@ export const paperFinishes = [
   { label: 'Coated One Side', value: 'coated_one_side' },
   { label: 'Fine Paper', value: 'fine_paper' },
   { label: 'Others', value: 'others' },
+]
+
+// For Art Paper, Art Card, Board, Chromo, Dalum Recycled, Grey Back, Gumming Sheet, Maplitho A Grade, Maplitho B Grade, Maplitho C Grade, SBS, Whiteback
+export const commonWorkingSizes = [
+  {
+    paperLength: 635, // 25inch
+    paperWidth: 914.4, // 36inch
+    workingLength: 635, // 25inch
+    workingWidth: 914.4, // 36inch
+    workingSheetUps: 1,
+  },
+
+  {
+    paperLength: 635, // 25inch
+    paperWidth: 914.4, // 36inch
+    workingLength: 457.2, // 18inch
+    workingWidth: 635, // 25inch
+    workingSheetUps: 2,
+  },
+
+  {
+    paperLength: 635, // 25inch
+    paperWidth: 914.4, // 36inch
+    workingLength: 304.8, // 12inch
+    workingWidth: 635, // 25inch
+    workingSheetUps: 3,
+  },
+
+  {
+    paperLength: 584.2, // 23inch
+    paperWidth: 914.4, // 36inch
+    workingLength: 584.2, // 23inch
+    workingWidth: 914.4, // 36inch
+    workingSheetUps: 1,
+  },
+
+  {
+    paperLength: 584.2, // 23inch
+    paperWidth: 914.4, // 36inch
+    workingLength: 457.2, // 18inch
+    workingWidth: 584.2, // 23inch
+    workingSheetUps: 2,
+  },
+  {
+    paperLength: 584.2, // 23inch
+    paperWidth: 914.4, // 36inch
+    workingLength: 304.8, // 12inch
+    workingWidth: 584.2, // 23inch
+    workingSheetUps: 3,
+  },
+
+  {
+    paperLength: 508, // 20inch
+    paperWidth: 762, // 30inch
+    workingLength: 508, // 20inch
+    workingWidth: 762, // 30inch
+    workingSheetUps: 1,
+  },
+
+  {
+    paperLength: 508, // 20inch
+    paperWidth: 762, // 30inch
+    workingLength: 381.0, // 15inch
+    workingWidth: 508, // 20inch
+    workingSheetUps: 2,
+  },
+
+  {
+    paperLength: 762, // 30inch
+    paperWidth: 1016, // 40inch
+    workingLength: 762, // 30inch
+    workingWidth: 1016, // 40inch
+    workingSheetUps: 1,
+  },
+
+  {
+    paperLength: 762, // 30inch
+    paperWidth: 1016, // 40inch
+    workingLength: 508, // 20inch
+    workingWidth: 762, // 30inch
+    workingSheetUps: 2,
+  },
+
+  {
+    paperLength: 762, // 30inch
+    paperWidth: 1016, // 40inch
+    workingLength: 381.0, // 15inch
+    workingWidth: 508, // 20inch
+    workingSheetUps: 4,
+  },
+
+  {
+    paperLength: 762, // 30inch
+    paperWidth: 1016, // 40inch
+    workingLength: 338.58, // 13.33inch
+    workingWidth: 762, // 30inch
+    workingSheetUps: 3,
+  },
+
+  {
+    paperLength: 762, // 30inch
+    paperWidth: 1016, // 40inch
+    workingLength: 338.58, // 13.33inch
+    workingWidth: 381.0, // 15inch
+    workingSheetUps: 6,
+  },
 ]

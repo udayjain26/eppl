@@ -89,7 +89,7 @@ export default function CalculationFields(props: {
   >(undefined)
 
   const { isDirty } = useFormStateReactHookForm(form)
-  
+
   useEffect(() => {
     console.log('Dirty Fields:', dirtyFields)
   }, [dirtyFields])
@@ -124,7 +124,7 @@ export default function CalculationFields(props: {
         coverPaper: data?.coverPaper,
         coverPaperRate: data?.coverPaperRate
           ? data.coverPaperRate.toString()
-          : '90',
+          : '0',
         coverWastageFactor: data?.coverWastageFactor
           ? data.coverWastageFactor.toString()
           : '1',
@@ -151,14 +151,14 @@ export default function CalculationFields(props: {
           : '0',
         coverPlateSize: data?.coverPlateSize
           ? data.coverPlateSize.toString()
-          : 'YIKES',
+          : 'Large',
         textGutters: data?.textGutters ? data.textGutters.toString() : '0',
         textBleed: data?.textBleed ? data.textBleed.toString() : '3',
         textGrippers: data?.textGrippers ? data.textGrippers.toString() : '10',
         textPaper: data?.textPaper,
         textPaperRate: data?.textPaperRate
           ? data.textPaperRate.toString()
-          : '90',
+          : '0',
         textWastageFactor: data?.textWastageFactor
           ? data.textWastageFactor.toString()
           : '1',

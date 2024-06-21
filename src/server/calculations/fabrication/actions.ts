@@ -8,6 +8,7 @@ import {
 import { TextCostData } from '@/app/estimates/[id]/_components/calculation-components/text-calculation'
 import {
   catalogBrochureBindingTypes,
+  coatings,
   gummingTypes,
   paperbackBindingTypes,
   postpressProcesses,
@@ -61,7 +62,8 @@ function getFabricationCostsDict(
   const data = variationData.variationQtysRates.map((o) => {
     const jobQuantity = o.quantity
     let coverTotalSheets = 0
-    let totalSheets = textCostDataTable?.textCostDataDict.find(
+
+    let textTotalSheets = textCostDataTable?.textCostDataDict.find(
       (row) => row.jobQuantity === jobQuantity,
     )?.totalSheets
 
@@ -72,13 +74,16 @@ function getFabricationCostsDict(
 
     let fabricationSheets: number
     if (textCostDataTable?.pagesPerSheet > 16) {
-      fabricationSheets = (totalSheets || 0) * 2
+      fabricationSheets = (textTotalSheets || 0) * 2
     } else {
-      fabricationSheets = totalSheets || 0
+      fabricationSheets = textTotalSheets || 0
     }
 
-    const coverWorkingLength = coverCostDataTable?.coverSheetlength
-    const coverWorkingWidth = coverCostDataTable?.coverSheetWidth
+    const coverWorkingLength = coverCostDataTable?.coverWorkingLength
+    const coverWorkingWidth = coverCostDataTable?.coverWorkingWidth
+
+    const textWorkingLength = textCostDataTable?.textWorkingLength
+    const textWorkingWidth = textCostDataTable?.textWorkingWidth
 
     const foldingCost = getFoldingCost(textCostDataTable, fabricationSheets)
     const gatheringCost = getGatheringCost(fabricationSheets)
@@ -90,6 +95,8 @@ function getFabricationCostsDict(
     let coverUV: number | undefined
     let vdp: number | undefined
     let gumming: number | undefined
+    let coverCoating: number | undefined
+    let textCoating: number | undefined
 
     if (variationData.binding === 'Perfect') {
       const perfectCharges = paperbackBindingTypes.find(
@@ -180,6 +187,24 @@ function getFabricationCostsDict(
       gumming = getGummingCost(jobQuantity, variationData)
     }
 
+    if (typeof variationData.coverCoating === 'string') {
+      coverCoating = getCoatingCost(
+        coverTotalSheets,
+        coverWorkingLength,
+        coverWorkingWidth,
+        variationData,
+      )
+    }
+
+    if (typeof variationData.textCoating === 'string') {
+      textCoating = getCoatingCost(
+        textTotalSheets ? textTotalSheets : 0,
+        textWorkingLength,
+        textWorkingWidth,
+        variationData,
+      )
+    }
+
     const totalCost =
       foldingCost +
       gatheringCost +
@@ -188,6 +213,8 @@ function getFabricationCostsDict(
       (sidePinAndPerfect || 0) +
       (centrePin || 0) +
       (coverUV || 0) +
+      (coverCoating || 0) +
+      (textCoating || 0) +
       (vdp || 0) +
       (gumming || 0)
 
@@ -211,6 +238,8 @@ function getFabricationCostsDict(
       sidePinAndPerfect: sidePinAndPerfect
         ? Number(sidePinAndPerfect.toFixed(0))
         : undefined,
+      coverCoating: coverCoating ? Number(coverCoating.toFixed(0)) : undefined,
+      textCoating: textCoating ? Number(textCoating.toFixed(0)) : undefined,
       centrePin: centrePin ? Number(centrePin.toFixed(0)) : undefined,
       coverUV: coverUV ? Number(coverUV.toFixed(0)) : undefined,
       vdp: vdp ? Number(vdp.toFixed(0)) : undefined,
@@ -271,4 +300,24 @@ function getGummingCost(qty: number, variationData: VariationData) {
   gummingCost = (gummingCharges / 100) * totalWidth
 
   return gummingCost
+}
+
+function getCoatingCost(
+  fabricationSheets: number,
+  coverWorkingLength: number | undefined,
+  coverWorkingWidth: number | undefined,
+  variationData: VariationData,
+) {
+  let coatingCost = 0
+  let coatingCharges = coatings.find(
+    (row) => row.label === variationData.coverCoating,
+  )?.rate
+  if (coatingCharges === undefined) {
+    return 0
+  }
+  const sheetLengthInM = coverWorkingLength ? coverWorkingLength / 1000 : 0
+  const sheetWidthInM = coverWorkingWidth ? coverWorkingWidth / 1000 : 0
+  coatingCost =
+    coatingCharges * fabricationSheets * sheetLengthInM * sheetWidthInM
+  return coatingCost
 }

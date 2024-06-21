@@ -87,6 +87,8 @@ export default function VariationForm(props: {
       vdp: props.variationData.vdp,
       packagingType: props.variationData.packagingType,
       gummingType: props.variationData.gummingType,
+      textCoating: props.variationData.textCoating,
+      coverCoating: props.variationData.coverCoating,
     },
   })
 

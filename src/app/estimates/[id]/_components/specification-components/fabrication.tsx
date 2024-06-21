@@ -8,6 +8,9 @@ import CoverUV from './cover-uv'
 import VDPComp from './vdp'
 import CatalogBrochureBinding from './catalog-brochure-binding'
 import Gumming from './gumming'
+import { text } from 'stream/consumers'
+import TextCoating from './text-coating'
+import CoverCoating from './cover-coating'
 
 export default function Fabrication(props: {
   control: any
@@ -22,6 +25,8 @@ export default function Fabrication(props: {
     coverUV: CoverUV,
     vdp: VDPComp,
     gumming: Gumming,
+    textCoating: TextCoating,
+    coverCoating: CoverCoating,
   }
   const fabricationFields =
     productFieldMap[props.product]['fabricationComponents'] || []

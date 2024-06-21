@@ -198,6 +198,9 @@ export const VariationFormSchema = z.object({
   vdp: z.string().optional(),
   packagingType: z.string().optional(),
   gummingType: z.string().optional(),
+  textCoating: z.string().optional(),
+  coverCoating: z.string().optional(),
+
   // textPaper: z.string().optional(),
 
   // createdBy: z.string().uuid(),

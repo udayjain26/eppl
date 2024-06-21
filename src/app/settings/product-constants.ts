@@ -50,6 +50,23 @@ export const productFieldMap: productFieldMapType = {
     ],
     fabricationComponents: ['paperbackBookBinding', 'coverUV', 'vdp'],
   },
+  'Swatch Cards': {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: [],
+  },
 
   Catalogs: {
     specificationComponents: [
@@ -68,7 +85,12 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
+    fabricationComponents: [
+      'catalogBrochureBinding',
+      'coverUV',
+      'coverCoating',
+      'textCoating',
+    ],
   },
   Brochures: {
     specificationComponents: [
@@ -87,7 +109,12 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
+    fabricationComponents: [
+      'catalogBrochureBinding',
+      'coverUV',
+      'coverCoating',
+      'textCoating',
+    ],
   },
   Magazines: {
     specificationComponents: [

@@ -61,6 +61,37 @@ export const laminations = [
     value: 'single_side_thermal_metallic',
     rate: 31,
   },
+
+  // {
+  //   label: 'Both Side Aqueous Coating',
+  //   value: 'both_side_aqueous_coating',
+  //   rate: 4,
+  // },
+
+  // {
+  //   label: 'Both Side Aqueous Coating With Thermal Gloss Single Side',
+  //   value: 'both_side_aqueous_coating_with_thermal_gloss_single_side',
+  //   rate: 12,
+  // },
+  // {
+  //   label: 'Both Side Aqueous Coating With Thermal Gloss Both Side',
+  //   value: 'both_side_aqueous_coating_with_thermal_gloss_both_side',
+  //   rate: 20,
+  // },
+]
+
+export const coatings = [
+  { label: 'None', value: 'none', rate: 0 },
+  {
+    label: 'Single Side Aqueous Coating',
+    value: 'single_side_aqueous_coating',
+    rate: 2,
+  },
+  {
+    label: 'Both Side Aqueous Coating',
+    value: 'both_side_aqueous_coating',
+    rate: 4,
+  },
 ]
 
 export const commonSizes = [

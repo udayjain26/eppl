@@ -162,6 +162,8 @@ export async function calculateTextCost(
     textForms: textForms,
     totalSets: totalSetsUsed,
     paperAreaUsed: paperAreaUsed,
+    textWorkingLength: textWorkingLength,
+    textWorkingWidth: textWorkingWidth,
     textCostDataDict: textCostDataDict,
   }
 }

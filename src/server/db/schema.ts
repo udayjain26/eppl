@@ -277,6 +277,8 @@ export const variations = createTable('variations', {
   coverUV: varchar('cover_uv', { length: 256 }),
   vdp: varchar('vdp', { length: 256 }),
   gummingType: varchar('gumming_type', { length: 256 }),
+  textCoating: varchar('text_coating', { length: 256 }),
+  coverCoating: varchar('cover_coating', { length: 256 }),
 
   //packaging
   packagingType: varchar('packaging_type', { length: 256 }),

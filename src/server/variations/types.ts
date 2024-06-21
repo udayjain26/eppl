@@ -39,6 +39,8 @@ export type VariationData = {
 
   packagingType: string | undefined
   gummingType: string | undefined
+  textCoating: string | undefined
+  coverCoating: string | undefined
 
   createdAt: Date
   updatedAt: Date

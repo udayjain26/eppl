@@ -60,7 +60,7 @@ export type CoverCostData = {
   paperAreaUsed: number
   coverForms: PrintingForms
   totalSets: number
-  coverSheetlength: number
+  coverSheetLength: number
   coverSheetWidth: number
   coverCostDataDict: {
     jobQuantity: number
@@ -200,10 +200,15 @@ export default function CoverCalculation(props: {
 
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-      props.form.setValue(
-        'coverPaperRate',
-        initialSelectedPaper.paperDefaultRate,
-      )
+      if (
+        props.form.getValues('coverPaperRate') === 0 ||
+        props.form.getValues('coverPaperRate') === undefined
+      ) {
+        props.form.setValue(
+          'coverPaperRate',
+          initialSelectedPaper.paperDefaultRate,
+        )
+      }
       props.form.setValue(
         'coverWorkingLength',
         initialSelectedPaper.paperLength,

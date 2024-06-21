@@ -53,29 +53,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
-export type CoverCostData = {
-  coverPiecesPerSheet: number
-  pagesPerSheet: number
-  paperAreaUsed: number
-  coverForms: PrintingForms
-  totalSets: number
-  coverSheetlength: number
-  coverSheetWidth: number
-  coverCostDataDict: {
-    jobQuantity: number
-    calculatedSheets: number
-    wastageSheets: number
-    totalSheets: number
-    paperWeight: number
-    paperCost: number
-    plateCost: number
-    printingCost: number
-    laminationCost: number
-    totalCost: number
-    costPerCover: number
-  }[]
-}
+import { CoverCostData } from './cover-calculation'
 
 export default function SheetPrintingCalculation(props: {
   variationData: VariationData
@@ -87,6 +65,7 @@ export default function SheetPrintingCalculation(props: {
   >
 }) {
   const coverCostDataTable = props.coverCostDataTable
+  const setCoverCostDataTable = props.setCoverCostDataTable
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
   const handleInputChange = (
@@ -229,7 +208,7 @@ export default function SheetPrintingCalculation(props: {
         debouncedPrintingRateFactor,
         coverPrintingType,
       )
-      props.setCoverCostDataTable(fetchCoverCostDataTable)
+      setCoverCostDataTable(fetchCoverCostDataTable)
     }
     calculateCoverSheets()
   }, [

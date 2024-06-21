@@ -5,22 +5,19 @@ const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
   '/estimates(.*)',
   '/clients(.*)',
+  '/api(.*)', // Add this line to protect /api routes
 ])
-
-// function middleware(request: NextRequest) {
-//   return NextResponse.redirect(new URL('/home', request.url))
-// }
 
 export default clerkMiddleware((auth, request) => {
   const pathname = request.nextUrl.pathname
   const userId = auth().userId
 
-  // check if the request is for a protected route and protect it
+  // Check if the request is for a protected route and protect it
   if (isProtectedRoute(request)) {
     auth().protect()
   }
 
-  // if the user is authenticated and the request is for the home page, redirect to the dashboard
+  // If the user is authenticated and the request is for the home page, redirect to the dashboard
   if (userId && pathname === '/') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }

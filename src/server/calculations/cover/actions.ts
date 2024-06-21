@@ -146,12 +146,10 @@ export async function calculateCoverCost(
       coverForms: coverForms,
       totalSets: totalSetsUsed,
       paperAreaUsed: paperAreaUsed,
-      coverSheetlength: coverWorkingLength,
+      coverSheetLength: coverWorkingLength,
       coverSheetWidth: coverWorkingWidth,
       coverCostDataDict: coverCostDataDict,
     }
-
-
   }
 }
 
@@ -518,8 +516,6 @@ function calculatePrintingCost(
     if (printingSheets === 0) {
       printingRatePerColor = 0
     }
-
-
 
     printingCost =
       (printingRatePerColor *

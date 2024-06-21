@@ -26,6 +26,8 @@ export type FabricationCostDataDict = {
   centrePin?: number
   coverUV?: number
   vdp?: number
+  coverCoating?: number
+  textCoating?: number
   gumming?: number
   totalCost: number
   costPerPiece: number
@@ -89,6 +91,8 @@ export default function FabricationCalculation(props: {
     sidePinAndPerfect: 'Side Pin Perfect',
     centrePin: 'Centre Pin',
     coverUV: 'Cover UV',
+    coverCoating: 'Cover Coating',
+    textCoating: 'Text Coating',
     vdp: 'VDP',
     gumming: 'Gumming',
     totalCost: 'Total Cost',
@@ -157,6 +161,20 @@ export default function FabricationCalculation(props: {
                   <li className="flex items-center justify-between border-b-2">
                     <span className="text-muted-foreground">Gumming Type</span>
                     <span>{variationData?.gummingType}</span>
+                  </li>
+                )}
+              {variationData?.coverCoating !== 'None' &&
+                variationData?.coverCoating !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Cover Coating</span>
+                    <span>{variationData?.coverCoating}</span>
+                  </li>
+                )}
+              {variationData?.textCoating !== 'None' &&
+                variationData?.textCoating !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Text Coating</span>
+                    <span>{variationData?.textCoating}</span>
                   </li>
                 )}
             </ul>

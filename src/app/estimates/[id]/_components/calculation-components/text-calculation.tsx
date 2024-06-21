@@ -55,6 +55,8 @@ export type TextCostData = {
   textForms: PrintingForms
   totalSets: number
   paperAreaUsed: number
+  textWorkingLength: number
+  textWorkingWidth: number
 
   textCostDataDict: {
     jobQuantity: number
@@ -142,7 +144,6 @@ export default function TextCalculation(props: {
   const watchPaperData = props.form.watch('textPaper')
   const watchPlateSize = props.form.watch('textPlateSize')
   const printingRateFactor = props.form.watch('textPrintingRateFactor')
-  const textPlateSize = props.form.watch('textPlateSize')
 
   const [debouncedWastageFactor] = useDebounce(wastageFactor, 1000)
   const [debouncedPaperRatePerkg] = useDebounce(paperRatePerkg, 1000)
@@ -150,7 +151,7 @@ export default function TextCalculation(props: {
   const [debouncedTextWorkingLength] = useDebounce(textWorkingLength, 1000)
   const [debouncedTextWorkingWidth] = useDebounce(textWorkingWidth, 1000)
   const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
-  const [debouncedPlateSize] = useDebounce(textPlateSize, 1000)
+  const [debouncedPlateSize] = useDebounce(watchPlateSize, 1000)
 
   const isPlateSizeSmall =
     watchPlateSize === 'Small' &&
@@ -176,10 +177,16 @@ export default function TextCalculation(props: {
 
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-      props.form.setValue(
-        'textPaperRate',
-        initialSelectedPaper.paperDefaultRate,
-      )
+      if (
+        props.form.getValues('textPaperRate') === 0 ||
+        props.form.getValues('textPaperRate') === undefined
+      ) {
+        props.form.setValue(
+          'textPaperRate',
+          initialSelectedPaper.paperDefaultRate,
+        )
+      }
+
       props.form.setValue('textWorkingLength', initialSelectedPaper.paperLength)
       props.form.setValue('textWorkingWidth', initialSelectedPaper.paperWidth)
     }
@@ -194,7 +201,7 @@ export default function TextCalculation(props: {
   }, [watchPlateSize])
 
   useEffect(() => {
-    if (textWorkingLength <= 508 && textWorkingWidth <= 762) {
+    if (textWorkingLength < 508 && textWorkingWidth < 762) {
       props.form.setValue('textPlateSize', 'Small')
     } else {
       props.form.setValue('textPlateSize', 'Large')

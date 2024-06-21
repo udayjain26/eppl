@@ -105,7 +105,7 @@ export default async function saveCalculationData(
     })
   }
 
-  revalidatePath('/estimates/[id]')
+  revalidatePath('/estimates/[id]', 'page')
 
   return {
     actionSuccess: true,
