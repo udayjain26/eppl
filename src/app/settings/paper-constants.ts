@@ -3,7 +3,8 @@ import { workerData } from 'worker_threads'
 export const paperTypes = [
   { label: 'Art Card', value: 'art_card' },
   { label: 'Art Paper', value: 'art_paper' },
-  { label: 'Board', value: 'board' },
+  { label: 'G/G Kappa Board', value: 'grey_grey_kappa_board' },
+  { label: 'G/W Kappa Board', value: 'grey_white_kappa_board' },
   { label: 'Chromo', value: 'chromo' },
   { label: 'Dalum Recycled', value: 'dalum_recycled' },
   { label: 'Grey Back', value: 'grey_back' },
