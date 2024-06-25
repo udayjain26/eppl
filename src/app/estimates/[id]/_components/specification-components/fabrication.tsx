@@ -11,6 +11,9 @@ import Gumming from './gumming'
 import { text } from 'stream/consumers'
 import TextCoating from './text-coating'
 import CoverCoating from './cover-coating'
+import TextUV from './text-uv'
+import CoverFoiling from './cover-foiling'
+import CoverEmbossing from './cover-embossing'
 
 export default function Fabrication(props: {
   control: any
@@ -23,6 +26,9 @@ export default function Fabrication(props: {
     paperbackBookBinding: PaperbackBookBinding,
     catalogBrochureBinding: CatalogBrochureBinding,
     coverUV: CoverUV,
+    textUV: TextUV,
+    coverFoiling: CoverFoiling,
+    coverEmbossing: CoverEmbossing,
     vdp: VDPComp,
     gumming: Gumming,
     textCoating: TextCoating,

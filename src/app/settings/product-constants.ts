@@ -29,7 +29,7 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['paperbackBookBinding', 'coverUV', 'vdp'],
+    fabricationComponents: ['paperbackBookBinding', 'coverUV', 'textUV', 'vdp'],
   },
   'Paperback Books': {
     specificationComponents: [
@@ -48,7 +48,13 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['paperbackBookBinding', 'coverUV', 'vdp'],
+    fabricationComponents: [
+      'paperbackBookBinding',
+      'coverUV',
+      'vdp',
+      'coverFoiling',
+      'coverEmbossing',
+    ],
   },
   'Swatch Cards': {
     specificationComponents: [
@@ -88,8 +94,11 @@ export const productFieldMap: productFieldMapType = {
     fabricationComponents: [
       'catalogBrochureBinding',
       'coverUV',
+      'textUV',
       'coverCoating',
       'textCoating',
+      'coverFoiling',
+      'coverEmbossing',
     ],
   },
   Brochures: {
@@ -112,8 +121,11 @@ export const productFieldMap: productFieldMapType = {
     fabricationComponents: [
       'catalogBrochureBinding',
       'coverUV',
+      'textUV',
       'coverCoating',
       'textCoating',
+      'coverFoiling',
+      'coverEmbossing',
     ],
   },
   Magazines: {
@@ -133,7 +145,13 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['catalogBrochureBinding', 'coverUV'],
+    fabricationComponents: [
+      'catalogBrochureBinding',
+      'coverUV',
+      'textUV',
+      'coverFoiling',
+      'coverEmbossing',
+    ],
   },
   Posters: {
     specificationComponents: [
@@ -166,5 +184,21 @@ export const productFieldMap: productFieldMapType = {
       'packagingCalculation',
     ],
     fabricationComponents: ['coverUV'],
+  },
+  'Both Side Flap Monocartons': {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverUV', 'coverFoiling', 'coverEmbossing'],
   },
 }

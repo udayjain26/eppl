@@ -6,10 +6,14 @@ import {
   FabricationCostDataDict,
 } from '@/app/estimates/[id]/_components/calculation-components/fabrication-calculation'
 import { TextCostData } from '@/app/estimates/[id]/_components/calculation-components/text-calculation'
+import coverEmbossing from '@/app/estimates/[id]/_components/specification-components/cover-embossing'
+import CoverEmbossing from '@/app/estimates/[id]/_components/specification-components/cover-embossing'
 import {
   catalogBrochureBindingTypes,
   coatings,
+  embossingTypes,
   gummingTypes,
+  leafingTypes,
   paperbackBindingTypes,
   postpressProcesses,
   uvTypes,
@@ -79,8 +83,8 @@ function getFabricationCostsDict(
       fabricationSheets = textTotalSheets || 0
     }
 
-    const coverWorkingLength = coverCostDataTable?.coverWorkingLength
-    const coverWorkingWidth = coverCostDataTable?.coverWorkingWidth
+    const coverWorkingLength = coverCostDataTable?.coverSheetLength
+    const coverWorkingWidth = coverCostDataTable?.coverSheetWidth
 
     const textWorkingLength = textCostDataTable?.textWorkingLength
     const textWorkingWidth = textCostDataTable?.textWorkingWidth
@@ -93,6 +97,9 @@ function getFabricationCostsDict(
     let sidePinAndPerfect: number | undefined
     let centrePin: number | undefined
     let coverUV: number | undefined
+    let textUV: number | undefined
+    let coverFoiling: number | undefined
+    let coverEmbossing: number | undefined
     let vdp: number | undefined
     let gumming: number | undefined
     let coverCoating: number | undefined
@@ -187,6 +194,35 @@ function getFabricationCostsDict(
       gumming = getGummingCost(jobQuantity, variationData)
     }
 
+    if (typeof variationData.textUV === 'string') {
+      let textUVCharges: number
+      let fixedCharges: number
+      if (textWorkingLength <= 508 && textWorkingWidth <= 762) {
+        textUVCharges = uvTypes.find(
+          (row) => row.label === variationData.textUV,
+        )?.smallSheetRate!
+
+        fixedCharges = uvTypes.find(
+          (row) => row.label === variationData.textUV,
+        )?.smallFixedCharge!
+      } else {
+        textUVCharges = uvTypes.find(
+          (row) => row.label === variationData.textUV,
+        )?.bigSheetRate!
+
+        fixedCharges = uvTypes.find(
+          (row) => row.label === variationData.textUV,
+        )?.bigFixedCharge!
+      }
+
+      if (textUVCharges === undefined || fixedCharges === undefined) {
+        textUV = 0
+        fixedCharges = 0
+      }
+
+      textUV = textUVCharges * fabricationSheets + fixedCharges
+    }
+
     if (typeof variationData.coverCoating === 'string') {
       coverCoating = getCoatingCost(
         coverTotalSheets,
@@ -205,6 +241,18 @@ function getFabricationCostsDict(
       )
     }
 
+    if (typeof variationData.coverFoiling === 'string') {
+      coverFoiling = getFoilingCost(
+        coverTotalSheets,
+        coverWorkingLength,
+        coverWorkingWidth,
+        variationData,
+      )
+    }
+    if (typeof variationData.coverEmbossing === 'string') {
+      coverEmbossing = getEmbossingCost(coverTotalSheets, variationData)
+    }
+
     const totalCost =
       foldingCost +
       gatheringCost +
@@ -213,10 +261,13 @@ function getFabricationCostsDict(
       (sidePinAndPerfect || 0) +
       (centrePin || 0) +
       (coverUV || 0) +
+      (textUV || 0) +
       (coverCoating || 0) +
       (textCoating || 0) +
+      (coverEmbossing || 0) +
       (vdp || 0) +
-      (gumming || 0)
+      (gumming || 0) +
+      (coverFoiling || 0)
 
     const costPerPiece = totalCost / jobQuantity
 
@@ -242,6 +293,11 @@ function getFabricationCostsDict(
       textCoating: textCoating ? Number(textCoating.toFixed(0)) : undefined,
       centrePin: centrePin ? Number(centrePin.toFixed(0)) : undefined,
       coverUV: coverUV ? Number(coverUV.toFixed(0)) : undefined,
+      textUV: textUV ? Number(textUV.toFixed(0)) : undefined,
+      coverFoiling: coverFoiling ? Number(coverFoiling.toFixed(0)) : undefined,
+      coverEmbossing: coverEmbossing
+        ? Number(coverEmbossing.toFixed(0))
+        : undefined,
       vdp: vdp ? Number(vdp.toFixed(0)) : undefined,
       gumming: gumming ? Number(gumming.toFixed(0)) : undefined,
       totalCost: Number(totalCost.toFixed(0)),
@@ -320,4 +376,51 @@ function getCoatingCost(
   coatingCost =
     coatingCharges * fabricationSheets * sheetLengthInM * sheetWidthInM
   return coatingCost
+}
+
+function getFoilingCost(
+  fabricationSheets: number,
+  coverWorkingLength: number | undefined,
+  coverWorkingWidth: number | undefined,
+  variationData: VariationData,
+) {
+  let coverFoilingCost = 0
+  let foilingFixedCharges = leafingTypes.find(
+    (row) => row.label === variationData.coverFoiling,
+  )?.blockRate
+  let foilingCharges = leafingTypes.find(
+    (row) => row.label === variationData.coverFoiling,
+  )?.rate
+
+  if (foilingCharges === undefined || foilingFixedCharges === undefined) {
+    return 0
+  }
+  const sheetLengthInM = coverWorkingLength ? coverWorkingLength / 1000 : 0
+  const sheetWidthInM = coverWorkingWidth ? coverWorkingWidth / 1000 : 0
+  coverFoilingCost =
+    foilingCharges * fabricationSheets * sheetLengthInM * sheetWidthInM +
+    foilingFixedCharges
+  return coverFoilingCost
+}
+
+function getEmbossingCost(
+  fabricationSheets: number,
+
+  variationData: VariationData,
+) {
+  let coverFoilingCost = 0
+  let embossingFixedCharges = embossingTypes.find(
+    (row) => row.label === variationData.coverEmbossing,
+  )?.blockRate
+  let embossingCharges = embossingTypes.find(
+    (row) => row.label === variationData.coverEmbossing,
+  )?.rate
+
+  if (embossingCharges === undefined || embossingFixedCharges === undefined) {
+    return 0
+  }
+
+  coverFoilingCost =
+    (embossingCharges * fabricationSheets) / 1000 + embossingFixedCharges
+  return coverFoilingCost
 }

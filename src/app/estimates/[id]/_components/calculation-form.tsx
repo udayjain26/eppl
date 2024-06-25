@@ -151,7 +151,7 @@ export default function CalculationFields(props: {
           : '0',
         coverPlateSize: data?.coverPlateSize
           ? data.coverPlateSize.toString()
-          : 'Large',
+          : 'Small',
         textGutters: data?.textGutters ? data.textGutters.toString() : '0',
         textBleed: data?.textBleed ? data.textBleed.toString() : '3',
         textGrippers: data?.textGrippers ? data.textGrippers.toString() : '10',

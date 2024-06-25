@@ -56,12 +56,12 @@ export default function MainView(props: {
   const viewPdf = async () => {
     try {
       // Example: Fetch PDF data from a server endpoint
-      const response = await fetch('/api/generate-quotation') // Assuming you have an API route to generate PDF
-
-      console.log(response)
+      const response = await fetch(
+        `/estimates/${props.estimateData.uuid}/quotation`,
+      ) // Assuming you have an API route to generate PDF
 
       if (!response.ok) {
-        throw new Error('Failed to fetch PDF')
+        throw new Error('Failed to Fetch PDF')
       }
 
       // Read the PDF content as a blob

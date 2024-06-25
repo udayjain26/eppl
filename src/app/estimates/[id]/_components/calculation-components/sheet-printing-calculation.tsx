@@ -1,5 +1,3 @@
-'use client'
-
 import { VariationData } from '@/server/variations/types'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -22,17 +20,13 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { CheckIcon, Plus, Trash } from 'lucide-react'
+import { CheckIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { PaperData } from '@/server/paper/types'
-import { getPaperData } from '@/server/paper/queries'
 import { calculateCoverCost as calculateCoverCost } from '@/server/calculations/cover/actions'
 import { Input } from '@/components/ui/input'
-import { UseFormReturn, useFieldArray } from 'react-hook-form'
-import FormError from '@/app/_components/form-error'
-import { Slider } from '@/components/ui/slider'
-import { Stage, Layer, Rect, Text, Circle, Line } from 'react-konva'
+import { UseFormReturn } from 'react-hook-form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Table,
@@ -53,9 +47,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CoverCostData } from './cover-calculation'
 
-export default function SheetPrintingCalculation(props: {
+export type CoverCostData = {
+  coverPiecesPerSheet: number
+  pagesPerSheet: number
+  paperAreaUsed: number
+  coverForms: PrintingForms
+  totalSets: number
+  coverSheetLength: number
+  coverSheetWidth: number
+  coverCostDataDict: {
+    jobQuantity: number
+    calculatedSheets: number
+    wastageSheets: number
+    totalSheets: number
+    paperWeight: number
+    paperCost: number
+    plateCost: number
+    printingCost: number
+    laminationCost: number
+    totalCost: number
+    costPerCover: number
+  }[]
+}
+
+export default function CoverCalculation(props: {
   variationData: VariationData
   paperData: PaperData[]
   form: UseFormReturn
@@ -65,7 +81,6 @@ export default function SheetPrintingCalculation(props: {
   >
 }) {
   const coverCostDataTable = props.coverCostDataTable
-  const setCoverCostDataTable = props.setCoverCostDataTable
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
   const handleInputChange = (
@@ -107,7 +122,7 @@ export default function SheetPrintingCalculation(props: {
     : 0
   const effectiveCoverWidth = props.variationData.openSizeWidth
     ? props.variationData.openSizeWidth +
-      // Number(props.form.watch('coverSpine')) +
+      Number(props.form.watch('coverSpine')) +
       Number(props.form.watch('coverBleed')) * 2
     : 0
   const coverPrintingType = props.form.watch('coverPrintingType')
@@ -172,6 +187,7 @@ export default function SheetPrintingCalculation(props: {
   }, [watchPlateSize])
 
   useEffect(() => {
+    console.log('watchPaperData', watchPaperData)
     const initialPaperName = props.form.getValues('coverPaper')
     const initialSelectedPaper = props.paperData.find(
       (paper) => paper.paperName === initialPaperName,
@@ -179,10 +195,16 @@ export default function SheetPrintingCalculation(props: {
 
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-      props.form.setValue(
-        'coverPaperRate',
-        initialSelectedPaper.paperDefaultRate,
-      )
+      if (
+        props.form.getValues('coverPaperRate') === '0' ||
+        props.form.getValues('coverPaperRate') === undefined
+      ) {
+        console.log('Setting paper rate')
+        props.form.setValue(
+          'coverPaperRate',
+          initialSelectedPaper.paperDefaultRate,
+        )
+      }
       props.form.setValue(
         'coverWorkingLength',
         initialSelectedPaper.paperLength,
@@ -208,7 +230,7 @@ export default function SheetPrintingCalculation(props: {
         debouncedPrintingRateFactor,
         coverPrintingType,
       )
-      setCoverCostDataTable(fetchCoverCostDataTable)
+      props.setCoverCostDataTable(fetchCoverCostDataTable)
     }
     calculateCoverSheets()
   }, [
@@ -216,8 +238,6 @@ export default function SheetPrintingCalculation(props: {
     effectiveCoverWidth,
     grippers,
     selectedPaper,
-    coverWorkingLength,
-    coverWorkingWidth,
     debouncedCoverWorkingLength,
     debouncedCoverWorkingWidth,
     debouncedPaperRatePerkg,
@@ -234,9 +254,17 @@ export default function SheetPrintingCalculation(props: {
     <>
       <div className="flex flex-col gap-x-8 p-4 sm:flex-row">
         <div className="flex w-full max-w-[12rem] flex-col gap-y-2">
-          <h1 className="underline">Sheet Specifications</h1>
+          <h1 className="underline">Cover Specifications</h1>
           <div className="text-sm">
             <ul className="flex flex-col gap-y-2">
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Close Length</span>
+                <span>{props.variationData?.closeSizeLength} mm</span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Close Width</span>
+                <span>{props.variationData?.closeSizeWidth} mm</span>
+              </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Open Length</span>
                 <span>{props.variationData?.openSizeLength} mm</span>
@@ -274,7 +302,7 @@ export default function SheetPrintingCalculation(props: {
         </div>
         <div className="flex w-full flex-col gap-y-2">
           <div className="flex flex-row gap-x-2">
-            {/* <FormField
+            <FormField
               control={props.form.control}
               name="coverSpine"
               render={({ field }) => (
@@ -285,7 +313,7 @@ export default function SheetPrintingCalculation(props: {
                   </FormControl>
                 </FormItem>
               )}
-            /> */}
+            />
             <FormField
               control={props.form.control}
               name="coverBleed"
@@ -499,7 +527,7 @@ export default function SheetPrintingCalculation(props: {
               render={({ field }) => (
                 <FormItem className="w-2/5">
                   <FormLabel>
-                    Wastage Factor {(field.value * 100).toFixed(2)}%
+                    Cover Wastage Factor {(field.value * 100).toFixed(2)}%
                   </FormLabel>
                   <FormControl>
                     <Input type="number" step={0.001} {...field}></Input>
@@ -584,7 +612,7 @@ export default function SheetPrintingCalculation(props: {
               name="coverPlateSize"
               render={({ field }) => (
                 <FormItem className={cn({ 'text-red-500': isPlateSizeSmall })}>
-                  <FormLabel>Printing Plate Size</FormLabel>
+                  <FormLabel>Cover Plate Size</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -611,7 +639,9 @@ export default function SheetPrintingCalculation(props: {
           <div className="flex  flex-col gap-y-1 text-sm">
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Pieces/Sheet</span>
+                <span className="text-muted-foreground">
+                  Cover Pieces/Sheet
+                </span>
                 <span>{coverCostDataTable?.coverPiecesPerSheet}</span>
               </li>
               <li className="flex items-center justify-between border-b-2">
@@ -620,7 +650,7 @@ export default function SheetPrintingCalculation(props: {
               </li>
 
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Forms</span>
+                <span className="text-muted-foreground">Cover Forms</span>
                 <span>
                   {' '}
                   {coverCostDataTable?.coverForms.totalFormsFB! +
@@ -690,10 +720,10 @@ export default function SheetPrintingCalculation(props: {
         </div>
       </div>
       <Table>
-        <TableCaption>Paper, Plates and Printing Data</TableCaption>
+        <TableCaption>Cover Paper, Plates and Printing Data</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Quantity</TableHead>
+            <TableHead>Cover Quantity</TableHead>
             <TableHead>Calculated Sheets</TableHead>
             <TableHead>Wastage Sheets</TableHead>
             <TableHead>Total Sheets</TableHead>
@@ -703,7 +733,7 @@ export default function SheetPrintingCalculation(props: {
             <TableHead>Printing Cost</TableHead>
             <TableHead>Lamination Cost</TableHead>
             <TableHead>Total Cost</TableHead>
-            <TableHead>Cost/Piece</TableHead>
+            <TableHead>Cost/Cover</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

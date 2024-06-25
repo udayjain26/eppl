@@ -25,6 +25,9 @@ export type FabricationCostDataDict = {
   sidePinAndPerfect?: number
   centrePin?: number
   coverUV?: number
+  textUV?: number
+  coverFoiling?: number
+  coverEmbossing?: number
   vdp?: number
   coverCoating?: number
   textCoating?: number
@@ -91,8 +94,11 @@ export default function FabricationCalculation(props: {
     sidePinAndPerfect: 'Side Pin Perfect',
     centrePin: 'Centre Pin',
     coverUV: 'Cover UV',
+    textUV: 'Text UV',
     coverCoating: 'Cover Coating',
     textCoating: 'Text Coating',
+    coverFoiling: 'Cover Foiling',
+    coverEmbossing: 'Cover Embossing',
     vdp: 'VDP',
     gumming: 'Gumming',
     totalCost: 'Total Cost',
@@ -150,6 +156,13 @@ export default function FabricationCalculation(props: {
                     <span>{variationData?.coverUV}</span>
                   </li>
                 )}
+              {variationData?.textUV !== 'None' &&
+                variationData?.textUV !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Text UV</span>
+                    <span>{variationData?.textUV}</span>
+                  </li>
+                )}
               {variationData?.vdp !== 'None' && variationData?.vdp !== null && (
                 <li className="flex items-center justify-between border-b-2">
                   <span className="text-muted-foreground">VDP</span>
@@ -175,6 +188,22 @@ export default function FabricationCalculation(props: {
                   <li className="flex items-center justify-between border-b-2">
                     <span className="text-muted-foreground">Text Coating</span>
                     <span>{variationData?.textCoating}</span>
+                  </li>
+                )}
+              {variationData?.coverFoiling !== 'None' &&
+                variationData?.coverFoiling !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Cover Foiling</span>
+                    <span>{variationData?.coverFoiling}</span>
+                  </li>
+                )}
+              {variationData?.coverEmbossing !== 'None' &&
+                variationData?.coverEmbossing !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Cover Embossing
+                    </span>
+                    <span>{variationData?.coverEmbossing}</span>
                   </li>
                 )}
             </ul>

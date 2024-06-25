@@ -201,7 +201,7 @@ export default function CoverCalculation(props: {
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
       if (
-        props.form.getValues('coverPaperRate') === 0 ||
+        props.form.getValues('coverPaperRate') === '0' ||
         props.form.getValues('coverPaperRate') === undefined
       ) {
         props.form.setValue(

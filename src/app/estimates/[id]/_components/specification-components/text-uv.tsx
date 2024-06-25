@@ -26,7 +26,7 @@ import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-export default function CoverUV(props: {
+export default function TextUV(props: {
   control: any
   form: UseFormReturn
   product: string
@@ -36,13 +36,13 @@ export default function CoverUV(props: {
   return (
     <FormField
       control={props.control}
-      name="coverUV"
+      name="textUV"
       render={({ field }) => (
         <FormItem
           className="flex flex-col
            gap-y-1 pt-[6px]"
         >
-          <FormLabel>Cover UV</FormLabel>
+          <FormLabel>Text UV</FormLabel>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger className="" asChild>
@@ -73,9 +73,9 @@ export default function CoverUV(props: {
                         key={size.label}
                         value={size.label}
                         onSelect={() => {
-                          props.form.setValue('coverUV', size.label)
+                          props.form.setValue('textUV', size.label)
                           field.onChange(size.label)
-                          props.form.trigger('coverUV') // Trigger form validation and state update
+                          props.form.trigger('textUV') // Trigger form validation and state update
 
                           setOpen(false)
                         }}

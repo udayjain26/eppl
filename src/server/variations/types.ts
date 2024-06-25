@@ -35,6 +35,9 @@ export type VariationData = {
   binding: string | undefined
   // catalogBrochureBinding: string | undefined
   coverUV: string | undefined
+  coverFoiling: string | undefined
+  coverEmbossing: string | undefined
+  textUV: string | undefined
   vdp: string | undefined
 
   packagingType: string | undefined

@@ -275,6 +275,10 @@ export const variations = createTable('variations', {
   //fabrication
   binding: varchar('binding', { length: 256 }),
   coverUV: varchar('cover_uv', { length: 256 }),
+  coverFoiling: varchar('cover_foiling', { length: 256 }),
+  coverEmbossing: varchar('cover_embossing', { length: 256 }),
+  textUV: varchar('text_uv', { length: 256 }),
+
   vdp: varchar('vdp', { length: 256 }),
   gummingType: varchar('gumming_type', { length: 256 }),
   textCoating: varchar('text_coating', { length: 256 }),

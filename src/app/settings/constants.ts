@@ -1,5 +1,9 @@
 //Lamination rates are in rupees per square meter
 
+// Velet : 1550*32 sqinch per kilo
+
+//
+
 export const laminations = [
   { label: 'None', value: 'none', rate: 0 },
   {
@@ -15,12 +19,12 @@ export const laminations = [
   {
     label: 'Both Side Thermal Gloss',
     value: 'both_side_thermal_gloss',
-    rate: 15.5,
+    rate: 14,
   },
   {
     label: 'Single Side Thermal Gloss',
     value: 'single_side_thermal_gloss',
-    rate: 7.75,
+    rate: 7.0,
   },
 
   {
@@ -48,49 +52,43 @@ export const laminations = [
   {
     label: 'Both Side Thermal Velvet',
     value: 'both_side_thermal_velvet',
-    rate: 62,
+    rate: 50,
   },
   {
     label: 'Single Side Thermal Velvet',
     value: 'single_side_thermal_velvet',
-    rate: 31,
+    rate: 25,
   },
 
   {
     label: 'Single Side Thermal Metallic',
     value: 'single_side_thermal_metallic',
-    rate: 31,
+    rate: 20,
   },
-
-  // {
-  //   label: 'Both Side Aqueous Coating',
-  //   value: 'both_side_aqueous_coating',
-  //   rate: 4,
-  // },
-
-  // {
-  //   label: 'Both Side Aqueous Coating With Thermal Gloss Single Side',
-  //   value: 'both_side_aqueous_coating_with_thermal_gloss_single_side',
-  //   rate: 12,
-  // },
-  // {
-  //   label: 'Both Side Aqueous Coating With Thermal Gloss Both Side',
-  //   value: 'both_side_aqueous_coating_with_thermal_gloss_both_side',
-  //   rate: 20,
-  // },
 ]
 
+// rates are in rupees per meter square qty
 export const coatings = [
   { label: 'None', value: 'none', rate: 0 },
   {
-    label: 'Single Side Aqueous Coating',
+    label: 'Single Side Aqueous Coating Gloss',
     value: 'single_side_aqueous_coating',
-    rate: 2,
+    rate: 1.9,
   },
   {
-    label: 'Both Side Aqueous Coating',
+    label: 'Both Side Aqueous Coating Gloss',
     value: 'both_side_aqueous_coating',
-    rate: 4,
+    rate: 3.8,
+  },
+  {
+    label: 'Single Side Aqueous Coating Matt',
+    value: 'single_side_aqueous_coating',
+    rate: 2.25,
+  },
+  {
+    label: 'Both Side Aqueous Coating Matt',
+    value: 'both_side_aqueous_coating',
+    rate: 4.5,
   },
 ]
 
@@ -290,16 +288,29 @@ export const embossingTypes = [
   { label: 'None', value: 'none', rate: 0 },
   { label: 'Embossing', value: 'embossing', rate: 350, blockRate: 1000 },
   { label: 'Debossing', value: 'debossing', rate: 350, blockRate: 1000 },
+]
+
+//Rates in rupeess per meter square
+export const leafingTypes = [
+  { label: 'None', value: 'none', rate: 0 },
   {
-    label: 'Foil Embossing',
-    value: 'foil_embossing',
-    rate: 1500,
+    label: 'Standard Foil',
+    value: 'standard_foiling',
+    rate: 5,
     blockRate: 1000,
   },
+  {
+    label: 'Rainbow Silver',
+    value: 'rainbow_silver',
+    rate: 20,
+    blockRate: 1000,
+  },
+  { label: 'Rainbow Gold', value: 'rainbow_gold', rate: 20, blockRate: 1000 },
 ]
 
 // rates are in rupees per qty
 export const vdpTypes = [
+  { label: 'None', value: 'none', rate: 0 },
   { label: 'VDP 1 Color', value: 'vdp_1_color', rate: 2 },
   { label: 'VDP 4 Color', value: 'vdp_4_color', rate: 8 },
   { label: 'VDP and Scratch', value: 'vdp_and_scratch', rate: 3 },

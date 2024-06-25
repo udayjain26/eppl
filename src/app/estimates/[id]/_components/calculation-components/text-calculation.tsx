@@ -178,9 +178,10 @@ export default function TextCalculation(props: {
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
       if (
-        props.form.getValues('textPaperRate') === 0 ||
+        props.form.getValues('textPaperRate') === '0' ||
         props.form.getValues('textPaperRate') === undefined
       ) {
+        console.log('Setting paper rate')
         props.form.setValue(
           'textPaperRate',
           initialSelectedPaper.paperDefaultRate,
@@ -198,7 +199,7 @@ export default function TextCalculation(props: {
     } else if (watchPlateSize === 'Large') {
       props.form.setValue('textPlateRate', 500 * plateFactor)
     }
-  }, [watchPlateSize])
+  }, [watchPlateSize, plateFactor])
 
   useEffect(() => {
     if (textWorkingLength < 508 && textWorkingWidth < 762) {

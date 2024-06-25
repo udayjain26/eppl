@@ -1,5 +1,9 @@
 import MySep from '@/app/_components/custom-sep'
-import { paperbackBindingTypes, uvTypes } from '@/app/settings/constants'
+import {
+  leafingTypes,
+  paperbackBindingTypes,
+  uvTypes,
+} from '@/app/settings/constants'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -26,7 +30,7 @@ import { CheckIcon, ChevronDown } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-export default function CoverUV(props: {
+export default function CoverFoiling(props: {
   control: any
   form: UseFormReturn
   product: string
@@ -36,13 +40,13 @@ export default function CoverUV(props: {
   return (
     <FormField
       control={props.control}
-      name="coverUV"
+      name="coverFoiling"
       render={({ field }) => (
         <FormItem
           className="flex flex-col
            gap-y-1 pt-[6px]"
         >
-          <FormLabel>Cover UV</FormLabel>
+          <FormLabel>Cover Foiling</FormLabel>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger className="" asChild>
@@ -58,7 +62,8 @@ export default function CoverUV(props: {
                   value={field.value ? field.value : ''}
                 />
                 {field.value
-                  ? uvTypes.find((size) => size.label === field.value)?.label
+                  ? leafingTypes.find((size) => size.label === field.value)
+                      ?.label
                   : 'Select'}
               </Button>
             </PopoverTrigger>
@@ -68,14 +73,14 @@ export default function CoverUV(props: {
                 <CommandEmpty>No size found.</CommandEmpty>
                 <CommandGroup>
                   <CommandList>
-                    {uvTypes.map((size) => (
+                    {leafingTypes.map((size) => (
                       <CommandItem
                         key={size.label}
                         value={size.label}
                         onSelect={() => {
-                          props.form.setValue('coverUV', size.label)
+                          props.form.setValue('coverFoiling', size.label)
                           field.onChange(size.label)
-                          props.form.trigger('coverUV') // Trigger form validation and state update
+                          props.form.trigger('coverFoiling') // Trigger form validation and state update
 
                           setOpen(false)
                         }}
