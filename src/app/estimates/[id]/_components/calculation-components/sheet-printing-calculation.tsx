@@ -133,13 +133,6 @@ export default function CoverCalculation(props: {
     grippers = Number(props.form.watch('coverGrippers')) * 2
   }
 
-  const effectivePaperLength = selectedPaper?.paperLength
-    ? selectedPaper.paperLength - grippers
-    : 0
-  const effectivePaperWidth = selectedPaper?.paperWidth
-    ? selectedPaper.paperWidth
-    : 0
-
   const wastageFactor = Number(props.form.watch('coverWastageFactor'))
   const plateFactor = Number(props.form.watch('coverPlateRateFactor'))
   const printingFactor = Number(props.form.watch('coverPrintingFactor'))
@@ -161,6 +154,11 @@ export default function CoverCalculation(props: {
   const [debouncedCoverWorkingWidth] = useDebounce(coverWorkingWidth, 1000)
   const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
   const [debouncedPlateSize] = useDebounce(watchPlateSize, 1000)
+
+  const effectivePaperLength = coverWorkingLength
+    ? coverWorkingLength - grippers
+    : 0
+  const effectivePaperWidth = coverWorkingWidth ? coverWorkingWidth : 0
 
   const isPlateSizeSmall =
     watchPlateSize === 'Small' &&

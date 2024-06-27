@@ -92,7 +92,10 @@ export default function CreatePaperForm(props: { closeDialog: () => void }) {
 
       // If all fields are filled, generate the paper name
       if (allFieldsFilled) {
-        const name = `${lengthInInches}x${widthInInches}/${form.getValues('paperGrammage')}gsm ${form.getValues('paperMill')} ${form.getValues('paperQuality')} ${form.getValues('paperFinish')}`
+        const paperTypeCode = paperTypes.find(
+          (row) => row.label === form.getValues('paperType'),
+        )?.value
+        const name = `${lengthInInches}x${widthInInches}/${form.getValues('paperGrammage')}gsm ${form.getValues('paperMill')} ${form.getValues('paperQuality')} ${form.getValues('paperFinish')}-${paperTypeCode}`
         form.setValue('paperName', name)
       } else {
         // If any field is empty, set paperName to an empty string

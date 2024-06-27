@@ -124,6 +124,16 @@ export async function updateEstimateStageToDrafting(estimateUuid: string) {
 
 export async function canSetToNeedsRates(estimateUuid: string) {
   try {
+    const estimateIsEmpty = await db.query.estimates
+      .findFirst({
+        where: (estimate, { eq }) => eq(estimate.uuid, estimateUuid),
+      })
+      .then((estimate) => estimate?.estimateStage === 'Empty')
+
+    if (estimateIsEmpty) {
+      return false
+    }
+
     const canSetToNeedsRates = await db.query.variations
       .findMany({
         columns: {},
@@ -135,6 +145,7 @@ export async function canSetToNeedsRates(estimateUuid: string) {
           return variation.variationQtysRates.length > 0
         })
       })
+    console.log(canSetToNeedsRates)
     return canSetToNeedsRates
   } catch (e) {
     return false

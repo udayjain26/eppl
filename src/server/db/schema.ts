@@ -318,30 +318,7 @@ export const variationsRelations = relations(variations, ({ one, many }) => ({
     references: [estimates.uuid],
   }),
   variationQtysRates: many(variationQtysRates),
-}))
-
-export const estimatesRelations = relations(estimates, ({ one, many }) => ({
-  client: one(clients, {
-    fields: [estimates.clientUuid],
-    references: [clients.uuid],
-  }),
-  contact: one(contacts, {
-    fields: [estimates.contactUuid],
-    references: [contacts.uuid],
-  }),
-  productType: one(productsType, {
-    fields: [estimates.estimateProductTypeUuid],
-    references: [productsType.uuid],
-  }),
-  product: one(products, {
-    fields: [estimates.estimateProductUuid],
-    references: [products.uuid],
-  }),
-  salesRep: one(salesReps, {
-    fields: [estimates.estimateSalesRepUuid],
-    references: [salesReps.uuid],
-  }),
-  variations: many(variations),
+  variationCalculations: many(variationCalculation),
 }))
 
 export const paperMaster = createTable('paper_master', {
@@ -423,8 +400,36 @@ export const variationCalculation = createTable('variation_calculation', {
     scale: 2,
   }),
   textWorkingWidth: numeric('text_working_width', { precision: 7, scale: 2 }),
-  profitPercentage: numeric('profit_percentage', { precision: 7, scale: 2 }),
+  profitPercentage: numeric('profit_percentage', { precision: 7, scale: 4 }),
+  discountPercentage: numeric('discount_percentage', {
+    precision: 7,
+    scale: 4,
+  }),
 })
+
+export const estimatesRelations = relations(estimates, ({ one, many }) => ({
+  client: one(clients, {
+    fields: [estimates.clientUuid],
+    references: [clients.uuid],
+  }),
+  contact: one(contacts, {
+    fields: [estimates.contactUuid],
+    references: [contacts.uuid],
+  }),
+  productType: one(productsType, {
+    fields: [estimates.estimateProductTypeUuid],
+    references: [productsType.uuid],
+  }),
+  product: one(products, {
+    fields: [estimates.estimateProductUuid],
+    references: [products.uuid],
+  }),
+  salesRep: one(salesReps, {
+    fields: [estimates.estimateSalesRepUuid],
+    references: [salesReps.uuid],
+  }),
+  variations: many(variations),
+}))
 
 export const variationCalculationRelations = relations(
   variationCalculation,

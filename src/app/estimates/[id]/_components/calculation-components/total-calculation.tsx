@@ -69,6 +69,11 @@ export default function TotalCalculation(props: {
     500,
   ) // Watch only profitPercentage
 
+  const [debouncedDiscountPercentage] = useDebounce(
+    props.form.watch('discountPercentage'),
+    500,
+  ) // Watch only profitPercentage
+
   // Function to calculate cost details for each item
   const calculateCostDetails = () => {
     const costDetails: TotalCostDetails = []
@@ -86,9 +91,26 @@ export default function TotalCalculation(props: {
       const totalCost = costPerPiece * item.jobQuantity
 
       const profitPercentage = parseFloat(debouncedProfitPercentage) / 100
+      const discountPercentage = parseFloat(debouncedDiscountPercentage) / 100
       const profitPerPiece = costPerPiece * profitPercentage
+      const discountPerPiece = costPerPiece * discountPercentage
       const totalProfit = profitPerPiece * item.jobQuantity
-      const sellingPrice = costPerPiece + profitPerPiece
+      const totalDiscount = discountPerPiece * item.jobQuantity
+      const sellingPrice = costPerPiece + profitPerPiece - discountPerPiece
+
+      console.log(
+        item.paperCost,
+        item.plateCost,
+        debouncedTextCostDataTable?.textCostDataDict[index]?.paperCost,
+        debouncedTextCostDataTable?.textCostDataDict[index]?.plateCost,
+        sellingPrice,
+        item.jobQuantity,
+        costPerPiece,
+        totalCost,
+        profitPerPiece,
+        totalProfit,
+        sellingPrice,
+      )
 
       const platePaperRatio =
         (item.paperCost +
@@ -97,7 +119,7 @@ export default function TotalCalculation(props: {
             0) +
           (debouncedTextCostDataTable?.textCostDataDict[index]?.plateCost ||
             0)) /
-        (totalCost + totalProfit)
+        (sellingPrice * item.jobQuantity)
 
       costDetails.push({
         jobQuantity: item.jobQuantity,
@@ -121,6 +143,7 @@ export default function TotalCalculation(props: {
     debouncedFabricationCostDataTable,
     debouncedPackagingCostDataTable,
     debouncedProfitPercentage,
+    debouncedDiscountPercentage,
   ])
 
   return (
@@ -134,6 +157,18 @@ export default function TotalCalculation(props: {
             render={({ field }) => (
               <FormItem className="w-20">
                 <FormLabel>Profit %</FormLabel>
+                <FormControl>
+                  <Input {...field}></Input>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={props.form.control}
+            name="discountPercentage"
+            render={({ field }) => (
+              <FormItem className="w-20">
+                <FormLabel>Discount %</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
                 </FormControl>

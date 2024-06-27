@@ -185,7 +185,10 @@ export default function CalculationFields(props: {
           : 'Large',
         profitPercentage: data?.profitPercentage
           ? data.profitPercentage.toString()
-          : '10',
+          : '25',
+        discountPercentage: data?.discountPercentage
+          ? data.discountPercentage.toString()
+          : '0',
       })
     }
     fetchCalculationData()

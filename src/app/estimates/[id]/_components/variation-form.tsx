@@ -56,10 +56,12 @@ export default function VariationForm(props: {
     resolver: zodResolver(VariationFormSchema),
 
     defaultValues: {
-      variationTitle: props.variationData.variationTitle,
+      variationTitle: props.variationData.variationTitle
+        ? props.variationData.variationTitle
+        : 'Standard Specs',
       variationNotes: props.variationData.variationNotes
         ? props.variationData.variationNotes
-        : '',
+        : 'None',
       clientEnquiry: props.variationData.clientEnquiry
         ? props.variationData.clientEnquiry
         : '',

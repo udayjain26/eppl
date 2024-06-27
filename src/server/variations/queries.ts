@@ -15,8 +15,6 @@ export async function getEstimateVariationsData(
     })
   ).map((row) => ({
     ...row,
-    sizeLength: row.sizeLength ? parseFloat(row.sizeLength) : undefined,
-    sizeWidth: row.sizeWidth ? parseInt(row.sizeWidth.toString()) : undefined,
     closeSizeLength: row.closeSizeLength
       ? parseFloat(row.closeSizeLength)
       : undefined,

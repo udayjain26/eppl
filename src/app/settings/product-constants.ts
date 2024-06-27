@@ -56,6 +56,33 @@ export const productFieldMap: productFieldMapType = {
       'coverEmbossing',
     ],
   },
+  'Coffee Table Books': {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'cover',
+      'text',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: [
+      'paperbackBookBinding',
+      'coverUV',
+      'coverCoating',
+      'textCoating',
+      'vdp',
+      'coverFoiling',
+      'coverEmbossing',
+    ],
+  },
   'Swatch Cards': {
     specificationComponents: [
       'openSize',
@@ -66,8 +93,7 @@ export const productFieldMap: productFieldMapType = {
     ],
     calculationComponents: [
       'totalCalculation',
-      'coverCalculation',
-      'textCalculation',
+      'sheetPrintingCalculation',
       'fabricationCalculation',
       'packagingCalculation',
     ],
