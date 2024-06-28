@@ -81,7 +81,6 @@ export default function MainView(props: {
         setLoadingPdf(false) // Set loading state to false once loaded
       }
     } catch (error) {
-      console.error('Error fetching PDF:', error)
       toast.error('Failed to fetch PDF')
       setLoadingPdf(false) // Set loading state to false in case of error
     }

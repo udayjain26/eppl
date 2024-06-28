@@ -14,6 +14,7 @@ import CoverCoating from './cover-coating'
 import TextUV from './text-uv'
 import CoverFoiling from './cover-foiling'
 import CoverEmbossing from './cover-embossing'
+import DieCutting from './cover-die-cutting'
 
 export default function Fabrication(props: {
   control: any
@@ -33,6 +34,7 @@ export default function Fabrication(props: {
     gumming: Gumming,
     textCoating: TextCoating,
     coverCoating: CoverCoating,
+    coverDieCutting: DieCutting,
   }
   const fabricationFields =
     productFieldMap[props.product]['fabricationComponents'] || []

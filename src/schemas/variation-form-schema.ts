@@ -1,3 +1,4 @@
+import TextDieCutting from '@/app/estimates/[id]/_components/specification-components/text-die-cutting'
 import { z } from 'zod'
 
 export const VariationFormSchema = z.object({
@@ -204,6 +205,8 @@ export const VariationFormSchema = z.object({
   gummingType: z.string().optional(),
   textCoating: z.string().optional(),
   coverCoating: z.string().optional(),
+  coverDieCutting: z.string().optional(),
+  textDieCutting: z.string().optional(),
 
   // textPaper: z.string().optional(),
 

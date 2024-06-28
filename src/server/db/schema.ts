@@ -283,6 +283,8 @@ export const variations = createTable('variations', {
   gummingType: varchar('gumming_type', { length: 256 }),
   textCoating: varchar('text_coating', { length: 256 }),
   coverCoating: varchar('cover_coating', { length: 256 }),
+  coverDieCutting: varchar('cover_die_cutting', { length: 256 }),
+  textDieCutting: varchar('text_die_cutting', { length: 256 }),
 
   //packaging
   packagingType: varchar('packaging_type', { length: 256 }),

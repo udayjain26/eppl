@@ -98,19 +98,7 @@ export default function TotalCalculation(props: {
       const totalDiscount = discountPerPiece * item.jobQuantity
       const sellingPrice = costPerPiece + profitPerPiece - discountPerPiece
 
-      console.log(
-        item.paperCost,
-        item.plateCost,
-        debouncedTextCostDataTable?.textCostDataDict[index]?.paperCost,
-        debouncedTextCostDataTable?.textCostDataDict[index]?.plateCost,
-        sellingPrice,
-        item.jobQuantity,
-        costPerPiece,
-        totalCost,
-        profitPerPiece,
-        totalProfit,
-        sellingPrice,
-      )
+
 
       const platePaperRatio =
         (item.paperCost +

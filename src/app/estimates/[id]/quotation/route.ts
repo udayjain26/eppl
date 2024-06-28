@@ -496,7 +496,6 @@ function drawVariationsTable(
     })
     usedHeight += TEXT_SIZE
 
-    console.log(variation.variationCalculations)
 
     let selectedPaper = variation.variationCalculations[0].coverPaper
     let result = selectedPaper

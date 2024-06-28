@@ -145,7 +145,6 @@ export async function canSetToNeedsRates(estimateUuid: string) {
           return variation.variationQtysRates.length > 0
         })
       })
-    console.log(canSetToNeedsRates)
     return canSetToNeedsRates
   } catch (e) {
     return false

@@ -167,10 +167,7 @@ function calculatePagesPerSheet(
   const coverLength = effectiveCoverLength
   const coverWidth = effectiveCoverWidth
 
-  // console.log('Paper Length:', paperLength)
-  // console.log('Paper Width:', paperWidth)
-  // console.log('Cover Length:', coverLength)
-  // console.log('Cover Width:', coverWidth)
+
 
   if (!coverLength || !coverWidth || paperLength <= 0 || paperWidth <= 0) {
     return undefined
@@ -546,14 +543,10 @@ function calculateLaminationCost(
   const paperLengthInM = textWorkingLength / 1000
   const paperWidthInM = textWorkingWidth / 1000
 
-  console.log('Paper Length:', paperLengthInM)
-  console.log('Paper Width:', paperWidthInM)
-
   const laminationRate = laminations.find(
     (lam) => lam.label === variationData.coverLamination,
   )?.rate!
 
-  console.log('Lamination Rate:', laminationRate)
 
   if (laminationRate !== 0) {
     const laminationCost = (
@@ -562,8 +555,7 @@ function calculateLaminationCost(
       totalSheets *
       laminationRate
     ).toFixed(2)
-    console.log('total sheets:', totalSheets)
-    console.log('Lamination Cost:', laminationCost)
+
     return Number(laminationCost)
   } else {
     return 0

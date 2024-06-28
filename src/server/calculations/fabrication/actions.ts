@@ -11,6 +11,7 @@ import CoverEmbossing from '@/app/estimates/[id]/_components/specification-compo
 import {
   catalogBrochureBindingTypes,
   coatings,
+  dieCuttingTypes,
   embossingTypes,
   gummingTypes,
   leafingTypes,
@@ -83,6 +84,8 @@ function getFabricationCostsDict(
       fabricationSheets = textTotalSheets || 0
     }
 
+    const coverFabricationSheets = coverTotalSheets
+
     const coverWorkingLength = coverCostDataTable?.coverSheetLength
     const coverWorkingWidth = coverCostDataTable?.coverSheetWidth
 
@@ -104,6 +107,8 @@ function getFabricationCostsDict(
     let gumming: number | undefined
     let coverCoating: number | undefined
     let textCoating: number | undefined
+    let coverDieCutting: number | undefined
+    let textDieCutting: number | undefined
 
     if (variationData.binding === 'Perfect') {
       const perfectCharges = paperbackBindingTypes.find(
@@ -139,7 +144,7 @@ function getFabricationCostsDict(
     }
 
     //Use catalog brochure binding types need to make it so that it matches this condition
-    else if (variationData.binding === 'Centre Pin') {
+    else if (variationData.binding === 'Centre Pin' && fabricationSheets > 0) {
       const centrePinCharges = catalogBrochureBindingTypes.find(
         (row) => row.label === 'Centre Pin',
       )?.rate!
@@ -149,7 +154,10 @@ function getFabricationCostsDict(
       }
     }
 
-    if (typeof variationData.coverUV === 'string') {
+    if (
+      typeof variationData.coverUV === 'string' &&
+      variationData.coverUV !== 'None'
+    ) {
       let coverUVCharges: number
       let fixedCharges: number
       if (coverWorkingLength <= 508 && coverWorkingWidth <= 762) {
@@ -178,7 +186,7 @@ function getFabricationCostsDict(
       coverUV = coverUVCharges * coverTotalSheets + fixedCharges
     }
 
-    if (typeof variationData.vdp === 'string') {
+    if (typeof variationData.vdp === 'string' && variationData.vdp !== 'None') {
       const vdpCharges = vdpTypes.find(
         (row) => row.label === variationData.vdp,
       )?.rate!
@@ -190,11 +198,17 @@ function getFabricationCostsDict(
       vdp = vdpCharges * jobQuantity
     }
 
-    if (typeof variationData.gummingType === 'string') {
+    if (
+      typeof variationData.gummingType === 'string' &&
+      variationData.gummingType !== 'None'
+    ) {
       gumming = getGummingCost(jobQuantity, variationData)
     }
 
-    if (typeof variationData.textUV === 'string') {
+    if (
+      typeof variationData.textUV === 'string' &&
+      variationData.textUV !== 'None'
+    ) {
       let textUVCharges: number
       let fixedCharges: number
       if (textWorkingLength <= 508 && textWorkingWidth <= 762) {
@@ -223,7 +237,10 @@ function getFabricationCostsDict(
       textUV = textUVCharges * fabricationSheets + fixedCharges
     }
 
-    if (typeof variationData.coverCoating === 'string') {
+    if (
+      typeof variationData.coverCoating === 'string' &&
+      variationData.coverCoating !== 'None'
+    ) {
       coverCoating = getCoatingCost(
         coverTotalSheets,
         coverWorkingLength,
@@ -232,7 +249,10 @@ function getFabricationCostsDict(
       )
     }
 
-    if (typeof variationData.textCoating === 'string') {
+    if (
+      typeof variationData.textCoating === 'string' &&
+      variationData.textCoating !== 'None'
+    ) {
       textCoating = getCoatingCost(
         textTotalSheets ? textTotalSheets : 0,
         textWorkingLength,
@@ -241,7 +261,10 @@ function getFabricationCostsDict(
       )
     }
 
-    if (typeof variationData.coverFoiling === 'string') {
+    if (
+      typeof variationData.coverFoiling === 'string' &&
+      variationData.coverFoiling !== 'None'
+    ) {
       coverFoiling = getFoilingCost(
         coverTotalSheets,
         coverWorkingLength,
@@ -249,8 +272,33 @@ function getFabricationCostsDict(
         variationData,
       )
     }
-    if (typeof variationData.coverEmbossing === 'string') {
+    if (
+      typeof variationData.coverEmbossing === 'string' &&
+      variationData.coverEmbossing !== 'None'
+    ) {
       coverEmbossing = getEmbossingCost(coverTotalSheets, variationData)
+    }
+
+    if (
+      typeof variationData.coverDieCutting === 'string' &&
+      variationData.coverDieCutting !== 'None'
+    ) {
+      coverDieCutting = getDieCuttingCost(
+        jobQuantity,
+        variationData,
+        coverFabricationSheets,
+      )
+    }
+
+    if (
+      typeof variationData.textDieCutting === 'string' &&
+      variationData.textDieCutting !== 'None'
+    ) {
+      textDieCutting = getDieCuttingCost(
+        jobQuantity,
+        variationData,
+        fabricationSheets,
+      )
     }
 
     const totalCost =
@@ -267,7 +315,9 @@ function getFabricationCostsDict(
       (coverEmbossing || 0) +
       (vdp || 0) +
       (gumming || 0) +
-      (coverFoiling || 0)
+      (coverFoiling || 0) +
+      (coverDieCutting || 0) +
+      (textDieCutting || 0)
 
     const costPerPiece = totalCost / jobQuantity
 
@@ -298,6 +348,13 @@ function getFabricationCostsDict(
       coverEmbossing: coverEmbossing
         ? Number(coverEmbossing.toFixed(0))
         : undefined,
+      coverCutting: coverDieCutting
+        ? Number(coverDieCutting.toFixed(0))
+        : undefined,
+      textDieCutting: coverDieCutting
+        ? Number(coverDieCutting.toFixed(0))
+        : undefined,
+
       vdp: vdp ? Number(vdp.toFixed(0)) : undefined,
       gumming: gumming ? Number(gumming.toFixed(0)) : undefined,
       totalCost: Number(totalCost.toFixed(0)),
@@ -352,10 +409,35 @@ function getGummingCost(qty: number, variationData: VariationData) {
   const posterWidthInInches = (variationData.openSizeWidth || 0) / 25.4
 
   const totalWidth = posterWidthInInches * qty
+  console.log('totalWidth', totalWidth)
 
   gummingCost = (gummingCharges / 100) * totalWidth
 
   return gummingCost
+}
+
+function getDieCuttingCost(
+  qty: number,
+  variationData: VariationData,
+  fabricationSheets: number,
+) {
+  let dieCuttingCost = 0
+
+  let dieCuttingCharges = dieCuttingTypes.find(
+    (row) => row.label === variationData.coverDieCutting,
+  )?.rate
+  let dieCuttingFrame =
+    dieCuttingTypes.find((row) => row.label === variationData.coverDieCutting)
+      ?.dieCost || 1000
+
+  if (dieCuttingCharges === undefined) {
+    return 0
+  }
+
+  dieCuttingCost =
+    dieCuttingFrame + (dieCuttingCharges / 1000) * fabricationSheets
+
+  return dieCuttingCost
 }
 
 function getCoatingCost(

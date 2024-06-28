@@ -91,6 +91,8 @@ export default function VariationForm(props: {
       vdp: props.variationData.vdp,
       packagingType: props.variationData.packagingType,
       gummingType: props.variationData.gummingType,
+      coverDieCutting: props.variationData.coverDieCutting,
+      textDieCutting: props.variationData.textDieCutting,
       textCoating: props.variationData.textCoating,
       coverCoating: props.variationData.coverCoating,
     },

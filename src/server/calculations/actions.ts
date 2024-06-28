@@ -45,7 +45,6 @@ export default async function saveCalculationData(
     throw new Error('User Unauthenticated')
   }
 
-  console.log('PLEASE', totalCostDataTable)
 
   const transformedData: TransformedData = {}
   formData.forEach((value, key) => {

@@ -316,6 +316,23 @@ export const vdpTypes = [
   { label: 'VDP and Scratch', value: 'vdp_and_scratch', rate: 3 },
 ]
 
+// rates are in rupees per 1000 qty
+export const dieCuttingTypes = [
+  { label: 'None', value: 'none', rate: 0 },
+  {
+    label: 'Simple Die Cutting',
+    value: 'simple_die_cutting',
+    rate: 350,
+    dieCost: 1000,
+  },
+  {
+    label: 'Complex Die Cutting',
+    value: 'complex_die_cutting',
+    rate: 400,
+    dieCost: 2000,
+  },
+]
+
 export const gummingTypes = [
   { label: 'None', value: 'none', rate: 0 },
   {
@@ -364,5 +381,3 @@ export const gummingTypes = [
     rate: 9,
   },
 ]
-
-// { label: 'Gilding', value: 'gilding', rate: 25 },

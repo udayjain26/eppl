@@ -182,10 +182,9 @@ export default function CoverCalculation(props: {
     } else if (watchPlateSize === 'Large') {
       props.form.setValue('coverPlateRate', 500 * plateFactor)
     }
-  }, [watchPlateSize])
+  }, [watchPlateSize, plateFactor])
 
   useEffect(() => {
-    console.log('watchPaperData', watchPaperData)
     const initialPaperName = props.form.getValues('coverPaper')
     const initialSelectedPaper = props.paperData.find(
       (paper) => paper.paperName === initialPaperName,
@@ -193,21 +192,17 @@ export default function CoverCalculation(props: {
 
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-      if (
-        props.form.getValues('coverPaperRate') === '0' ||
-        props.form.getValues('coverPaperRate') === undefined
-      ) {
-        console.log('Setting paper rate')
-        props.form.setValue(
-          'coverPaperRate',
-          initialSelectedPaper.paperDefaultRate,
-        )
-      }
+
       props.form.setValue(
         'coverWorkingLength',
         initialSelectedPaper.paperLength,
       )
       props.form.setValue('coverWorkingWidth', initialSelectedPaper.paperWidth)
+
+      props.form.setValue(
+        'coverPaperRate',
+        initialSelectedPaper.paperDefaultRate,
+      )
     }
   }, [watchPaperData])
 
@@ -252,7 +247,7 @@ export default function CoverCalculation(props: {
     <>
       <div className="flex flex-col gap-x-8 p-4 sm:flex-row">
         <div className="flex w-full max-w-[12rem] flex-col gap-y-2">
-          <h1 className="underline">Cover Specifications</h1>
+          <h1 className="underline">Sheet Specifications</h1>
           <div className="text-sm">
             <ul className="flex flex-col gap-y-2">
               <li className="flex items-center justify-between border-b-2">
@@ -637,9 +632,7 @@ export default function CoverCalculation(props: {
           <div className="flex  flex-col gap-y-1 text-sm">
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">
-                  Cover Pieces/Sheet
-                </span>
+                <span className="text-muted-foreground">Pieces/Sheet</span>
                 <span>{coverCostDataTable?.coverPiecesPerSheet}</span>
               </li>
               <li className="flex items-center justify-between border-b-2">
@@ -688,10 +681,10 @@ export default function CoverCalculation(props: {
               control={props.form.control}
               name="coverPlateRate"
               render={({ field }) => (
-                <FormItem className=" grow">
+                <FormItem className=" grow text-gray-500">
                   <FormLabel>Plate Rate(&#x20B9;)</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input readOnly {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -718,10 +711,10 @@ export default function CoverCalculation(props: {
         </div>
       </div>
       <Table>
-        <TableCaption>Cover Paper, Plates and Printing Data</TableCaption>
+        <TableCaption>Paper, Plates and Printing Data</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Cover Quantity</TableHead>
+            <TableHead>Quantity</TableHead>
             <TableHead>Calculated Sheets</TableHead>
             <TableHead>Wastage Sheets</TableHead>
             <TableHead>Total Sheets</TableHead>
@@ -731,7 +724,7 @@ export default function CoverCalculation(props: {
             <TableHead>Printing Cost</TableHead>
             <TableHead>Lamination Cost</TableHead>
             <TableHead>Total Cost</TableHead>
-            <TableHead>Cost/Cover</TableHead>
+            <TableHead>Cost/Piece</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

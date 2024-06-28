@@ -31,6 +31,8 @@ export type FabricationCostDataDict = {
   vdp?: number
   coverCoating?: number
   textCoating?: number
+  coverDieCutting?: number
+  textDieCutting?: number
   gumming?: number
   totalCost: number
   costPerPiece: number
@@ -99,6 +101,8 @@ export default function FabricationCalculation(props: {
     textCoating: 'Text Coating',
     coverFoiling: 'Cover Foiling',
     coverEmbossing: 'Cover Embossing',
+    coverDieCutting: 'Cover Die Cutting',
+    textDieCutting: 'Text Die Cutting',
     vdp: 'VDP',
     gumming: 'Gumming',
     totalCost: 'Total Cost',
@@ -204,6 +208,24 @@ export default function FabricationCalculation(props: {
                       Cover Embossing
                     </span>
                     <span>{variationData?.coverEmbossing}</span>
+                  </li>
+                )}
+              {variationData?.coverDieCutting !== 'None' &&
+                variationData?.coverDieCutting !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Cover Die Cutting
+                    </span>
+                    <span>{variationData?.coverDieCutting}</span>
+                  </li>
+                )}
+              {variationData?.textDieCutting !== 'None' &&
+                variationData?.textDieCutting !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Text Die Cutting
+                    </span>
+                    <span>{variationData?.textDieCutting}</span>
                   </li>
                 )}
             </ul>

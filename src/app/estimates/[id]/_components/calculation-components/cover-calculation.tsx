@@ -139,13 +139,6 @@ export default function CoverCalculation(props: {
     grippers = Number(props.form.watch('coverGrippers')) * 2
   }
 
-  const effectivePaperLength = selectedPaper?.paperLength
-    ? selectedPaper.paperLength - grippers
-    : 0
-  const effectivePaperWidth = selectedPaper?.paperWidth
-    ? selectedPaper.paperWidth
-    : 0
-
   const wastageFactor = Number(props.form.watch('coverWastageFactor'))
   const plateFactor = Number(props.form.watch('coverPlateRateFactor'))
   const printingFactor = Number(props.form.watch('coverPrintingFactor'))
@@ -167,6 +160,11 @@ export default function CoverCalculation(props: {
   const [debouncedCoverWorkingWidth] = useDebounce(coverWorkingWidth, 1000)
   const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
   const [debouncedPlateSize] = useDebounce(watchPlateSize, 1000)
+
+  const effectivePaperLength = coverWorkingLength
+    ? coverWorkingLength - grippers
+    : 0
+  const effectivePaperWidth = coverWorkingWidth ? coverWorkingWidth : 0
 
   const isPlateSizeSmall =
     watchPlateSize === 'Small' &&
@@ -190,7 +188,7 @@ export default function CoverCalculation(props: {
     } else if (watchPlateSize === 'Large') {
       props.form.setValue('coverPlateRate', 500 * plateFactor)
     }
-  }, [watchPlateSize])
+  }, [watchPlateSize, plateFactor])
 
   useEffect(() => {
     const initialPaperName = props.form.getValues('coverPaper')
@@ -200,26 +198,23 @@ export default function CoverCalculation(props: {
 
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-      if (
-        props.form.getValues('coverPaperRate') === '0' ||
-        props.form.getValues('coverPaperRate') === undefined
-      ) {
-        props.form.setValue(
-          'coverPaperRate',
-          initialSelectedPaper.paperDefaultRate,
-        )
-      }
+
       props.form.setValue(
         'coverWorkingLength',
         initialSelectedPaper.paperLength,
       )
       props.form.setValue('coverWorkingWidth', initialSelectedPaper.paperWidth)
+
+      props.form.setValue(
+        'coverPaperRate',
+        initialSelectedPaper.paperDefaultRate,
+      )
     }
   }, [watchPaperData])
 
   useEffect(() => {
     const calculateCoverSheets = async () => {
-      const fetchCoverCostDataTable = await calculateCoverCost(
+      const fetchCoverCostData = await calculateCoverCost(
         props.variationData,
         selectedPaper,
         effectiveCoverLength,
@@ -234,7 +229,7 @@ export default function CoverCalculation(props: {
         debouncedPrintingRateFactor,
         coverPrintingType,
       )
-      props.setCoverCostDataTable(fetchCoverCostDataTable)
+      props.setCoverCostDataTable(fetchCoverCostData)
     }
     calculateCoverSheets()
   }, [
@@ -694,10 +689,10 @@ export default function CoverCalculation(props: {
               control={props.form.control}
               name="coverPlateRate"
               render={({ field }) => (
-                <FormItem className=" grow">
+                <FormItem className=" grow text-gray-500">
                   <FormLabel>Plate Rate(&#x20B9;)</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input readOnly {...field}></Input>
                   </FormControl>
                 </FormItem>
               )}

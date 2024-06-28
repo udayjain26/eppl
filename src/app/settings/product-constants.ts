@@ -54,6 +54,7 @@ export const productFieldMap: productFieldMapType = {
       'vdp',
       'coverFoiling',
       'coverEmbossing',
+      'coverDieCutting',
     ],
   },
   'Coffee Table Books': {
@@ -81,6 +82,35 @@ export const productFieldMap: productFieldMapType = {
       'vdp',
       'coverFoiling',
       'coverEmbossing',
+      'coverDieCutting',
+    ],
+  },
+  'Hardbound Books': {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'cover',
+      'text',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'coverCalculation',
+      'textCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: [
+      'paperbackBookBinding',
+      'coverUV',
+      'coverCoating',
+      'textCoating',
+      'vdp',
+      'coverFoiling',
+      'coverEmbossing',
+      'coverDieCutting',
     ],
   },
   'Swatch Cards': {
@@ -97,7 +127,7 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: [],
+    fabricationComponents: ['coverDieCutting'],
   },
 
   Catalogs: {
@@ -125,6 +155,7 @@ export const productFieldMap: productFieldMapType = {
       'textCoating',
       'coverFoiling',
       'coverEmbossing',
+      'coverDieCutting',
     ],
   },
   Brochures: {
@@ -152,6 +183,7 @@ export const productFieldMap: productFieldMapType = {
       'textCoating',
       'coverFoiling',
       'coverEmbossing',
+      'coverDieCutting',
     ],
   },
   Magazines: {
@@ -177,6 +209,7 @@ export const productFieldMap: productFieldMapType = {
       'textUV',
       'coverFoiling',
       'coverEmbossing',
+      'coverDieCutting',
     ],
   },
   Posters: {
@@ -193,7 +226,7 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['gumming', 'coverUV'],
+    fabricationComponents: ['gumming', 'coverUV', 'coverDieCutting'],
   },
   Leaflets: {
     specificationComponents: [
@@ -209,7 +242,7 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['coverUV'],
+    fabricationComponents: ['coverUV', 'coverDieCutting'],
   },
   'Both Side Flap Monocartons': {
     specificationComponents: [
@@ -225,6 +258,11 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['coverUV', 'coverFoiling', 'coverEmbossing'],
+    fabricationComponents: [
+      'coverUV',
+      'coverFoiling',
+      'coverEmbossing',
+      'coverDieCutting',
+    ],
   },
 }

@@ -78,7 +78,9 @@ export default function TextCalculation(props: {
   paperData: PaperData[]
   form: UseFormReturn
   textCostDataTable: TextCostData | undefined
-  setTextCostDataTable: any
+  setTextCostDataTable: React.Dispatch<
+    React.SetStateAction<TextCostData | undefined>
+  >
 }) {
   const [lengthInInches, setLengthInInches] = useState('')
   const [widthInInches, setWidthInInches] = useState('')
@@ -120,13 +122,6 @@ export default function TextCalculation(props: {
   const bleed = Number(props.form.watch('textBleed'))
   const gutters = Number(props.form.watch('textGutters'))
 
-  const effectivePaperLength = selectedPaper?.paperLength
-    ? selectedPaper.paperLength - grippers
-    : 0
-  const effectivePaperWidth = selectedPaper?.paperWidth
-    ? selectedPaper.paperWidth
-    : 0
-
   const effectiveTextLength = props.variationData.openSizeLength
     ? props.variationData.openSizeLength + bleed * 2
     : 0
@@ -153,6 +148,11 @@ export default function TextCalculation(props: {
   const [debouncedPrintingRateFactor] = useDebounce(printingRateFactor, 1000)
   const [debouncedPlateSize] = useDebounce(watchPlateSize, 1000)
 
+  const effectivePaperLength = textWorkingLength
+    ? textWorkingLength - grippers
+    : 0
+  const effectivePaperWidth = textWorkingWidth ? textWorkingWidth : 0
+
   const isPlateSizeSmall =
     watchPlateSize === 'Small' &&
     (textWorkingLength > 508 || textWorkingWidth > 762)
@@ -177,19 +177,14 @@ export default function TextCalculation(props: {
 
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-      if (
-        props.form.getValues('textPaperRate') === '0' ||
-        props.form.getValues('textPaperRate') === undefined
-      ) {
-        console.log('Setting paper rate')
-        props.form.setValue(
-          'textPaperRate',
-          initialSelectedPaper.paperDefaultRate,
-        )
-      }
 
       props.form.setValue('textWorkingLength', initialSelectedPaper.paperLength)
       props.form.setValue('textWorkingWidth', initialSelectedPaper.paperWidth)
+
+      props.form.setValue(
+        'textPaperRate',
+        initialSelectedPaper.paperDefaultRate,
+      )
     }
   }, [watchPaperData])
 
@@ -409,7 +404,6 @@ export default function TextCalculation(props: {
                                     paper.paperName,
                                   )
                                   field.onChange(paper.paperName)
-
                                   props.form.trigger('textPaper') // Trigger form validation and state update
 
                                   props.form.setValue(

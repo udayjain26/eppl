@@ -90,9 +90,7 @@ export default function CalculationFields(props: {
 
   const { isDirty } = useFormStateReactHookForm(form)
 
-  useEffect(() => {
-    console.log('Dirty Fields:', dirtyFields)
-  }, [dirtyFields])
+
 
   const initialState: CalculationFormState = {
     message: null,
