@@ -348,7 +348,7 @@ function getFabricationCostsDict(
       coverEmbossing: coverEmbossing
         ? Number(coverEmbossing.toFixed(0))
         : undefined,
-      coverCutting: coverDieCutting
+      coverDieCutting: coverDieCutting
         ? Number(coverDieCutting.toFixed(0))
         : undefined,
       textDieCutting: coverDieCutting

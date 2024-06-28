@@ -55,6 +55,7 @@ export const productFieldMap: productFieldMapType = {
       'coverFoiling',
       'coverEmbossing',
       'coverDieCutting',
+      'textDieCutting',
     ],
   },
   'Coffee Table Books': {
@@ -83,6 +84,7 @@ export const productFieldMap: productFieldMapType = {
       'coverFoiling',
       'coverEmbossing',
       'coverDieCutting',
+      'textDieCutting',
     ],
   },
   'Hardbound Books': {
@@ -111,6 +113,7 @@ export const productFieldMap: productFieldMapType = {
       'coverFoiling',
       'coverEmbossing',
       'coverDieCutting',
+      'textDieCutting',
     ],
   },
   'Swatch Cards': {
@@ -156,6 +159,7 @@ export const productFieldMap: productFieldMapType = {
       'coverFoiling',
       'coverEmbossing',
       'coverDieCutting',
+      'textDieCutting',
     ],
   },
   Brochures: {
@@ -184,6 +188,7 @@ export const productFieldMap: productFieldMapType = {
       'coverFoiling',
       'coverEmbossing',
       'coverDieCutting',
+      'textDieCutting',
     ],
   },
   Magazines: {

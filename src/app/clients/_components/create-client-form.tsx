@@ -117,6 +117,15 @@ export function CreateClientForm({
   //   setAccordionValue(value)
   // }
 
+  const [openState, setOpenState] = useState(false)
+  const closeStatePopover = () => {
+    setOpenState(false)
+  }
+
+  const [openIndustry, setOpenIndustry] = useState(false)
+  const closeIndustryPopover = () => {
+    setOpenIndustry(false)
+  }
   const form = useForm<z.infer<typeof ClientFormSchema>>({
     resolver: zodResolver(ClientFormSchema),
   })
@@ -352,7 +361,11 @@ export function CreateClientForm({
                   render={({ field }) => (
                     <FormItem className="flex flex-col space-y-1">
                       <FormLabel>State</FormLabel>
-                      <Popover modal={true}>
+                      <Popover
+                        modal={true}
+                        open={openState}
+                        onOpenChange={setOpenState}
+                      >
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -409,6 +422,7 @@ export function CreateClientForm({
                                           'clientAddressState',
                                           state.value,
                                         )
+                                        closeStatePopover()
                                       }}
                                     >
                                       {' '}
@@ -505,7 +519,11 @@ export function CreateClientForm({
                   render={({ field }) => (
                     <FormItem className="flex flex-col space-y-1">
                       <FormLabel>Industry</FormLabel>
-                      <Popover modal={true}>
+                      <Popover
+                        modal={true}
+                        open={openIndustry}
+                        onOpenChange={setOpenIndustry}
+                      >
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -564,6 +582,7 @@ export function CreateClientForm({
                                           'clientIndustry',
                                           industry.value,
                                         )
+                                        closeIndustryPopover()
                                       }}
                                     >
                                       {' '}

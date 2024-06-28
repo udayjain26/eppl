@@ -14,6 +14,7 @@ import fs from 'fs'
 import path from 'path'
 import { db } from '@/server/db'
 import { max } from 'drizzle-orm'
+import { init } from 'next/dist/compiled/webpack/webpack'
 
 const PAGE_WIDTH = 1240
 const PAGE_HEIGHT = 1754
@@ -56,6 +57,9 @@ export async function GET(req: NextRequest) {
     const courierFont = await pdfDoc.embedFont(StandardFonts.Courier)
     const timesFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+    const helveticaBoldFont = await pdfDoc.embedFont(
+      StandardFonts.HelveticaBold,
+    )
 
     pdfDoc.setTitle(
       quotationData.estimateNumber.toString().padStart(6, '0') +
@@ -105,6 +109,7 @@ export async function GET(req: NextRequest) {
       quotationData,
       helveticaFont,
       timesFont,
+      helveticaBoldFont,
     )
 
     const pdfBytes = await pdfDoc.save()
@@ -148,7 +153,7 @@ function drawDatesData(
   )
   usedHeight += TEXT_SIZE
   currentPage.drawText(
-    `Valid Until: ${new Date(new Date().setDate(new Date().getDate() + 30)).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+    `Valid Until: ${new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}`,
     {
       x: PAGE_WIDTH - 300,
       y: PAGE_HEIGHT - 175 - usedHeight,
@@ -227,16 +232,15 @@ function drawEstimateDetails(
   currentPage.drawText(`Title: ${quotationData.estimateTitle}`, {
     x: 40,
     y: PAGE_HEIGHT - usedHeight,
-    size: TEXT_SIZE,
+    size: TEXT_SIZE - 5,
     maxWidth: PAGE_WIDTH / 2 - 10,
   })
 
-  usedHeight = usedHeight + TEXT_SIZE + 10
-
+  usedHeight = usedHeight + TEXT_SIZE
   currentPage.drawText(`Description: ${quotationData.estimateDescription}`, {
     x: 40,
     y: PAGE_HEIGHT - usedHeight,
-    size: TEXT_SIZE,
+    size: TEXT_SIZE - 5,
     maxWidth: PAGE_WIDTH / 2 - 10,
   })
 
@@ -366,8 +370,12 @@ function drawVariationsTable(
   quotationData: any,
   helveticaFont: any,
   timesFont: any,
+  helveticaBoldFont: any,
 ) {
+  const initialHeight = usedHeight
+
   quotationData.variations.forEach((variation: any, index: number) => {
+    let insideInitialHeight = usedHeight
     currentPage.drawText(`${variation.variationTitle}`, {
       x: 40,
       y: PAGE_HEIGHT - usedHeight,
@@ -394,6 +402,7 @@ function drawVariationsTable(
       y: PAGE_HEIGHT - usedHeight,
       size: TEXT_SIZE - 5,
       maxWidth: PAGE_WIDTH - 60,
+      font: helveticaBoldFont,
     })
 
     usedHeight += TEXT_SIZE
@@ -447,6 +456,7 @@ function drawVariationsTable(
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 5,
         maxWidth: PAGE_WIDTH - 60,
+        font: helveticaBoldFont,
       })
 
       usedHeight += TEXT_SIZE + 5
@@ -456,6 +466,7 @@ function drawVariationsTable(
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 5,
         maxWidth: PAGE_WIDTH - 60,
+        font: helveticaBoldFont,
       })
 
       usedHeight += TEXT_SIZE + 5
@@ -496,7 +507,6 @@ function drawVariationsTable(
     })
     usedHeight += TEXT_SIZE
 
-
     let selectedPaper = variation.variationCalculations[0].coverPaper
     let result = selectedPaper
       .replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '')
@@ -525,6 +535,7 @@ function drawVariationsTable(
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 5,
         maxWidth: PAGE_WIDTH - 60,
+        font: helveticaBoldFont,
       })
 
       usedHeight += TEXT_SIZE + 5
@@ -581,93 +592,276 @@ function drawVariationsTable(
         maxWidth: PAGE_WIDTH - 80,
       })
       usedHeight += TEXT_SIZE + 5
-
-      currentPage.drawText(`Fabrication Details`, {
-        x: 60,
-        y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
-        maxWidth: PAGE_WIDTH - 60,
-      })
-
-      usedHeight += TEXT_SIZE + 5
-
-      if (
-        variation.binding !== 'None' &&
-        variation.binding !== undefined &&
-        variation.binding !== null
-      ) {
-        currentPage.drawText(`Binding: ${variation.binding}`, {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        })
-        usedHeight += TEXT_SIZE
-      }
-      if (
-        variation.coverUV !== 'None' &&
-        variation.coverUV !== undefined &&
-        variation.coverUV !== null
-      ) {
-        currentPage.drawText(`Cover UV: ${variation.coverUV}`, {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        })
-        usedHeight += TEXT_SIZE
-      }
-      if (
-        variation.textUV !== 'None' &&
-        variation.textUV !== undefined &&
-        variation.textUV !== null
-      ) {
-        currentPage.drawText(`Text UV: ${variation.textUV}`, {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        })
-        usedHeight += TEXT_SIZE
-      }
-      if (
-        variation.coverEmbossing !== 'None' &&
-        variation.coverEmbossing !== undefined &&
-        variation.coverEmbossing !== null
-      ) {
-        currentPage.drawText(`Cover Embossing: ${variation.coverEmbossing}`, {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        })
-        usedHeight += TEXT_SIZE
-      }
-
-      currentPage.drawText(`Packaging Details`, {
-        x: 60,
-        y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
-        maxWidth: PAGE_WIDTH - 60,
-      })
-
-      usedHeight += TEXT_SIZE + 5
-
-      if (
-        variation.packagingType !== 'None' &&
-        variation.packagingType !== undefined &&
-        variation.packagingType !== null
-      ) {
-        currentPage.drawText(`Packaging: ${variation.packagingType}`, {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        })
-        usedHeight += TEXT_SIZE
-      }
     }
+
+    currentPage.drawText(`Fabrication Details`, {
+      x: 60,
+      y: PAGE_HEIGHT - usedHeight,
+      size: TEXT_SIZE - 5,
+      maxWidth: PAGE_WIDTH - 60,
+      font: helveticaBoldFont,
+    })
+
+    usedHeight += TEXT_SIZE + 5
+
+    if (
+      variation.binding !== 'None' &&
+      variation.binding !== undefined &&
+      variation.binding !== null
+    ) {
+      currentPage.drawText(`Binding: ${variation.binding}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.coverUV !== 'None' &&
+      variation.coverUV !== undefined &&
+      variation.coverUV !== null
+    ) {
+      currentPage.drawText(`Cover UV: ${variation.coverUV}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.textUV !== 'None' &&
+      variation.textUV !== undefined &&
+      variation.textUV !== null
+    ) {
+      currentPage.drawText(`Text UV: ${variation.textUV}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.coverCoating !== 'None' &&
+      variation.coverCoating !== undefined &&
+      variation.coverCoating !== null
+    ) {
+      currentPage.drawText(`Cover Coating: ${variation.coverCoating}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.textCoating !== 'None' &&
+      variation.textCoating !== undefined &&
+      variation.textCoating !== null
+    ) {
+      currentPage.drawText(`Text Coating: ${variation.textCoating}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.coverEmbossing !== 'None' &&
+      variation.coverEmbossing !== undefined &&
+      variation.coverEmbossing !== null
+    ) {
+      currentPage.drawText(`Cover Embossing: ${variation.coverEmbossing}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.coverFoiling !== 'None' &&
+      variation.coverFoiling !== undefined &&
+      variation.coverFoiling !== null
+    ) {
+      currentPage.drawText(`Cover Foiling: ${variation.coverFoiling}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+
+    if (
+      variation.vdp !== 'None' &&
+      variation.vdp !== undefined &&
+      variation.vdp !== null
+    ) {
+      currentPage.drawText(`VDP: ${variation.vdp}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.coverDieCutting !== 'None' &&
+      variation.coverDieCutting !== undefined &&
+      variation.coverDieCutting !== null
+    ) {
+      currentPage.drawText(
+        `Die Cutting(Outside): ${variation.coverDieCutting}`,
+        {
+          x: 80,
+          y: PAGE_HEIGHT - usedHeight,
+          size: TEXT_SIZE - 5,
+          maxWidth: PAGE_WIDTH - 80,
+        },
+      )
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.textDieCutting !== 'None' &&
+      variation.textDieCutting !== undefined &&
+      variation.textDieCutting !== null
+    ) {
+      currentPage.drawText(`Die Cutting(Inside): ${variation.textDieCutting}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.gumming !== 'None' &&
+      variation.gumming !== undefined &&
+      variation.gumming !== null
+    ) {
+      currentPage.drawText(`Gumming: ${variation.gumming}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+
+    currentPage.drawText(`Packaging Details`, {
+      x: 60,
+      y: PAGE_HEIGHT - usedHeight,
+      size: TEXT_SIZE - 5,
+      maxWidth: PAGE_WIDTH - 60,
+      font: helveticaBoldFont,
+    })
+
+    usedHeight += TEXT_SIZE + 5
+
+    if (
+      variation.packagingType !== 'None' &&
+      variation.packagingType !== undefined &&
+      variation.packagingType !== null
+    ) {
+      currentPage.drawText(`Packaging: ${variation.packagingType}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    // Example usage in the GET function
+    let usedHeightFromTable = drawRatesTable(
+      currentPage,
+      insideInitialHeight,
+      variation,
+      helveticaFont,
+      helveticaBoldFont,
+    )
+
+    usedHeight += 30
   })
+}
+
+function drawRatesTable(
+  currentPage: PDFPage,
+  usedHeight: number,
+  variation: any,
+  font: any,
+  boldFont: any,
+) {
+  const initialHeight = usedHeight + 80
+  usedHeight = usedHeight + 50
+
+  currentPage.drawText(`Rates Table`, {
+    x: PAGE_WIDTH / 2 + 200,
+    y: PAGE_HEIGHT - usedHeight,
+    size: TEXT_SIZE - 5,
+  })
+
+  usedHeight += TEXT_SIZE + 5
+
+  // Define table headers
+  const headers = ['Quantity', 'Rate']
+  const headerXPositions = [200, 305] // Adjust these positions as needed
+
+  // Draw table headers
+  headers.forEach((header, index) => {
+    currentPage.drawText(header, {
+      x: PAGE_WIDTH / 2 + headerXPositions[index],
+      y: PAGE_HEIGHT - usedHeight,
+      size: TEXT_SIZE - 5,
+    })
+  })
+
+  usedHeight += TEXT_SIZE + 10
+
+  let indexMax = 0
+
+  // // Draw table rows
+  variation.variationQtysRates.forEach((row: any, index: number) => {
+    indexMax = index
+    const rowYPosition = PAGE_HEIGHT - usedHeight - index * (TEXT_SIZE + 5)
+
+    currentPage.drawText(row.quantity.toString(), {
+      x: PAGE_WIDTH / 2 + headerXPositions[0],
+      y: rowYPosition,
+      size: TEXT_SIZE - 5,
+      font: font,
+    })
+
+    currentPage.drawText(row.rate.toString(), {
+      x: PAGE_WIDTH / 2 + headerXPositions[1],
+      y: rowYPosition,
+      size: TEXT_SIZE - 5,
+      font: font,
+    })
+
+    usedHeight += TEXT_SIZE - 10
+  })
+
+  usedHeight += TEXT_SIZE * indexMax + 20
+
+  currentPage.drawLine({
+    start: { x: PAGE_WIDTH / 2 + 300, y: PAGE_HEIGHT - initialHeight + 20 },
+    end: { x: PAGE_WIDTH / 2 + 300, y: PAGE_HEIGHT - usedHeight },
+    thickness: 1,
+    color: rgb(0, 0, 0),
+  })
+
+  currentPage.drawLine({
+    start: { x: PAGE_WIDTH / 2 + 200, y: PAGE_HEIGHT - initialHeight - 5 },
+    end: { x: PAGE_WIDTH / 2 + 400, y: PAGE_HEIGHT - initialHeight - 5 },
+    thickness: 1,
+    color: rgb(0, 0, 0),
+  })
+
+  return usedHeight
 }
 
 async function getAllQuotationData(uuid: string) {
