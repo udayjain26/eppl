@@ -66,8 +66,6 @@ export function EstimateDataTable<TData, TValue>({
       const savedSelectedValues = localStorage.getItem('selectedValues')
 
       if (savedSorting) console.log('saved result', JSON.parse(savedSorting))
-
-      if (true) setSorting([{ id: 'estimateNumber', desc: true }])
       if (savedFilters) setColumnFilters(JSON.parse(savedFilters))
       if (savedVisibility) setColumnVisibility(JSON.parse(savedVisibility))
       if (savedSearchColumn) setSearchColumn(savedSearchColumn)

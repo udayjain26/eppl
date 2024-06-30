@@ -287,6 +287,7 @@ function getFabricationCostsDict(
         jobQuantity,
         variationData,
         coverFabricationSheets,
+        'Cover',
       )
     }
 
@@ -298,6 +299,7 @@ function getFabricationCostsDict(
         jobQuantity,
         variationData,
         fabricationSheets,
+        'Text',
       )
     }
 
@@ -351,8 +353,8 @@ function getFabricationCostsDict(
       coverDieCutting: coverDieCutting
         ? Number(coverDieCutting.toFixed(0))
         : undefined,
-      textDieCutting: coverDieCutting
-        ? Number(coverDieCutting.toFixed(0))
+      textDieCutting: textDieCutting
+        ? Number(textDieCutting.toFixed(0))
         : undefined,
 
       vdp: vdp ? Number(vdp.toFixed(0)) : undefined,
@@ -409,7 +411,6 @@ function getGummingCost(qty: number, variationData: VariationData) {
   const posterWidthInInches = (variationData.openSizeWidth || 0) / 25.4
 
   const totalWidth = posterWidthInInches * qty
-  console.log('totalWidth', totalWidth)
 
   gummingCost = (gummingCharges / 100) * totalWidth
 
@@ -420,22 +421,44 @@ function getDieCuttingCost(
   qty: number,
   variationData: VariationData,
   fabricationSheets: number,
+  dieCuttingType: string,
 ) {
   let dieCuttingCost = 0
+  let dieCuttingCharges = 0
+  let dieCuttingFrame = 0
 
-  let dieCuttingCharges = dieCuttingTypes.find(
-    (row) => row.label === variationData.coverDieCutting,
-  )?.rate
-  let dieCuttingFrame =
-    dieCuttingTypes.find((row) => row.label === variationData.coverDieCutting)
-      ?.dieCost || 1000
+  if (dieCuttingType === 'Cover') {
+    dieCuttingCharges =
+      dieCuttingTypes.find((row) => row.label === variationData.coverDieCutting)
+        ?.rate || 350
+    dieCuttingFrame =
+      dieCuttingTypes.find((row) => row.label === variationData.coverDieCutting)
+        ?.dieCost || 1000
+  } else if (dieCuttingType === 'Text') {
+    dieCuttingCharges =
+      dieCuttingTypes.find((row) => row.label === variationData.textDieCutting)
+        ?.rate || 350
+    dieCuttingFrame =
+      dieCuttingTypes.find((row) => row.label === variationData.textDieCutting)
+        ?.dieCost || 1000
+  } else {
+    dieCuttingFrame = 0
+    dieCuttingCharges = 0
+  }
 
-  if (dieCuttingCharges === undefined) {
+  if (dieCuttingCharges === undefined || dieCuttingFrame === undefined) {
     return 0
   }
 
+  console.log('dieCuttingCharges', dieCuttingCharges)
+  console.log('dieCuttingFrame', dieCuttingFrame)
+  console.log('fabricationSheets', fabricationSheets)
+
+
   dieCuttingCost =
     dieCuttingFrame + (dieCuttingCharges / 1000) * fabricationSheets
+
+    
 
   return dieCuttingCost
 }
