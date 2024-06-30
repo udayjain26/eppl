@@ -739,11 +739,11 @@ function drawVariationsTable(
       usedHeight += TEXT_SIZE
     }
     if (
-      variation.gumming !== 'None' &&
-      variation.gumming !== undefined &&
-      variation.gumming !== null
+      variation.gummingType !== 'None' &&
+      variation.gummingType !== undefined &&
+      variation.gummingType !== null
     ) {
-      currentPage.drawText(`Gumming: ${variation.gumming}`, {
+      currentPage.drawText(`Gumming: ${variation.gummingType}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 5,

@@ -561,3 +561,8 @@ function calculateLaminationCost(
     return 0
   }
 }
+
+
+function canBeWorkAndTurn(){
+  
+}

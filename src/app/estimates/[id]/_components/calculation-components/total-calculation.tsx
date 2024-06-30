@@ -32,6 +32,7 @@ export type TotalCostDetails = {
   profitPerPiece: number
   totalProfit: number
   sellingPrice: number
+  totalPrice: number
 }[]
 
 export default function TotalCalculation(props: {
@@ -97,8 +98,7 @@ export default function TotalCalculation(props: {
       const totalProfit = profitPerPiece * item.jobQuantity
       const totalDiscount = discountPerPiece * item.jobQuantity
       const sellingPrice = costPerPiece + profitPerPiece - discountPerPiece
-
-
+      const totalPrice = sellingPrice * item.jobQuantity
 
       const platePaperRatio =
         (item.paperCost +
@@ -117,6 +117,7 @@ export default function TotalCalculation(props: {
         profitPerPiece: parseFloat(profitPerPiece.toFixed(2)),
         totalProfit: parseFloat(totalProfit.toFixed(2)),
         sellingPrice: parseFloat(sellingPrice.toFixed(2)),
+        totalPrice: parseFloat(totalPrice.toFixed(2)),
       })
     })
 
@@ -177,6 +178,7 @@ export default function TotalCalculation(props: {
                 <TableHead>Profit/Piece</TableHead>
                 <TableHead>Total Profit</TableHead>
                 <TableHead>Selling Price</TableHead>
+                <TableHead>Total Price</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -189,6 +191,7 @@ export default function TotalCalculation(props: {
                   <TableCell>{item.profitPerPiece}</TableCell>
                   <TableCell>{item.totalProfit}</TableCell>
                   <TableCell>{item.sellingPrice}</TableCell>
+                  <TableCell>{item.totalPrice}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

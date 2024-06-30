@@ -1,7 +1,5 @@
 'use client'
 
-import * as React from 'react'
-
 import {
   ColumnDef,
   flexRender,
@@ -36,6 +34,7 @@ import { Button } from '@/components/ui/button'
 import { CreateEstimateSheet } from './create-estimate-sheet'
 import { ChevronDown } from 'lucide-react'
 import { estimateStageEnum } from '@/server/db/schema'
+import { useEffect, useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -46,34 +45,72 @@ export function EstimateDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [searchColumn, setSearchColumn] =
-    React.useState<string>('estimateNumber')
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [searchColumn, setSearchColumn] = useState<string>('estimateTitle')
+  const [selectedValues, setSelectedValues] = useState<string[]>([
+    'Empty',
+    'Drafting',
+    'Needs Rates',
+    'Estimate Approved',
+    'Client Decision',
+  ])
 
-  const [selectedValues, setSelectedValues] = React.useState<string[]>([])
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSorting = localStorage.getItem('sorting')
+      const savedFilters = localStorage.getItem('columnFilters')
+      const savedVisibility = localStorage.getItem('columnVisibility')
+      const savedSearchColumn = localStorage.getItem('searchColumn')
+      const savedSelectedValues = localStorage.getItem('selectedValues')
 
-  // Restore state from localStorage when the component mounts
-  React.useEffect(() => {
-    const storedFilters = localStorage.getItem('tableFilters')
-    if (storedFilters) {
-      setColumnFilters(JSON.parse(storedFilters))
+      if (savedSorting) console.log('saved result', JSON.parse(savedSorting))
+
+      if (true) setSorting([{ id: 'estimateNumber', desc: true }])
+      if (savedFilters) setColumnFilters(JSON.parse(savedFilters))
+      if (savedVisibility) setColumnVisibility(JSON.parse(savedVisibility))
+      if (savedSearchColumn) setSearchColumn(savedSearchColumn)
+      if (savedSelectedValues)
+        setSelectedValues(JSON.parse(savedSelectedValues))
     }
   }, [])
 
-  // Update localStorage whenever columnFilters change
-  React.useEffect(() => {
-    localStorage.setItem('tableFilters', JSON.stringify(columnFilters))
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sorting', JSON.stringify(sorting))
+      // console.log('sorting', sorting)
+      // console.log('localStorage', localStorage.getItem('sorting'))
+    }
+  }, [sorting])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('columnFilters', JSON.stringify(columnFilters))
+    }
   }, [columnFilters])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility))
+    }
+  }, [columnVisibility])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('searchColumn', searchColumn)
+    }
+  }, [searchColumn])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedValues', JSON.stringify(selectedValues))
+    }
+  }, [selectedValues])
 
   const table = useReactTable({
     data,
     columns,
-
     enableSortingRemoval: true,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -82,13 +119,13 @@ export function EstimateDataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     // autoResetAll: false,
-
     state: {
       sorting,
       columnFilters,
       columnVisibility,
     },
   })
+
   const handleCheckboxChange = (value: string, checked: boolean) => {
     setSelectedValues((prev) => {
       const updatedValues = checked
@@ -98,7 +135,7 @@ export function EstimateDataTable<TData, TValue>({
     })
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     table.getColumn('estimateStage')?.setFilterValue(selectedValues)
   }, [selectedValues])
 
@@ -137,7 +174,6 @@ export function EstimateDataTable<TData, TValue>({
                     key={column.id}
                     onSelect={() => {
                       table.getColumn(searchColumn)?.setFilterValue('')
-
                       setSearchColumn(column.id)
                     }}
                   >
@@ -159,9 +195,10 @@ export function EstimateDataTable<TData, TValue>({
                 <DropdownMenuCheckboxItem
                   key={value}
                   checked={selectedValues.includes(value)}
-                  onCheckedChange={(checked) =>
-                    handleCheckboxChange(value, checked)
-                  }
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleCheckboxChange(value, !selectedValues.includes(value))
+                  }}
                 >
                   {value}
                 </DropdownMenuCheckboxItem>
@@ -195,9 +232,10 @@ export function EstimateDataTable<TData, TValue>({
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+                    onClick={(e) => {
+                      e.preventDefault()
+                      column.toggleVisibility()
+                    }}
                   >
                     {column.columnDef.meta!.columnName}
                   </DropdownMenuCheckboxItem>

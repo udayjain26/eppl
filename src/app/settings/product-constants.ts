@@ -29,7 +29,7 @@ export const productFieldMap: productFieldMapType = {
       'fabricationCalculation',
       'packagingCalculation',
     ],
-    fabricationComponents: ['paperbackBookBinding', 'coverUV', 'textUV', 'vdp'],
+    fabricationComponents: ['paperbackBookBinding', 'coverUV', 'textUV', 'coverCoating', 'textCoating', 'coverFoiling', 'coverEmbossing', 'coverDieCutting', 'textDieCutting'],
   },
   'Paperback Books': {
     specificationComponents: [
@@ -56,6 +56,7 @@ export const productFieldMap: productFieldMapType = {
       'coverEmbossing',
       'coverDieCutting',
       'textDieCutting',
+      
     ],
   },
   'Coffee Table Books': {

@@ -421,7 +421,7 @@ export default function CoverCalculation(props: {
             name="coverPaper"
             render={({ field }) => (
               <FormItem
-                className="flex 
+                className="flex
            flex-col gap-y-1"
               >
                 <FormLabel>Select Paper</FormLabel>
