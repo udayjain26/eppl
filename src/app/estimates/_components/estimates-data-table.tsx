@@ -35,6 +35,7 @@ import { CreateEstimateSheet } from './create-estimate-sheet'
 import { ChevronDown } from 'lucide-react'
 import { estimateStageEnum } from '@/server/db/schema'
 import { useEffect, useState } from 'react'
+import { set } from 'date-fns'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -65,7 +66,7 @@ export function EstimateDataTable<TData, TValue>({
       const savedSearchColumn = localStorage.getItem('searchColumn')
       const savedSelectedValues = localStorage.getItem('selectedValues')
 
-      if (savedSorting) console.log('saved result', JSON.parse(savedSorting))
+      if (savedSorting) setSorting(JSON.parse(savedSorting))
       if (savedFilters) setColumnFilters(JSON.parse(savedFilters))
       if (savedVisibility) setColumnVisibility(JSON.parse(savedVisibility))
       if (savedSearchColumn) setSearchColumn(savedSearchColumn)
@@ -77,8 +78,6 @@ export function EstimateDataTable<TData, TValue>({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('sorting', JSON.stringify(sorting))
-      // console.log('sorting', sorting)
-      // console.log('localStorage', localStorage.getItem('sorting'))
     }
   }, [sorting])
 
