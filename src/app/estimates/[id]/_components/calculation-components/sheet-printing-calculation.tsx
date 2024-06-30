@@ -189,20 +189,8 @@ export default function CoverCalculation(props: {
     const initialSelectedPaper = props.paperData.find(
       (paper) => paper.paperName === initialPaperName,
     )
-
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-
-      props.form.setValue(
-        'coverWorkingLength',
-        initialSelectedPaper.paperLength,
-      )
-      props.form.setValue('coverWorkingWidth', initialSelectedPaper.paperWidth)
-
-      props.form.setValue(
-        'coverPaperRate',
-        initialSelectedPaper.paperDefaultRate,
-      )
     }
   }, [watchPaperData])
 
@@ -476,6 +464,11 @@ export default function CoverCalculation(props: {
                                   props.form.setValue(
                                     'coverWorkingWidth',
                                     paper.paperWidth,
+                                  )
+
+                                  props.form.setValue(
+                                    'coverPaperRate',
+                                    paper.paperDefaultRate,
                                   )
                                   setSelectedPaper(paper)
                                   setOpenPaper(false)

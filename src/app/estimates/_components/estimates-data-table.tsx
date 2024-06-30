@@ -49,14 +49,8 @@ export function EstimateDataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [searchColumn, setSearchColumn] = useState<string>('estimateTitle')
-  const [selectedValues, setSelectedValues] = useState<string[]>([
-    'Empty',
-    'Drafting',
-    'Needs Rates',
-    'Estimate Approved',
-    'Client Decision',
-  ])
+  const [searchColumn, setSearchColumn] = useState<string>('')
+  const [selectedValues, setSelectedValues] = useState<string[]>([])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -77,31 +71,38 @@ export function EstimateDataTable<TData, TValue>({
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('sorting', JSON.stringify(sorting))
+      if (sorting.length !== 0)
+        localStorage.setItem('sorting', JSON.stringify(sorting))
     }
   }, [sorting])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('columnFilters', JSON.stringify(columnFilters))
+      if (Object.keys(columnFilters).length !== 0)
+        localStorage.setItem('columnFilters', JSON.stringify(columnFilters))
     }
   }, [columnFilters])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility))
+      if (Object.keys(columnVisibility).length !== 0)
+        localStorage.setItem(
+          'columnVisibility',
+          JSON.stringify(columnVisibility),
+        )
     }
   }, [columnVisibility])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('searchColumn', searchColumn)
+      if (searchColumn) localStorage.setItem('searchColumn', searchColumn)
     }
   }, [searchColumn])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('selectedValues', JSON.stringify(selectedValues))
+      if (selectedValues.length !== 0)
+        localStorage.setItem('selectedValues', JSON.stringify(selectedValues))
     }
   }, [selectedValues])
 
@@ -143,7 +144,9 @@ export function EstimateDataTable<TData, TValue>({
           <Input
             placeholder="Search..."
             value={
-              (table.getColumn(searchColumn)?.getFilterValue() as string) ?? ''
+              (table
+                .getColumn(searchColumn ? searchColumn : 'estimateTitle')
+                ?.getFilterValue() as string) ?? ''
             }
             onChange={(event) => {
               table.getColumn(searchColumn)?.setFilterValue(event.target.value)
@@ -154,7 +157,10 @@ export function EstimateDataTable<TData, TValue>({
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'}>
                 Searching by:{' '}
-                {table.getColumn(searchColumn)?.columnDef.meta?.columnName}
+                {
+                  table.getColumn(searchColumn ? searchColumn : 'estimateTitle')
+                    ?.columnDef.meta?.columnName
+                }
                 <span>
                   <ChevronDown
                     className=""

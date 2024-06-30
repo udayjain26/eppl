@@ -450,15 +450,8 @@ function getDieCuttingCost(
     return 0
   }
 
-  console.log('dieCuttingCharges', dieCuttingCharges)
-  console.log('dieCuttingFrame', dieCuttingFrame)
-  console.log('fabricationSheets', fabricationSheets)
-
-
   dieCuttingCost =
     dieCuttingFrame + (dieCuttingCharges / 1000) * fabricationSheets
-
-    
 
   return dieCuttingCost
 }

@@ -177,14 +177,6 @@ export default function TextCalculation(props: {
 
     if (initialSelectedPaper) {
       setSelectedPaper(initialSelectedPaper)
-
-      props.form.setValue('textWorkingLength', initialSelectedPaper.paperLength)
-      props.form.setValue('textWorkingWidth', initialSelectedPaper.paperWidth)
-
-      props.form.setValue(
-        'textPaperRate',
-        initialSelectedPaper.paperDefaultRate,
-      )
     }
   }, [watchPaperData])
 
@@ -414,6 +406,12 @@ export default function TextCalculation(props: {
                                     'textWorkingWidth',
                                     paper.paperWidth,
                                   )
+
+                                  props.form.setValue(
+                                    'textPaperRate',
+                                    paper.paperDefaultRate,
+                                  )
+
                                   setSelectedPaper(paper)
                                   setOpenPaper(false)
                                 }}
