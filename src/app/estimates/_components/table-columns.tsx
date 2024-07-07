@@ -107,11 +107,10 @@ export const estimatesColumns: ColumnDef<EstimateTableRow>[] = [
     header: ({ column }) => columnHeader(column, 'Contact'),
     meta: { columnName: 'Contact' },
     cell: ({ row }) => {
-      const fullName: string =
-        row.original.contact.contactFirstName +
-        ' ' +
-        row.original.contact.contactLastName
+      let firstName = row.original.contact.contactFirstName ?? ''
+      let lastName = row.original.contact.contactLastName ?? ''
 
+      const fullName: string = firstName + ' ' + lastName
       return (
         <Popover>
           <PopoverTrigger asChild>

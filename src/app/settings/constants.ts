@@ -331,6 +331,12 @@ export const dieCuttingTypes = [
     rate: 400,
     dieCost: 2000,
   },
+  {
+    label: 'Creasing',
+    value: 'creasing',
+    rate: 300,
+    dieCost: 1000,
+  },
 ]
 
 export const gummingTypes = [

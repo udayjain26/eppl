@@ -211,6 +211,7 @@ export default function TextCalculation(props: {
         debouncedPlateRate,
         debouncedPlateSize,
         debouncedPrintingRateFactor,
+        'primaryText',
       )
       props.setTextCostDataTable(fetchTextCostData)
     }
@@ -246,25 +247,24 @@ export default function TextCalculation(props: {
                 <span className="text-muted-foreground">Close Width</span>
                 <span>{props.variationData?.closeSizeWidth} mm</span>
               </li>
-
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Grammage</span>
-                <span>{props.variationData?.textGrammage} gsm</span>
+                <span className="text-muted-foreground">Pages</span>
+                <span>{props.variationData?.textPages} </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Paper Type</span>
                 <span>{props.variationData?.textPaperType}</span>
               </li>
-
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Grammage</span>
+                <span>{props.variationData?.textGrammage} gsm</span>
+              </li>
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Colors</span>
                 <span>{props.variationData?.textColors}</span>
               </li>
-              <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Pages</span>
-                <span>{props.variationData?.textPages} </span>
-              </li>
-              <li className="flex items-center justify-between text-right">
+
+              <li className="flex items-center justify-between border-b-2 text-right">
                 <span className="text-muted-foreground">Lamination</span>
                 <span>{props.variationData?.textLamination} </span>
               </li>

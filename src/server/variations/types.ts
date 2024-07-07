@@ -4,6 +4,7 @@ export type VariationData = {
   variationTitle: string | undefined
   variationNotes: string | undefined
   clientEnquiry: string | undefined
+  // quotationComments: string | undefined
   variationQtysRates: {
     uuid: string
     variationUuid: string
@@ -31,6 +32,12 @@ export type VariationData = {
   textGrammage: number | undefined
   textLamination: string | undefined
   textPaperType: string | undefined
+
+  secondaryTextColors: number | undefined
+  secondaryTextPages: number | undefined
+  secondaryTextGrammage: number | undefined
+  secondaryTextLamination: string | undefined
+  secondaryTextPaperType: string | undefined
 
   binding: string | undefined
   // catalogBrochureBinding: string | undefined

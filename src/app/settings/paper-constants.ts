@@ -46,6 +46,10 @@ export const paperMills: PaperMill[] = [
     ],
   },
   {
+    label: 'Avery Dennison',
+    qualities: ['Fasson'],
+  },
+  {
     label: 'Ruchira',
     qualities: ['Surface Size', 'Maplitho Paper', 'Others'],
   },
@@ -69,7 +73,7 @@ export const paperMills: PaperMill[] = [
       'Others',
     ],
   },
-  { label: 'Nevia', qualities: ['Others'] },
+  { label: 'Nevia', qualities: ['Art Paper', 'Others'] },
   { label: 'Hikote', qualities: ['Others'] },
   { label: 'ChingMing', qualities: ['Others'] },
   { label: 'Sripathi', qualities: ['Others'] },
@@ -112,14 +116,21 @@ export const paperMills: PaperMill[] = [
   { label: 'Fedregoni', qualities: ['Others'] },
   { label: 'Cordenons', qualities: ['Astropremium White', 'Others'] },
   { label: 'Sappi', qualities: ['Others'] },
-  { label: 'Stora Enso', qualities: ['Others'] },
+  { label: 'Stora Enso', qualities: ['Creamy', 'Others'] },
   {
     label: 'Holmen',
     qualities: ['Holmen High Bulk', 'Others'],
   },
   { label: 'Smurfit Kappa', qualities: ['Others'] },
-  { label: 'Galgo', qualities: ['Rendezvous Hi Print White', 'Others'] },
-  { label: 'Reel Cut', qualities: ['Standard', 'Others'] },
+  {
+    label: 'Galgo',
+    qualities: [
+      'Primo Plus Ultra White',
+      'Rendezvous Hi Print White',
+      'Others',
+    ],
+  },
+  { label: 'Reel Cut', qualities: ['Natural Shade', 'Standard', 'Others'] },
   { label: 'Prime', qualities: ['Standard', 'Others'] },
 ]
 

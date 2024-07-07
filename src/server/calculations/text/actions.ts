@@ -54,6 +54,7 @@ export async function calculateTextCost(
   textPlateRate?: number,
   plateSize?: string,
   printingRateFactor?: number,
+  textType?: string,
 ): Promise<TextCostData | undefined> {
   if (
     !variationData ||
@@ -69,10 +70,25 @@ export async function calculateTextCost(
     !textWorkingWidth ||
     !variationData.textColors ||
     !plateSize ||
-    !printingRateFactor
+    !printingRateFactor ||
+    !textType
   ) {
     return undefined
   }
+
+  let textPages = 0
+  let textCols = 0
+  let textGrammage = 0
+  if (textType === 'secondaryText') {
+    textGrammage = variationData.secondaryTextGrammage ?? 0
+    textPages = variationData.secondaryTextPages ?? 0
+    textCols = variationData.secondaryTextColors ?? 0
+  } else {
+    textGrammage = variationData.textGrammage ?? 0
+    textPages = variationData.textPages ?? 0
+    textCols = variationData.textColors ?? 0
+  }
+
   const textPagesPerSheet = calculatePagesPerSheet(
     textWorkingLength,
     textWorkingWidth,
@@ -85,10 +101,10 @@ export async function calculateTextCost(
     return undefined
   }
 
-  const textColors = variationData.textColors || 0
+  const textColors = textCols || 0
 
   const textForms = calculateTextForms(
-    variationData.textPages,
+    textPages,
     textPagesPerSheet,
   )
 

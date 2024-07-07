@@ -64,7 +64,11 @@ export async function calculateCoverCost(
       coverPrintingType,
     )
 
-    const totalSetsUsed = calculateTotalSets(coverForms, coverPrintingType)
+    const totalSetsUsed = calculateTotalSets(
+      coverForms,
+      coverPrintingType,
+      coverBackColors,
+    )
 
     const coverPiecesPerSheets = coverPagesPerSheet / variationData.coverPages
     const paperAreaUsed = Number(
@@ -167,8 +171,6 @@ function calculatePagesPerSheet(
   const coverLength = effectiveCoverLength
   const coverWidth = effectiveCoverWidth
 
-
-
   if (!coverLength || !coverWidth || paperLength <= 0 || paperWidth <= 0) {
     return undefined
   }
@@ -246,15 +248,18 @@ function calculateCoverForms(
 function calculateTotalSets(
   coverForms: PrintingForms,
   coverPrintingType: string,
+  coverBackColors: number,
 ) {
   // Calculate the number of complete forms
   if (coverPrintingType === 'frontBack') {
+    if (coverBackColors === 0) {
+      return coverForms.totalFormsFB
+    }
     return coverForms.totalFormsFB * 2
   } else if (coverPrintingType === 'singleSide') {
     return coverForms.totalFormsFB
   } else {
     let totalSetsFB = coverForms.totalFormsFB * 2
-
     let totalSetsWT2Ups = coverForms.totalForms2Ups
     let totalSetsWT4Ups = coverForms.totalForms4Ups
     let totalSetsWT8Ups = coverForms.totalForms8Ups
@@ -458,9 +463,13 @@ function calculatePrintingCost(
   Object.entries(formsSheetsDataDict).forEach(([key, value]) => {
     let printingCost = 0
     const formsQty = value.formsQty
-    const printingSets = key === 'totalFormsFB' ? 2 : 1
+    let printingSets = key === 'totalFormsFB' ? 2 : 1
     const coverColors =
       coverFrontColors > coverBackColors ? coverFrontColors : coverBackColors
+
+    if (coverPrintingType === 'singleSide' || coverBackColors === 0) {
+      printingSets = 1
+    }
 
     const printingSheets =
       key === 'totalFormsFB' ? value.sheetsQty : value.sheetsQty * 2
@@ -520,6 +529,7 @@ function calculatePrintingCost(
       printingRatePerColor = 0
     }
 
+
     printingCost =
       (printingRatePerColor *
         coverColors *
@@ -528,6 +538,10 @@ function calculatePrintingCost(
         printingSets *
         ceilingPrintingSheets) /
       1000
+
+    if (printingCost !== 0) {
+
+    }
 
     totalPrintingCost += printingCost
   })
@@ -547,7 +561,6 @@ function calculateLaminationCost(
     (lam) => lam.label === variationData.coverLamination,
   )?.rate!
 
-
   if (laminationRate !== 0) {
     const laminationCost = (
       paperLengthInM *
@@ -562,7 +575,4 @@ function calculateLaminationCost(
   }
 }
 
-
-function canBeWorkAndTurn(){
-  
-}
+function canBeWorkAndTurn() {}

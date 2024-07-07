@@ -247,6 +247,7 @@ export const variations = createTable('variations', {
     .notNull(),
   variationTitle: varchar('variation_title', { length: 256 }),
   variationNotes: text('variation_notes'),
+  // quotationComments: text('quotation_comments'),
   clientEnquiry: text('client_enquiry'),
 
   //sizes
@@ -271,6 +272,15 @@ export const variations = createTable('variations', {
   textGrammage: smallint('text_grammage'),
   textLamination: varchar('text_lamination', { length: 256 }),
   textPaperType: varchar('text_paper_type', { length: 256 }),
+
+  //secondary text
+  secondaryTextColors: smallint('secondary_text_colors'),
+  secondaryTextPages: smallint('secondary_text_pages'),
+  secondaryTextGrammage: smallint('secondary_text_grammage'),
+  secondaryTextLamination: varchar('secondary_text_lamination', {
+    length: 256,
+  }),
+  secondaryTextPaperType: varchar('secondary_text_paper_type', { length: 256 }),
 
   //fabrication
   binding: varchar('binding', { length: 256 }),
@@ -382,6 +392,7 @@ export const variationCalculation = createTable('variation_calculation', {
   textGrippers: numeric('text_grippers', { precision: 7, scale: 2 }),
   textPaper: varchar('text_paper', { length: 256 }),
   textPaperRate: numeric('text_paper_rate', { precision: 7, scale: 2 }),
+
   textWastageFactor: numeric('text_wastage_factor', {
     precision: 7,
     scale: 3,
@@ -402,6 +413,53 @@ export const variationCalculation = createTable('variation_calculation', {
     scale: 2,
   }),
   textWorkingWidth: numeric('text_working_width', { precision: 7, scale: 2 }),
+  secondaryTextPaper: varchar('secondary_text_paper', { length: 256 }),
+  secondaryTextPaperRate: numeric('secondary_text_paper_rate', {
+    precision: 7,
+    scale: 2,
+  }),
+  secondaryTextWastageFactor: numeric('secondary_text_wastage_factor', {
+    precision: 7,
+    scale: 3,
+  }),
+  secondaryTextPlateRateFactor: numeric('secondary_text_plate_rate_factor', {
+    precision: 7,
+    scale: 3,
+  }),
+  secondaryTextPrintingRateFactor: numeric(
+    'secondary_text_printing_rate_factor',
+    { precision: 7, scale: 3 },
+  ),
+  secondaryTextPlateRate: numeric('secondary_text_plate_rate', {
+    precision: 7,
+    scale: 2,
+  }),
+  secondaryTextPlateSize: varchar('secondary_text_plate_size', { length: 256 }),
+  secondaryTextPrintingRate: numeric('secondary_text_printing_rate', {
+    precision: 7,
+    scale: 2,
+  }),
+  secondaryTextWorkingLength: numeric('secondary_text_working_length', {
+    precision: 7,
+    scale: 2,
+  }),
+  secondaryTextWorkingWidth: numeric('secondary_text_working_width', {
+    precision: 7,
+    scale: 2,
+  }),
+  secondaryTextGutters: numeric('secondary_text_gutters', {
+    precision: 7,
+    scale: 2,
+  }),
+  secondaryTextBleed: numeric('secondary_text_bleed', {
+    precision: 7,
+    scale: 2,
+  }),
+  secondaryTextGrippers: numeric('secondary_text_grippers', {
+    precision: 7,
+    scale: 2,
+  }),
+
   profitPercentage: numeric('profit_percentage', { precision: 7, scale: 4 }),
   discountPercentage: numeric('discount_percentage', {
     precision: 7,

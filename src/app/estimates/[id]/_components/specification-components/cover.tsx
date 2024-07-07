@@ -110,7 +110,7 @@ export default function Cover(props: {
                       variant="outline"
                       role="combobox"
                       aria-expanded={openLamination}
-                      className="w-48 justify-between"
+                      className="w-56 justify-between"
                     >
                       <input
                         type="hidden"

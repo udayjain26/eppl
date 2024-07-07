@@ -34,6 +34,19 @@ export type VariationCalculationData =
       textWorkingLength?: number
       textWorkingWidth?: number
       textPlateSize?: string
+      secondaryTextGutters?: number
+      secondaryTextBleed?: number
+      secondaryTextGrippers?: number
+      secondaryTextPaper?: string
+      secondaryTextPaperRate?: number
+      secondaryTextWastageFactor?: number
+      secondaryTextPlateRateFactor?: number
+      secondaryTextPrintingRateFactor?: number
+      secondaryTextPlateRate?: number
+      secondaryTextPrintingRate?: number
+      secondaryTextWorkingLength?: number
+      secondaryTextWorkingWidth?: number
+      secondaryTextPlateSize?: string
       profitPercentage: number
       discountPercentage: number
     }

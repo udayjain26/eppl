@@ -40,6 +40,7 @@ export default function TotalCalculation(props: {
   form: UseFormReturn
   coverCostDataTable: CoverCostData
   textCostDataTable: TextCostData
+  secondaryTextCostDataTable: TextCostData
   fabricationCostDataTable: FabricationCostData
   packagingCostDataTable: PackagingCostData
   totalCostDataTable: TotalCostDetails
@@ -48,6 +49,7 @@ export default function TotalCalculation(props: {
   const {
     coverCostDataTable,
     textCostDataTable,
+    secondaryTextCostDataTable,
     fabricationCostDataTable,
     packagingCostDataTable,
     totalCostDataTable,
@@ -57,6 +59,10 @@ export default function TotalCalculation(props: {
   // Debounce value
   const [debouncedCoverCostDataTable] = useDebounce(coverCostDataTable, 500)
   const [debouncedTextCostDataTable] = useDebounce(textCostDataTable, 500)
+  const [debouncedSecondaryTextCostDataTable] = useDebounce(
+    secondaryTextCostDataTable,
+    500,
+  )
   const [debouncedFabricationCostDataTable] = useDebounce(
     fabricationCostDataTable,
     500,
@@ -84,6 +90,10 @@ export default function TotalCalculation(props: {
         item.costPerCover +
         (debouncedTextCostDataTable?.textCostDataDict[index]?.costPerText ||
           0) +
+        +(
+          debouncedSecondaryTextCostDataTable?.textCostDataDict[index]
+            ?.costPerText || 0
+        ) +
         (debouncedFabricationCostDataTable?.fabricationCostDataDict[index]
           ?.costPerPiece || 0) +
         (debouncedPackagingCostDataTable?.packagingCostDataDict[index]
@@ -106,7 +116,11 @@ export default function TotalCalculation(props: {
           (debouncedTextCostDataTable?.textCostDataDict[index]?.paperCost ||
             0) +
           (debouncedTextCostDataTable?.textCostDataDict[index]?.plateCost ||
-            0)) /
+            0) +
+          (debouncedSecondaryTextCostDataTable?.textCostDataDict[index]
+            ?.paperCost || 0) +
+          (debouncedSecondaryTextCostDataTable?.textCostDataDict[index]
+            ?.plateCost || 0)) /
         (sellingPrice * item.jobQuantity)
 
       costDetails.push({

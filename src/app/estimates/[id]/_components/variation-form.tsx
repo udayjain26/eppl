@@ -83,6 +83,11 @@ export default function VariationForm(props: {
       textGrammage: props.variationData.textGrammage,
       textLamination: props.variationData.textLamination,
       textPaperType: props.variationData.textPaperType,
+      secondaryTextColors: props.variationData.secondaryTextColors,
+      secondaryTextPages: props.variationData.secondaryTextPages,
+      secondaryTextGrammage: props.variationData.secondaryTextGrammage,
+      secondaryTextLamination: props.variationData.secondaryTextLamination,
+      secondaryTextPaperType: props.variationData.secondaryTextPaperType,
       binding: props.variationData.binding,
       coverUV: props.variationData.coverUV,
       textUV: props.variationData.textUV,
@@ -193,6 +198,22 @@ export default function VariationForm(props: {
                 </FormItem>
               )}
             />
+            {/* <FormField
+              control={form.control}
+              name="quotationComments"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quotation Comments</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="min-h-32"
+                      placeholder="Quotation Comments"
+                      {...field}
+                    ></Textarea>
+                  </FormControl>
+                </FormItem>
+              )}
+            /> */}
           </div>
           <div className="flex w-full flex-col px-2">
             <div className="flex h-full w-full flex-row gap-x-2 ">

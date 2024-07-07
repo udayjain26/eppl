@@ -33,6 +33,7 @@ import TotalCalculation, {
 import PackagingCalculation from './calculation-components/packaging-calculation'
 import { Sheet } from 'lucide-react'
 import SheetPrintingCalculation from './calculation-components/sheet-printing-calculation'
+import SecondaryTextCalculation from './calculation-components/secondary-text-calculation'
 
 function SaveButton(props: { isDirty: boolean }) {
   const { pending } = useFormStatus()
@@ -52,6 +53,7 @@ const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   totalCalculation: TotalCalculation,
   coverCalculation: CoverCalculation,
   textCalculation: TextCalculation,
+  secondaryTextCalculation: SecondaryTextCalculation,
   sheetPrintingCalculation: SheetPrintingCalculation,
   fabricationCalculation: FabricationCalculation,
   packagingCalculation: PackagingCalculation,
@@ -77,6 +79,9 @@ export default function CalculationFields(props: {
   const [textCostDataTable, setTextCostDataTable] = useState<
     TextCostData | undefined
   >(undefined)
+  const [secondaryTextCostDataTable, setSecondaryTextCostDataTable] = useState<
+    TextCostData | undefined
+  >(undefined)
   const [fabricationCostDataTable, setFabricationCostDataTable] = useState<
     FabricationCostData | undefined
   >(undefined)
@@ -89,8 +94,6 @@ export default function CalculationFields(props: {
   >(undefined)
 
   const { isDirty } = useFormStateReactHookForm(form)
-
-
 
   const initialState: CalculationFormState = {
     message: null,
@@ -181,6 +184,44 @@ export default function CalculationFields(props: {
         textPlateSize: data?.textPlateSize
           ? data.textPlateSize.toString()
           : 'Large',
+        secondaryTextGutters: data?.secondaryTextGutters
+          ? data.secondaryTextGutters.toString()
+          : '0',
+        secondaryTextBleed: data?.secondaryTextBleed
+          ? data.secondaryTextBleed.toString()
+          : '3',
+        secondaryTextGrippers: data?.secondaryTextGrippers
+          ? data.secondaryTextGrippers.toString()
+          : '10',
+        secondaryTextPaperRate: data?.secondaryTextPaperRate
+          ? data.secondaryTextPaperRate.toString()
+          : '0',
+        secondaryTextPaper: data?.secondaryTextPaper,
+        secondaryTextPlateRate: data?.secondaryTextPlateRate
+          ? data.secondaryTextPlateRate.toString()
+          : '500',
+        secondaryTextPrintingRate: data?.secondaryTextPrintingRate
+          ? data.secondaryTextPrintingRate.toString()
+          : '150',
+        secondaryTextPlateSize: data?.secondaryTextPlateSize
+          ? data.secondaryTextPlateSize.toString()
+          : 'Large',
+        secondaryTextPlateRateFactor: data?.secondaryTextPlateRateFactor
+          ? data.secondaryTextPlateRateFactor.toString()
+          : '1',
+        secondaryTextWastageFactor: data?.secondaryTextWastageFactor
+          ? data.secondaryTextWastageFactor.toString()
+          : '1',
+        secondaryTextPrintingRateFactor: data?.secondaryTextPrintingRateFactor
+          ? data.secondaryTextPrintingRateFactor.toString()
+          : '1',
+        secondaryTextWorkingLength: data?.secondaryTextWorkingLength
+          ? data.secondaryTextWorkingLength.toString()
+          : '0',
+        secondaryTextWorkingWidth: data?.secondaryTextWorkingWidth
+          ? data.secondaryTextWorkingWidth.toString()
+          : '0',
+
         profitPercentage: data?.profitPercentage
           ? data.profitPercentage.toString()
           : '25',
@@ -244,6 +285,8 @@ export default function CalculationFields(props: {
                   setCoverCostDataTable={setCoverCostDataTable}
                   textCostDataTable={textCostDataTable}
                   setTextCostDataTable={setTextCostDataTable}
+                  secondaryTextCostDataTable={secondaryTextCostDataTable}
+                  setSecondaryTextCostDataTable={setSecondaryTextCostDataTable}
                   fabricationCostDataTable={fabricationCostDataTable}
                   setFabricationCostDataTable={setFabricationCostDataTable}
                   packagingCostDataTable={packagingCostDataTable}

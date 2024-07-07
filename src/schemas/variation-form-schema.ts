@@ -7,6 +7,7 @@ export const VariationFormSchema = z.object({
   variationTitle: z.string({ message: 'Variation title is required!' }).trim(),
   variationNotes: z.string().trim().optional(),
   clientEnquiry: z.string().trim().optional(),
+  // quotationComments: z.string().trim().optional(),
   variationQtysRates: z
     .array(
       z.object({
@@ -208,8 +209,51 @@ export const VariationFormSchema = z.object({
   coverDieCutting: z.string().optional(),
   textDieCutting: z.string().optional(),
 
+  secondaryTextColors: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseInt(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .int()
+      .nonnegative({ message: 'Secondary Text Colors must be non-negative' })
+      .optional(),
+  ),
+  secondaryTextPages: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseInt(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .int()
+      .nonnegative({ message: 'Text Pages must be non-negative' })
+      .optional(),
+  ),
+  secondaryTextGrammage: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseInt(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .int()
+      .nonnegative({ message: 'Text Grammage must be non-negative' })
+      .optional(),
+  ),
+  secondaryTextLamination: z.string().optional(),
+  secondaryTextPaperType: z.string().optional(),
   // textPaper: z.string().optional(),
-
   // createdBy: z.string().uuid(),
   // updatedBy: z.string().uuid(),
   // createdAt: z.date(),

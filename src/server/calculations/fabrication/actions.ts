@@ -246,6 +246,7 @@ function getFabricationCostsDict(
         coverWorkingLength,
         coverWorkingWidth,
         variationData,
+        'cover',
       )
     }
 
@@ -258,6 +259,7 @@ function getFabricationCostsDict(
         textWorkingLength,
         textWorkingWidth,
         variationData,
+        'text',
       )
     }
 
@@ -461,11 +463,20 @@ function getCoatingCost(
   coverWorkingLength: number | undefined,
   coverWorkingWidth: number | undefined,
   variationData: VariationData,
+  coatingOn: string,
 ) {
   let coatingCost = 0
-  let coatingCharges = coatings.find(
-    (row) => row.label === variationData.coverCoating,
-  )?.rate
+  let coatingCharges = 0
+  if (coatingOn === 'cover') {
+    coatingCharges = coatings.find(
+      (row) => row.label === variationData.coverCoating,
+    )?.rate!
+  } else if (coatingOn === 'text') {
+    coatingCharges = coatings.find(
+      (row) => row.label === variationData.textCoating,
+    )?.rate!
+  }
+
   if (coatingCharges === undefined) {
     return 0
   }
@@ -473,6 +484,7 @@ function getCoatingCost(
   const sheetWidthInM = coverWorkingWidth ? coverWorkingWidth / 1000 : 0
   coatingCost =
     coatingCharges * fabricationSheets * sheetLengthInM * sheetWidthInM
+
   return coatingCost
 }
 

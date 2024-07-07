@@ -102,6 +102,7 @@ export async function saveVariation(
   const validatedFields = Variation.safeParse(transformedData)
 
   if (!validatedFields.success) {
+    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       actionSuccess: false,

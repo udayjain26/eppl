@@ -41,7 +41,7 @@ export default function PaperbackBookBinding(props: {
           className="flex flex-col
            gap-y-1 pt-[6px]"
         >
-          <FormLabel>Paperback Book Binding</FormLabel>
+          <FormLabel>Book Binding</FormLabel>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger className="" asChild>
@@ -77,10 +77,7 @@ export default function PaperbackBookBinding(props: {
                         key={size.label}
                         value={size.label}
                         onSelect={() => {
-                          props.form.setValue(
-                            'binding',
-                            size.label,
-                          )
+                          props.form.setValue('binding', size.label)
                           field.onChange(size.label)
                           props.form.trigger('binding') // Trigger form validation and state update
 
