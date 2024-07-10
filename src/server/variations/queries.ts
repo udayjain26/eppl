@@ -27,6 +27,9 @@ export async function getEstimateVariationsData(
     openSizeWidth: row.openSizeWidth
       ? parseFloat(row.openSizeWidth)
       : undefined,
+    boardThickness: row.boardThickness
+      ? parseFloat(row.boardThickness).toFixed(1)
+      : undefined,
     variationQtysRates: row.variationQtysRates.map((rate) => ({
       ...rate,
       quantity: parseInt(rate.quantity),

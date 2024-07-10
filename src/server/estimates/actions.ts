@@ -173,3 +173,26 @@ export async function updateEstimateStageToNeedsRates(estimateUuid: string) {
     return 'Database Error'
   }
 }
+
+export async function updateEstimateStageToClientDecision(
+  estimateUuid: string,
+) {
+  try {
+    if (true) {
+      try {
+        await db
+          .update(estimates)
+          .set({
+            estimateStage: 'Client Decision',
+          })
+          .where(eq(estimates.uuid, estimateUuid))
+        revalidatePath(`/estimates/${estimateUuid}`)
+        return 'Success'
+      } catch (e) {
+        return 'Database Error'
+      }
+    }
+  } catch (e) {
+    return 'Database Error'
+  }
+}

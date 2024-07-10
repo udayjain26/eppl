@@ -484,6 +484,21 @@ export const CalculationFormSchema = z.object({
       .transform((val) => val?.toString() || undefined),
   ),
 
+  boardRate: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Rate must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
   profitPercentage: z.preprocess(
     (val) => {
       if (typeof val === 'string') {
@@ -509,6 +524,36 @@ export const CalculationFormSchema = z.object({
     z
       .number()
       .nonnegative({ message: 'Discount must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
+  addedHardcoverLength: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Hardcover Length must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
+  addedHardcoverWidth: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Hardcover width must be non-negative' })
       .optional()
       .transform((val) => val?.toString() || undefined),
   ),

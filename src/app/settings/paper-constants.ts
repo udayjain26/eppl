@@ -26,6 +26,21 @@ export const paperTypes = [
   { label: 'Thermal Paper', value: 'TP' },
 ]
 
+export const boardThicknesses = [
+  { label: '1.0', value: 1 },
+  { label: '1.2', value: 1.2 },
+  { label: '1.4', value: 1.4 },
+  { label: '1.5', value: 1.5 },
+  { label: '1.7', value: 1.7 },
+  { label: '1.8', value: 1.8 },
+  { label: '2.0', value: 2 },
+  { label: '2.2', value: 2.2 },
+  { label: '2.5', value: 2.5 },
+  { label: '2.8', value: 2.8 },
+  { label: '3.0', value: 3.0 },
+  { label: '3.5', value: 3.5 },
+  { label: '4.0', value: 4.0 },
+]
 type PaperMill = {
   label: string
   qualities: string[]

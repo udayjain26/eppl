@@ -34,6 +34,10 @@ import PackagingCalculation from './calculation-components/packaging-calculation
 import { Sheet } from 'lucide-react'
 import SheetPrintingCalculation from './calculation-components/sheet-printing-calculation'
 import SecondaryTextCalculation from './calculation-components/secondary-text-calculation'
+import { forwardRef } from 'react'
+import BoardCalculation, {
+  BoardCostData,
+} from './calculation-components/board-calculation'
 
 function SaveButton(props: { isDirty: boolean }) {
   const { pending } = useFormStatus()
@@ -52,6 +56,7 @@ function SaveButton(props: { isDirty: boolean }) {
 const calculationComponentMap: { [key: string]: React.ComponentType<any> } = {
   totalCalculation: TotalCalculation,
   coverCalculation: CoverCalculation,
+  boardCalculation: BoardCalculation,
   textCalculation: TextCalculation,
   secondaryTextCalculation: SecondaryTextCalculation,
   sheetPrintingCalculation: SheetPrintingCalculation,
@@ -81,6 +86,9 @@ export default function CalculationFields(props: {
   >(undefined)
   const [secondaryTextCostDataTable, setSecondaryTextCostDataTable] = useState<
     TextCostData | undefined
+  >(undefined)
+  const [boardCostDataTable, setBoardCostDataTable] = useState<
+    BoardCostData | undefined
   >(undefined)
   const [fabricationCostDataTable, setFabricationCostDataTable] = useState<
     FabricationCostData | undefined
@@ -116,8 +124,25 @@ export default function CalculationFields(props: {
     const fetchCalculationData = async () => {
       const data = await getVariationCalculation(props.variationData.uuid)
       setVariationCalculationData(data)
+
+      const grammage = props.variationData.textGrammage
+        ? props.variationData.textGrammage
+        : 0
+      const leaves = props.variationData.textPages
+        ? props.variationData.textPages / 2
+        : 0
+
+      const boardThickness = props.variationData.boardThickness
+        ? props.variationData.boardThickness * 2
+        : 0
+
+      const computedSpine = grammage * leaves * 0.0015 + boardThickness
+
       form.reset({
-        coverSpine: data?.coverSpine ? data.coverSpine.toString() : '0',
+        coverSpine:
+          data?.coverSpine && Number(data?.coverSpine) !== 0
+            ? data.coverSpine.toString()
+            : computedSpine.toString(),
         coverBleed: data?.coverBleed ? data.coverBleed.toString() : '3',
         coverGrippers: data?.coverGrippers
           ? data.coverGrippers.toString()
@@ -228,6 +253,19 @@ export default function CalculationFields(props: {
         discountPercentage: data?.discountPercentage
           ? data.discountPercentage.toString()
           : '0',
+        boardRate: data?.boardRate
+          ? data.boardRate.toString()
+          : props.variationData.boardType === 'G/G Kappa Board'
+            ? '50'
+            : props.variationData.boardType === 'G/W Kappa Board'
+              ? '58'
+              : '0',
+        addedHardcoverLength: data?.addedHardcoverLength
+          ? data.addedHardcoverLength.toString()
+          : '8',
+        addedHardcoverWidth: data?.addedHardcoverWidth
+          ? data.addedHardcoverWidth.toString()
+          : '0',
       })
     }
     fetchCalculationData()
@@ -283,6 +321,8 @@ export default function CalculationFields(props: {
                   paperData={props.paperData}
                   coverCostDataTable={coverCostDataTable}
                   setCoverCostDataTable={setCoverCostDataTable}
+                  boardCostDataTable={boardCostDataTable}
+                  setBoardCostDataTable={setBoardCostDataTable}
                   textCostDataTable={textCostDataTable}
                   setTextCostDataTable={setTextCostDataTable}
                   secondaryTextCostDataTable={secondaryTextCostDataTable}
@@ -293,6 +333,7 @@ export default function CalculationFields(props: {
                   setPackagingCostDataTable={setPackagingCostDataTable}
                   totalCostDataTable={totalCostDataTable}
                   setTotalCostDataTable={setTotalCostDataTable}
+                  product={props.product}
                 />
               ) : null
             })}

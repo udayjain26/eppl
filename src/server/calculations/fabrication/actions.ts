@@ -15,6 +15,7 @@ import {
   embossingTypes,
   gummingTypes,
   leafingTypes,
+  makingProcesses,
   paperbackBindingTypes,
   postpressProcesses,
   uvTypes,
@@ -109,6 +110,7 @@ function getFabricationCostsDict(
     let textCoating: number | undefined
     let coverDieCutting: number | undefined
     let textDieCutting: number | undefined
+    let making: number | undefined
 
     if (variationData.binding === 'Perfect') {
       const perfectCharges = paperbackBindingTypes.find(
@@ -251,6 +253,13 @@ function getFabricationCostsDict(
     }
 
     if (
+      typeof variationData.makingProcess === 'string' &&
+      variationData.makingProcess !== 'None'
+    ) {
+      making = getMakingCost(jobQuantity, variationData)
+    }
+
+    if (
       typeof variationData.textCoating === 'string' &&
       variationData.textCoating !== 'None'
     ) {
@@ -321,7 +330,8 @@ function getFabricationCostsDict(
       (gumming || 0) +
       (coverFoiling || 0) +
       (coverDieCutting || 0) +
-      (textDieCutting || 0)
+      (textDieCutting || 0) +
+      (making || 0)
 
     const costPerPiece = totalCost / jobQuantity
 
@@ -359,6 +369,8 @@ function getFabricationCostsDict(
         ? Number(textDieCutting.toFixed(0))
         : undefined,
 
+      making: making ? Number(making.toFixed(0)) : undefined,
+
       vdp: vdp ? Number(vdp.toFixed(0)) : undefined,
       gumming: gumming ? Number(gumming.toFixed(0)) : undefined,
       totalCost: Number(totalCost.toFixed(0)),
@@ -366,6 +378,21 @@ function getFabricationCostsDict(
     }
   })
   return data
+}
+
+function getMakingCost(jobQuantity: number, variationData: VariationData) {
+  let makingCost = 0
+  let makingCharges = makingProcesses.find(
+    (row) => row.label === variationData.makingProcess,
+  )?.rate
+
+  if (makingCharges === undefined) {
+    return 0
+  }
+
+  makingCost = (makingCharges * jobQuantity) / 1000
+
+  return makingCost
 }
 
 function getFoldingCost(

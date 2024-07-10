@@ -529,7 +529,6 @@ function calculatePrintingCost(
       printingRatePerColor = 0
     }
 
-
     printingCost =
       (printingRatePerColor *
         coverColors *
@@ -540,7 +539,6 @@ function calculatePrintingCost(
       1000
 
     if (printingCost !== 0) {
-
     }
 
     totalPrintingCost += printingCost

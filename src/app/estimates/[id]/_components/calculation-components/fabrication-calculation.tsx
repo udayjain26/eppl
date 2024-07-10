@@ -23,6 +23,7 @@ export type FabricationCostDataDict = {
   perfectBindingCost?: number
   sewnAndPerfect?: number
   sidePinAndPerfect?: number
+  making?: number
   centrePin?: number
   coverUV?: number
   textUV?: number
@@ -94,6 +95,7 @@ export default function FabricationCalculation(props: {
     perfectBindingCost: 'Perfect',
     sewnAndPerfect: 'Sewn & Perfect',
     sidePinAndPerfect: 'Side Pin Perfect',
+    making: 'Making',
     centrePin: 'Centre Pin',
     coverUV: 'Cover UV',
     textUV: 'Text UV',
@@ -226,6 +228,13 @@ export default function FabricationCalculation(props: {
                       Text Die Cutting
                     </span>
                     <span>{variationData?.textDieCutting}</span>
+                  </li>
+                )}
+              {variationData?.makingProcess !== 'None' &&
+                variationData?.makingProcess !== null && (
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Making</span>
+                    <span>{variationData?.makingProcess}</span>
                   </li>
                 )}
             </ul>

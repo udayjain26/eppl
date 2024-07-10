@@ -47,7 +47,10 @@ export type VariationCalculationData =
       secondaryTextWorkingLength?: number
       secondaryTextWorkingWidth?: number
       secondaryTextPlateSize?: string
+      boardRate?: number
       profitPercentage: number
       discountPercentage: number
+      addedHardcoverLength: number
+      addedHardcoverWidth: number
     }
   | undefined

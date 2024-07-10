@@ -103,10 +103,7 @@ export async function calculateTextCost(
 
   const textColors = textCols || 0
 
-  const textForms = calculateTextForms(
-    textPages,
-    textPagesPerSheet,
-  )
+  const textForms = calculateTextForms(textPages, textPagesPerSheet)
 
   const totalSetsUsed = calculateTotalSets(textForms)
 

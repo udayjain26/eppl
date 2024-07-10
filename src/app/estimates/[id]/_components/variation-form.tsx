@@ -100,6 +100,9 @@ export default function VariationForm(props: {
       textDieCutting: props.variationData.textDieCutting,
       textCoating: props.variationData.textCoating,
       coverCoating: props.variationData.coverCoating,
+      boardThickness: props.variationData.boardThickness?.toString(),
+      boardType: props.variationData.boardType,
+      makingProcess: props.variationData.makingProcess,
     },
   })
 
@@ -198,22 +201,6 @@ export default function VariationForm(props: {
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="quotationComments"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quotation Comments</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      className="min-h-32"
-                      placeholder="Quotation Comments"
-                      {...field}
-                    ></Textarea>
-                  </FormControl>
-                </FormItem>
-              )}
-            /> */}
           </div>
           <div className="flex w-full flex-col px-2">
             <div className="flex h-full w-full flex-row gap-x-2 ">

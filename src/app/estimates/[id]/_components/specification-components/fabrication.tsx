@@ -17,6 +17,8 @@ import CoverEmbossing from './cover-embossing'
 import DieCutting from './cover-die-cutting'
 import TextDieCutting from './text-die-cutting'
 import CoverDieCutting from './cover-die-cutting'
+import { makingProcesses } from '@/app/settings/constants'
+import Making from './making'
 
 export default function Fabrication(props: {
   control: any
@@ -38,6 +40,7 @@ export default function Fabrication(props: {
     coverCoating: CoverCoating,
     coverDieCutting: CoverDieCutting,
     textDieCutting: TextDieCutting,
+    making: Making,
   }
   const fabricationFields =
     productFieldMap[props.product]['fabricationComponents'] || []

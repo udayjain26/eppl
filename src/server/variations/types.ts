@@ -46,6 +46,7 @@ export type VariationData = {
   coverEmbossing: string | undefined
   textUV: string | undefined
   vdp: string | undefined
+  makingProcess: string | undefined
 
   packagingType: string | undefined
   gummingType: string | undefined
@@ -53,6 +54,9 @@ export type VariationData = {
   textDieCutting: string | undefined
   textCoating: string | undefined
   coverCoating: string | undefined
+
+  boardType: string | undefined
+  boardThickness: number | undefined
 
   createdAt: Date
   updatedAt: Date

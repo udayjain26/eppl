@@ -28,7 +28,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Slider } from '@/components/ui/slider'
 import {
   Table,
   TableBody,
@@ -48,6 +47,7 @@ import { VariationData } from '@/server/variations/types'
 import { CheckIcon } from 'lucide-react'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { text } from 'stream/consumers'
 import { useDebounce } from 'use-debounce'
 
 export type TextCostData = {
@@ -156,6 +156,11 @@ export default function TextCalculation(props: {
   const isPlateSizeSmall =
     watchPlateSize === 'Small' &&
     (textWorkingLength > 508 || textWorkingWidth > 762)
+
+  const totalFormsFB = textCostDataTable?.textForms.totalFormsFB ?? 0
+  const totalForms2Ups = textCostDataTable?.textForms.totalForms2Ups ?? 0
+  const totalForms4Ups = textCostDataTable?.textForms.totalForms4Ups ?? 0
+  const totalForms8Ups = textCostDataTable?.textForms.totalForms8Ups ?? 0
 
   useEffect(() => {
     const lengthValue = props.form.getValues('textWorkingLength')
@@ -543,14 +548,12 @@ export default function TextCalculation(props: {
                   <FormLabel>Text Plate Size</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    {...field}
+                    value={field.value}
+                    name="textPlateSize"
                   >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Large">Large</SelectItem>
                       <SelectItem value="Small">Small</SelectItem>
@@ -574,10 +577,10 @@ export default function TextCalculation(props: {
               <li className="flex items-center justify-between border-b-2">
                 <span className="text-muted-foreground">Text Forms</span>
                 <span>
-                  {textCostDataTable?.textForms.totalFormsFB! +
-                    textCostDataTable?.textForms.totalForms2Ups! / 2 +
-                    textCostDataTable?.textForms.totalForms4Ups! / 4 +
-                    textCostDataTable?.textForms.totalForms8Ups! / 8}
+                  {totalFormsFB +
+                    totalForms2Ups +
+                    totalForms4Ups +
+                    totalForms8Ups}
                 </span>
               </li>
               <li className="flex items-center justify-between border-b-2">

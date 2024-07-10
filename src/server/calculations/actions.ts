@@ -2,7 +2,6 @@
 
 import { auth } from '@clerk/nextjs/server'
 import { CalculationFormState } from './types'
-import { error } from 'console'
 import { CalculationFormSchema } from '@/schemas/calculation-form-schema'
 import { variationCalculation, variationQtysRates } from '../db/schema'
 import { db } from '../db'
@@ -44,7 +43,6 @@ export default async function saveCalculationData(
   if (!user.userId) {
     throw new Error('User Unauthenticated')
   }
-
 
   const transformedData: TransformedData = {}
   formData.forEach((value, key) => {

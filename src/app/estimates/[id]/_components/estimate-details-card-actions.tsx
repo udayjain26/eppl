@@ -8,7 +8,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { EstimateTableRow } from '@/schemas/schema-table-types'
-import { updateEstimateStageToNeedsRates } from '@/server/estimates/actions'
+import {
+  updateEstimateStageToClientDecision,
+  updateEstimateStageToNeedsRates,
+} from '@/server/estimates/actions'
 import { MoreVertical } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -43,6 +46,16 @@ export default function EstimateDetailsCardActions(props: {
             }}
           >
             Request Rates
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={props.estimateData.estimateStage === 'Client Decision'}
+            onClick={async () => {
+              const result = await updateEstimateStageToClientDecision(
+                props.estimateData.uuid,
+              )
+            }}
+          >
+            Mark as Sent
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

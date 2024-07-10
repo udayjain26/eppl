@@ -1,4 +1,6 @@
 import TextDieCutting from '@/app/estimates/[id]/_components/specification-components/text-die-cutting'
+import { makingProcesses } from '@/app/settings/constants'
+import { boardThicknesses } from '@/app/settings/paper-constants'
 import { z } from 'zod'
 
 export const VariationFormSchema = z.object({
@@ -208,6 +210,7 @@ export const VariationFormSchema = z.object({
   coverCoating: z.string().optional(),
   coverDieCutting: z.string().optional(),
   textDieCutting: z.string().optional(),
+  makingProcess: z.string().optional(),
 
   secondaryTextColors: z.preprocess(
     (val) => {
@@ -253,6 +256,23 @@ export const VariationFormSchema = z.object({
   ),
   secondaryTextLamination: z.string().optional(),
   secondaryTextPaperType: z.string().optional(),
+
+  boardThickness: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Thickness must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
+  boardType: z.string().optional(),
   // textPaper: z.string().optional(),
   // createdBy: z.string().uuid(),
   // updatedBy: z.string().uuid(),

@@ -1,5 +1,4 @@
 'use client'
-
 import { VariationData } from '@/server/variations/types'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -148,6 +147,7 @@ export default function CoverCalculation(props: {
   const watchPaperData = props.form.watch('coverPaper')
   const watchPlateSize = props.form.watch('coverPlateSize')
   const printingRateFactor = props.form.watch('coverPrintingRateFactor')
+  const coverSpine = Number(props.form.watch('coverSpine'))
 
   const paperRatePerkg = Number(props.form.watch('coverPaperRate'))
   const plateRate = Number(props.form.watch('coverPlateRate'))
@@ -338,19 +338,19 @@ export default function CoverCalculation(props: {
           <div className="flex w-full flex-row gap-x-2">
             <ul className="flex flex-row gap-x-2 text-xs">
               <li>
-                Effective Open Length: {effectiveCoverLength}(mm) /{' '}
+                Effective Open Length: {effectiveCoverLength.toFixed(2)}(mm) /{' '}
                 {(effectiveCoverLength / 25.4).toFixed(2)}(in)
               </li>
               <li>
-                Effective Open Width: {effectiveCoverWidth}(mm) /{' '}
+                Effective Open Width: {effectiveCoverWidth.toFixed(2)}(mm) /{' '}
                 {(effectiveCoverWidth / 25.4).toFixed(2)}(in)
               </li>
               <li>
-                Effective Paper Length: {effectivePaperLength}(mm) /{' '}
+                Effective Paper Length: {effectivePaperLength.toFixed(2)}(mm) /{' '}
                 {(effectivePaperLength / 25.4).toFixed(2)}(in)
               </li>
               <li>
-                Effective Paper Width: {effectivePaperWidth}(mm) /{' '}
+                Effective Paper Width: {effectivePaperWidth.toFixed(2)}(mm) /{' '}
                 {(effectivePaperWidth / 25.4).toFixed(2)}(in)
               </li>
             </ul>
@@ -607,14 +607,12 @@ export default function CoverCalculation(props: {
                   <FormLabel>Cover Plate Size</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    {...field}
+                    value={field.value}
+                    name="coverPlateSize"
                   >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Large">Large</SelectItem>
                       <SelectItem value="Small">Small</SelectItem>

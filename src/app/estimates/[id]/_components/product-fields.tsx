@@ -9,12 +9,14 @@ import Fabrication from './specification-components/fabrication'
 import Packaging from './specification-components/packaging'
 import Dispatch from './specification-components/dispatch'
 import SheetPrinting from './specification-components/sheet-printing'
+import Board from './specification-components/board'
 
 const specificationComponentMap: { [key: string]: React.ComponentType<any> } = {
   size: Size,
   closeSize: CloseSize,
   openSize: OpenSize,
   cover: Cover,
+  board: Board,
   text: Text,
   sheetPrinting: SheetPrinting,
   fabrication: Fabrication,

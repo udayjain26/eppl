@@ -1,4 +1,5 @@
-import { gummingTypes } from '@/app/settings/constants'
+import { gummingTypes, makingProcesses } from '@/app/settings/constants'
+import { add } from 'date-fns'
 import { relations } from 'drizzle-orm'
 import {
   uuid,
@@ -288,13 +289,17 @@ export const variations = createTable('variations', {
   coverFoiling: varchar('cover_foiling', { length: 256 }),
   coverEmbossing: varchar('cover_embossing', { length: 256 }),
   textUV: varchar('text_uv', { length: 256 }),
-
   vdp: varchar('vdp', { length: 256 }),
   gummingType: varchar('gumming_type', { length: 256 }),
   textCoating: varchar('text_coating', { length: 256 }),
   coverCoating: varchar('cover_coating', { length: 256 }),
   coverDieCutting: varchar('cover_die_cutting', { length: 256 }),
   textDieCutting: varchar('text_die_cutting', { length: 256 }),
+  makingProcess: varchar('making_process', { length: 256 }),
+
+  //Board Specifications
+  boardType: varchar('board_type', { length: 256 }),
+  boardThickness: numeric('board_thickness', { precision: 7, scale: 2 }),
 
   //packaging
   packagingType: varchar('packaging_type', { length: 256 }),
@@ -459,11 +464,19 @@ export const variationCalculation = createTable('variation_calculation', {
     precision: 7,
     scale: 2,
   }),
-
+  boardRate: numeric('board_rate', { precision: 7, scale: 2 }),
   profitPercentage: numeric('profit_percentage', { precision: 7, scale: 4 }),
   discountPercentage: numeric('discount_percentage', {
     precision: 7,
     scale: 4,
+  }),
+  addedHardcoverLength: numeric('added_hardcover_length', {
+    precision: 7,
+    scale: 2,
+  }),
+  addedHardcoverWidth: numeric('added_hardcover_width', {
+    precision: 7,
+    scale: 2,
   }),
 })
 

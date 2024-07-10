@@ -103,6 +103,7 @@ export const productFieldMap: productFieldMapType = {
       'closeSize',
       'openSize',
       'cover',
+      'board',
       'text',
       'fabrication',
       'packaging',
@@ -111,6 +112,7 @@ export const productFieldMap: productFieldMapType = {
     calculationComponents: [
       'totalCalculation',
       'coverCalculation',
+      'boardCalculation',
       'textCalculation',
       'secondaryTextCalculation',
       'fabricationCalculation',
@@ -323,6 +325,56 @@ export const productFieldMap: productFieldMapType = {
       'packagingCalculation',
     ],
     fabricationComponents: ['coverUV', 'coverDieCutting'],
+  },
+  Letterhead: {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverUV', 'coverDieCutting'],
+  },
+  Envelopes: {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverUV', 'coverDieCutting', 'making'],
+  },
+  'Paper Carry Bags': {
+    specificationComponents: [
+      'closeSize',
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverUV', 'coverDieCutting', 'making'],
   },
   Folders: {
     specificationComponents: [

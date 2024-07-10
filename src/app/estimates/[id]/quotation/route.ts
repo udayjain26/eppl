@@ -164,7 +164,7 @@ export async function GET(req: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Error generating PDF:', error)
+    console.error(error)
     return new NextResponse('Failed to generate PDF', { status: 500 })
   }
 }
@@ -992,6 +992,23 @@ function drawVariationsTable(
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Gumming: ${variation.gummingType}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 5,
+        maxWidth: PAGE_WIDTH - 80,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.makingProcess !== 'None' &&
+      variation.makingProcess !== undefined &&
+      variation.makingProcess !== null
+    ) {
+      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
+      currentPage = checkHeightResult.currentPage
+      usedHeight = checkHeightResult.usedHeight
+      currentPage.drawText(`Making: ${variation.makingProcess}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 5,

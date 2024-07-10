@@ -1,5 +1,7 @@
 //Lamination rates are in rupees per square meter
 
+import { Label } from 'react-konva'
+
 // Velet : 1550*32 sqinch per kilo
 
 //
@@ -239,11 +241,26 @@ export const postpressProcesses = [
   { label: '3Fold', value: '3fold', rate: 125 },
   { label: 'Gathering', value: 'gathering', rate: 75 },
   { label: 'Insertion', value: 'insertion', rate: 250 },
+
   // { label: 'Perforation', value: 'perforation', rate: 50 },
   // { label: 'Punching', value: 'punching', rate: 50 },
   // { label: 'Stapling', value: 'stapling', rate: 50 },
   // { label: 'Trimming', value: 'trimming', rate: 50 },
   // { label: 'Wire-O Binding', value: 'wire_o_binding', rate: 100 },
+]
+
+export const makingProcesses = [
+  { label: 'Envelope Making', value: 'envelope', rate: 300 },
+  {
+    label: 'Carrybag Double Pasting',
+    value: 'carrybag_double_pasting',
+    rate: 6000,
+  },
+  {
+    label: 'Carrybag Single Pasting',
+    value: 'carrybag_single_pasting',
+    rate: 5000,
+  },
 ]
 
 // uvTypes rates are per qty

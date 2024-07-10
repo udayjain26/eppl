@@ -137,6 +137,14 @@ export default function SecondaryTextCalculation(props: {
     watchPlateSize === 'Small' &&
     (textWorkingLength > 508 || textWorkingWidth > 762)
 
+  const totalFormsFB = secondaryTextCostDataTable?.textForms.totalFormsFB ?? 0
+  const totalForms2Ups =
+    secondaryTextCostDataTable?.textForms.totalForms2Ups ?? 0
+  const totalForms4Ups =
+    secondaryTextCostDataTable?.textForms.totalForms4Ups ?? 0
+  const totalForms8Ups =
+    secondaryTextCostDataTable?.textForms.totalForms8Ups ?? 0
+
   useEffect(() => {
     const lengthValue = props.form.getValues('secondaryTextWorkingLength')
     const widthValue = props.form.getValues('secondaryTextWorkingWidth')
@@ -537,17 +545,15 @@ export default function SecondaryTextCalculation(props: {
                       <FormItem
                         className={cn({ 'text-red-500': isPlateSizeSmall })}
                       >
-                        <FormLabel>Text Plate Size</FormLabel>
+                        <FormLabel>Cover Plate Size</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          {...field}
+                          value={field.value}
+                          name="secondaryTextPlateSize"
                         >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select" />
-                            </SelectTrigger>
-                          </FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Large">Large</SelectItem>
                             <SelectItem value="Small">Small</SelectItem>
@@ -573,16 +579,10 @@ export default function SecondaryTextCalculation(props: {
                         Secondary Text Forms
                       </span>
                       <span>
-                        {secondaryTextCostDataTable?.textForms.totalFormsFB! +
-                          secondaryTextCostDataTable?.textForms
-                            .totalForms2Ups! /
-                            2 +
-                          secondaryTextCostDataTable?.textForms
-                            .totalForms4Ups! /
-                            4 +
-                          secondaryTextCostDataTable?.textForms
-                            .totalForms8Ups! /
-                            8}
+                        {totalFormsFB +
+                          totalForms2Ups +
+                          totalForms4Ups +
+                          totalForms8Ups}
                       </span>
                     </li>
                     <li className="flex items-center justify-between border-b-2">
