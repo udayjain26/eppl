@@ -184,6 +184,12 @@ export const commonSizes = [
 
 // rates are in rupees per 1000 qty per form
 export const paperbackBindingTypes = [
+  {
+    label: 'Centre Pin',
+    value: 'centre_pin',
+    rate: 0.25,
+    minimumPerBook: 1,
+  },
   { label: 'Perfect', value: 'perfect_binding', rate: 200, minimumPerBook: 2 },
   {
     label: 'Sewn and Perfect',
@@ -260,6 +266,16 @@ export const makingProcesses = [
     label: 'Carrybag Single Pasting',
     value: 'carrybag_single_pasting',
     rate: 5000,
+  },
+  {
+    label: 'Simple Sleeve Case',
+    value: 'carrybag_single_pasting',
+    rate: 1500,
+  },
+  {
+    label: 'Complex Sleeve Case',
+    value: 'carrybag_single_pasting',
+    rate: 2500,
   },
 ]
 

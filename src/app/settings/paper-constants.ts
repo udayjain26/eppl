@@ -109,7 +109,13 @@ export const paperMills: PaperMill[] = [
       'Others',
     ],
   },
+  {
+    label: 'Kauntum',
+    qualities: ['Kresto SS Maplitho', 'Others'],
+  },
   { label: 'TNPL', qualities: ['Others'] },
+  { label: 'Trident', qualities: ['Diamondline SS Maplitho', 'Others'] },
+
   { label: 'ITC', qualities: ['Others'] },
   {
     label: 'Century',
@@ -142,6 +148,7 @@ export const paperMills: PaperMill[] = [
     qualities: [
       'Primo Plus Ultra White',
       'Rendezvous Hi Print White',
+      'Glode Ultra White',
       'Others',
     ],
   },

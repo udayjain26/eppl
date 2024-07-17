@@ -84,9 +84,9 @@ export type BoardCostData = {
 }
 
 export const boardProductMap: { [key: string]: string[] } = {
-  'Coffee Table Books': ['hardcover'],
-  'Hardbound Books': ['hardcover'],
-  'Hardbound Diaries': ['hardcover'],
+  'Coffee Table Books': ['hardcover', 'spine'],
+  'Hardbound Books': ['hardcover', 'spine'],
+  'Hardbound Diaries': ['hardcover', 'spine'],
 }
 
 const mmToInches = (mm: number) => (mm / 25.4).toFixed(2)
@@ -153,6 +153,7 @@ export default function BoardCalculation(props: {
           </div>
         </div>
         <div className="flex w-full flex-col gap-y-2">
+          <h1 className="">Hardcover Planning</h1>
           <div className="flex flex-row gap-x-2">
             {boardPiecesComponents.includes('hardcover') && (
               <>
@@ -161,7 +162,7 @@ export default function BoardCalculation(props: {
                   name="addedHardcoverLength"
                   render={({ field }) => (
                     <FormItem className=" ">
-                      <FormLabel>Added Hardcover Length(mm)</FormLabel>
+                      <FormLabel>Add Hardcover Length(mm)</FormLabel>
                       <FormControl>
                         <Input {...field}></Input>
                       </FormControl>
@@ -179,7 +180,43 @@ export default function BoardCalculation(props: {
                   name="addedHardcoverWidth"
                   render={({ field }) => (
                     <FormItem className=" ">
-                      <FormLabel>Added Hardcover Width(mm)</FormLabel>
+                      <FormLabel>Add Hardcover Width(mm)</FormLabel>
+                      <FormControl>
+                        <Input {...field}></Input>
+                      </FormControl>
+                      <span className=" pl-2 text-sm ">
+                        {!isNaN(Number(mmToInches(Number(field.value))))
+                          ? mmToInches(Number(field.value))
+                          : 0}
+                        in
+                      </span>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={props.form.control}
+                  name="hardCoverWorkingLength"
+                  render={({ field }) => (
+                    <FormItem className=" ">
+                      <FormLabel>Working Length(mm)</FormLabel>
+                      <FormControl>
+                        <Input {...field}></Input>
+                      </FormControl>
+                      <span className=" pl-2 text-sm ">
+                        {!isNaN(Number(mmToInches(Number(field.value))))
+                          ? mmToInches(Number(field.value))
+                          : 0}
+                        in
+                      </span>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={props.form.control}
+                  name="hardCoverWorkingWidth"
+                  render={({ field }) => (
+                    <FormItem className=" ">
+                      <FormLabel>Working Width(mm)</FormLabel>
                       <FormControl>
                         <Input {...field}></Input>
                       </FormControl>
@@ -195,7 +232,6 @@ export default function BoardCalculation(props: {
               </>
             )}
           </div>
-          <div className="flex flex-row gap-x-2"></div>
         </div>
         <div className="flex w-full max-w-[20rem] flex-col ">
           <h1 className="underline">Calculated</h1>

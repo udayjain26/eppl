@@ -13,8 +13,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import { db } from '@/server/db'
-import { max } from 'drizzle-orm'
-import { init } from 'next/dist/compiled/webpack/webpack'
+import fontkit from '@pdf-lib/fontkit'
+import { use } from 'react'
 
 const PAGE_WIDTH = 1240
 const PAGE_HEIGHT = 1754
@@ -30,19 +30,43 @@ export async function GET(req: NextRequest) {
     const imagePath = path.join(process.cwd(), 'public', 'letterhead.png')
     const pngImageBytes = fs.readFileSync(imagePath)
 
-    // const textureBackgroundImagePath = path.join(
-    //   process.cwd(),
-    //   'public',
-    //   'texture-paper.jpg',
-    // )
-
-    const textureBackgroundImagePath = path.join(
+    const lightSansFontPath = path.join(
       process.cwd(),
       'public',
-      'white-texture.jpg',
+      'fonts',
+      'Montserrat-Light.ttf',
+    )
+    const mediumSansFontPath = path.join(
+      process.cwd(),
+      'public',
+      'fonts',
+      'Montserrat-Medium.ttf',
+    )
+    const boldSansFontPath = path.join(
+      process.cwd(),
+      'public',
+      'fonts',
+      'Montserrat-Bold.ttf',
     )
 
-    const jpgImageBytes = fs.readFileSync(textureBackgroundImagePath)
+    const lightSerifFontPath = path.join(
+      process.cwd(),
+      'public',
+      'fonts',
+      'EBGaramond-Regular.ttf',
+    )
+    const mediumSerifFontPath = path.join(
+      process.cwd(),
+      'public',
+      'fonts',
+      'EBGaramond-Medium.ttf',
+    )
+    const boldSerifFontPath = path.join(
+      process.cwd(),
+      'public',
+      'fonts',
+      'EBGaramond-Bold.ttf',
+    )
 
     // Get the request URL
     const requestUrl = req.nextUrl
@@ -65,17 +89,23 @@ export async function GET(req: NextRequest) {
 
     // Generate PDF
     const pdfDoc = await PDFDocument.create()
+    pdfDoc.registerFontkit(fontkit)
+    const lightSansFontBytes = await fs.promises.readFile(lightSansFontPath)
+    const mediumSansFontBytes = await fs.promises.readFile(mediumSansFontPath)
+    const boldSansFontBytes = await fs.promises.readFile(boldSansFontPath)
+    const lightSerifFontBytes = await fs.promises.readFile(lightSerifFontPath)
+    const mediumSerifFontBytes = await fs.promises.readFile(mediumSerifFontPath)
+    const boldSerifFontBytes = await fs.promises.readFile(boldSerifFontPath)
+
     currentPage = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
     const pngImage = await pdfDoc.embedPng(pngImageBytes)
-    const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
 
-    const courierFont = await pdfDoc.embedFont(StandardFonts.Courier)
-    const timesFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
-    const timesFontBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold)
-    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
-    const helveticaBoldFont = await pdfDoc.embedFont(
-      StandardFonts.HelveticaBold,
-    )
+    const lightSansFont = await pdfDoc.embedFont(lightSansFontBytes)
+    const mediumSansFont = await pdfDoc.embedFont(mediumSansFontBytes)
+    const boldSansFont = await pdfDoc.embedFont(boldSansFontBytes)
+    const lightSerifFont = await pdfDoc.embedFont(lightSerifFontBytes)
+    const mediumSerifFont = await pdfDoc.embedFont(mediumSerifFontBytes)
+    const boldSerifFont = await pdfDoc.embedFont(boldSerifFontBytes)
 
     pdfDoc.setTitle(
       quotationData.estimateNumber.toString().padStart(6, '0') +
@@ -90,18 +120,11 @@ export async function GET(req: NextRequest) {
     )
 
     // Get the width/height of the PNG image scaled down to 50% of its original size
-    const pngDims = pngImage.scale(0.1)
 
-    currentPage.setLineHeight(25)
-    currentPage.drawImage(jpgImage, {
-      x: 0,
-      y: 0,
-      width: PAGE_WIDTH,
-      height: PAGE_HEIGHT,
-      opacity: 0.33,
-    })
+    await drawPageBackgrounds(currentPage, pdfDoc)
 
     // Draw the PNG image near the top left corner of the JPG image
+    const pngDims = pngImage.scale(0.1)
     currentPage.drawImage(pngImage, {
       x: 40,
       y: PAGE_HEIGHT - pngDims.height,
@@ -109,45 +132,55 @@ export async function GET(req: NextRequest) {
       height: pngDims.height,
     })
 
-    drawDatesData(currentPage, usedHeight, quotationData)
+    const thirtyYearsImagePath = path.join(
+      process.cwd(),
+      'public',
+      '30-years.png',
+    )
+    const thirtyYearsImageBytes = fs.readFileSync(thirtyYearsImagePath)
+    const thirtyYearsImage = await pdfDoc.embedPng(thirtyYearsImageBytes)
+    const thirtyYearsDims = thirtyYearsImage.scale(0.2)
+
+    currentPage.drawImage(thirtyYearsImage, {
+      x: PAGE_WIDTH - 150,
+      y: PAGE_HEIGHT - 150,
+      width: thirtyYearsDims.width,
+      height: thirtyYearsDims.height,
+    })
+
+    drawDatesData(currentPage, usedHeight, quotationData, lightSansFont)
     usedHeight += pngDims.height
 
     usedHeight = drawEstimateDetails(
       currentPage,
       usedHeight,
       quotationData,
-      timesFont,
-      timesFontBold,
+      lightSerifFont,
+      mediumSerifFont,
+      boldSerifFont,
     )
-    // // Draw text on the page
-    // usedHeight = drawQuotationNumberRow(
-    //   currentPage,
-    //   usedHeight,
-    //   quotationData,
-    //   courierFont,
-    //   timesFont,
-    // )
 
-    let variationTableResult = drawVariationsTable(
+    let variationTableResult = await drawVariationsTable(
       pdfDoc,
       currentPage,
       usedHeight,
       quotationData,
-      helveticaFont,
-      timesFont,
-      helveticaBoldFont,
+      lightSansFont,
+      mediumSansFont,
+      boldSansFont,
     )
 
     currentPage = variationTableResult.currentPage
     usedHeight = variationTableResult.usedHeight
 
-    drawFooter(
+    await drawFooter(
       currentPage,
       usedHeight,
-      timesFont,
-      timesFontBold,
       pdfDoc,
       quotationData,
+      lightSerifFont,
+      mediumSerifFont,
+      boldSerifFont,
     )
 
     const pdfBytes = await pdfDoc.save()
@@ -173,11 +206,13 @@ function drawDatesData(
   currentPage: PDFPage,
   usedHeight: number,
   quotationData: any,
+  lightSansFont: any,
 ) {
   currentPage.drawText(`Estimate uuid: ${quotationData.uuid}`, {
-    x: PAGE_WIDTH - 400,
+    x: PAGE_WIDTH - 450,
     y: PAGE_HEIGHT - 15,
     size: TEXT_SIZE - 10,
+    font: lightSansFont,
     // maxWidth: PAGE_WIDTH - 40,
   })
 
@@ -188,8 +223,9 @@ function drawEstimateDetails(
   currentPage: PDFPage,
   usedHeight: number,
   quotationData: any,
-  font: any,
-  fontBold: any,
+  lightSerifFont: any,
+  mediumSerifFont: any,
+  boldSerifFont: any,
 ) {
   let initHeight = usedHeight + TEXT_SIZE + 10
 
@@ -245,7 +281,7 @@ function drawEstimateDetails(
     y: PAGE_HEIGHT - usedHeight,
     size: TEXT_SIZE + 5,
     maxWidth: PAGE_WIDTH,
-    font: fontBold,
+    font: boldSerifFont,
   })
   usedHeight = usedHeight + TEXT_SIZE + 10
   currentPage.drawText(
@@ -255,7 +291,7 @@ function drawEstimateDetails(
       y: PAGE_HEIGHT - usedHeight,
       size: TEXT_SIZE - 5,
       maxWidth: ((PAGE_WIDTH - 40) * 2) / 3 - 40,
-      font: font,
+      font: lightSerifFont,
     },
   )
   usedHeight = usedHeight + TEXT_SIZE + 40
@@ -265,7 +301,7 @@ function drawEstimateDetails(
     y: PAGE_HEIGHT - usedHeight,
     size: TEXT_SIZE,
     maxWidth: ((PAGE_WIDTH - 60) * 2) / 3,
-    font: fontBold,
+    font: boldSerifFont,
   })
   usedHeight = usedHeight + TEXT_SIZE + 10
   currentPage.drawText(`${contactMobile}${contactEmail}`, {
@@ -273,7 +309,7 @@ function drawEstimateDetails(
     y: PAGE_HEIGHT - usedHeight,
     size: TEXT_SIZE - 5,
     maxWidth: ((PAGE_WIDTH - 60) * 2) / 3,
-    font: font,
+    font: lightSerifFont,
   })
 
   usedHeight = usedHeight + TEXT_SIZE + 10
@@ -283,8 +319,9 @@ function drawEstimateDetails(
     {
       x: ((PAGE_WIDTH - 40) * 2) / 3 - 40 + 150,
       y: PAGE_HEIGHT - initHeight,
-      size: TEXT_SIZE - 5,
+      size: TEXT_SIZE - 2,
       maxWidth: PAGE_WIDTH - 40,
+      font: mediumSerifFont,
     },
   )
   initHeight += TEXT_SIZE
@@ -296,6 +333,7 @@ function drawEstimateDetails(
       y: PAGE_HEIGHT - initHeight,
       size: TEXT_SIZE - 5,
       maxWidth: PAGE_WIDTH - 40,
+      font: lightSerifFont,
     },
   )
   initHeight += TEXT_SIZE
@@ -306,6 +344,7 @@ function drawEstimateDetails(
       y: PAGE_HEIGHT - initHeight,
       size: TEXT_SIZE - 5,
       maxWidth: PAGE_WIDTH - 40,
+      font: lightSerifFont,
     },
   )
   initHeight += TEXT_SIZE
@@ -316,104 +355,91 @@ function drawEstimateDetails(
     y: PAGE_HEIGHT - initHeight,
     size: TEXT_SIZE - 5,
     maxWidth: PAGE_WIDTH / 4 - 40,
+    font: lightSerifFont,
   })
-
-  // currentPage.drawText(
-  //   `Excel Printers Private Limited \n07AABCE1085B1Z6\nA/82, Third Floor, Naraina Industrial Area Phase 1, New Delhi, Delhi - 110028\nUday Jain\n8588835451\nuday@excelprinters.com`,
-  //   {
-  //     x: PAGE_WIDTH / 2 + 5,
-  //     y: PAGE_HEIGHT - usedHeight,
-  //     size: TEXT_SIZE - 5,
-  //     maxWidth: PAGE_WIDTH / 4,
-  //     font: font,
-  //   },
-  // )
 
   usedHeight += 50
 
   return usedHeight
 }
 
-function drawQuotationNumberRow(
-  currentPage: PDFPage,
-  usedHeight: number,
-  quotationData: any,
-  font: any,
-  timesFont: any,
-) {
-  currentPage.drawRectangle({
-    x: 30,
-    y: PAGE_HEIGHT - usedHeight - 300,
-    width: PAGE_WIDTH - 60,
-    height: 240,
-    color: rgb(0.95, 0.45, 0.2),
-    opacity: 0.35,
-  })
+// function drawQuotationNumberRow(
+//   currentPage: PDFPage,
+//   usedHeight: number,
+//   quotationData: any,
+// ) {
+//   currentPage.drawRectangle({
+//     x: 30,
+//     y: PAGE_HEIGHT - usedHeight - 300,
+//     width: PAGE_WIDTH - 60,
+//     height: 240,
+//     color: rgb(0.95, 0.45, 0.2),
+//     opacity: 0.35,
+//   })
 
-  currentPage.drawRectangle({
-    x: 30,
-    y: PAGE_HEIGHT - usedHeight - 410,
-    width: PAGE_WIDTH - 60,
-    height: 100,
-    color: rgb(0, 0, 0),
-    opacity: 0.1,
-  })
-  currentPage.drawText(`Estimate Name: ${quotationData.estimateTitle}`, {
-    font: timesFont,
-    color: rgb(0, 0, 0),
-    x: 50,
-    maxWidth: ((PAGE_WIDTH - 40) * 2) / 3 - 40,
-    y: PAGE_HEIGHT - usedHeight - 350,
-    size: TEXT_SIZE,
-  })
+//   currentPage.drawRectangle({
+//     x: 30,
+//     y: PAGE_HEIGHT - usedHeight - 410,
+//     width: PAGE_WIDTH - 60,
+//     height: 100,
+//     color: rgb(0, 0, 0),
+//     opacity: 0.1,
+//   })
+//   currentPage.drawText(`Estimate Name: ${quotationData.estimateTitle}`, {
+//     color: rgb(0, 0, 0),
+//     x: 50,
+//     maxWidth: ((PAGE_WIDTH - 40) * 2) / 3 - 40,
+//     y: PAGE_HEIGHT - usedHeight - 350,
+//     size: TEXT_SIZE,
+//   })
 
-  currentPage.drawText(`Description: ${quotationData.estimateDescription}`, {
-    font: timesFont,
-    color: rgb(0, 0, 0),
-    x: 50,
-    maxWidth: ((PAGE_WIDTH - 40) * 2) / 3 - 40,
-    y: PAGE_HEIGHT - usedHeight - 380,
-    size: TEXT_SIZE - 5,
-  })
-  currentPage.drawText(
-    `Product Type: ${quotationData.productType.productsTypeName}`,
-    {
-      font: timesFont,
-      color: rgb(0, 0, 0),
+//   currentPage.drawText(`Description: ${quotationData.estimateDescription}`, {
+//     color: rgb(0, 0, 0),
+//     x: 50,
+//     maxWidth: ((PAGE_WIDTH - 40) * 2) / 3 - 40,
+//     y: PAGE_HEIGHT - usedHeight - 380,
+//     size: TEXT_SIZE - 5,
+//   })
+//   currentPage.drawText(
+//     `Product Type: ${quotationData.productType.productsTypeName}`,
+//     {
+//       color: rgb(0, 0, 0),
 
-      x: ((PAGE_WIDTH - 60) * 2) / 3 + 30,
-      maxWidth: PAGE_WIDTH - ((PAGE_WIDTH - 60) * 2) / 3 - 80,
-      y: PAGE_HEIGHT - usedHeight - 350,
-      size: TEXT_SIZE - 5,
-    },
-  )
+//       x: ((PAGE_WIDTH - 60) * 2) / 3 + 30,
+//       maxWidth: PAGE_WIDTH - ((PAGE_WIDTH - 60) * 2) / 3 - 80,
+//       y: PAGE_HEIGHT - usedHeight - 350,
+//       size: TEXT_SIZE - 5,
+//     },
+//   )
 
-  currentPage.drawText(`Product: ${quotationData.product.productName}`, {
-    font: timesFont,
-    color: rgb(0, 0, 0),
-    x: ((PAGE_WIDTH - 60) * 2) / 3 + 30,
-    maxWidth: PAGE_WIDTH - ((PAGE_WIDTH - 60) * 2) / 3 - 80,
-    y: PAGE_HEIGHT - usedHeight - 380,
-    size: TEXT_SIZE - 5,
-  })
+//   currentPage.drawText(`Product: ${quotationData.product.productName}`, {
+//     color: rgb(0, 0, 0),
+//     x: ((PAGE_WIDTH - 60) * 2) / 3 + 30,
+//     maxWidth: PAGE_WIDTH - ((PAGE_WIDTH - 60) * 2) / 3 - 80,
+//     y: PAGE_HEIGHT - usedHeight - 380,
+//     size: TEXT_SIZE - 5,
+//   })
 
-  usedHeight += 70
-  return usedHeight
-}
+//   usedHeight += 70
+//   return usedHeight
+// }
 
-function drawVariationsTable(
+async function drawVariationsTable(
   pdfDoc: PDFDocument,
   currentPage: PDFPage,
   usedHeight: number,
   quotationData: any,
-  helveticaFont: any,
-  timesFont: any,
-  helveticaBoldFont: any,
+  lightSansFont: any,
+  mediumSansFont: any,
+  boldSansFont: any,
 ) {
-  quotationData.variations.forEach((variation: any, index: number) => {
+  for (const variation of quotationData.variations) {
     let insideInitialHeight = usedHeight
-
-    let checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    let checkHeightResult = await checkUsedHeight(
+      currentPage,
+      usedHeight,
+      pdfDoc,
+    )
     if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
     currentPage = checkHeightResult.currentPage
     usedHeight = checkHeightResult.usedHeight
@@ -424,17 +450,18 @@ function drawVariationsTable(
         x: 40,
         y: PAGE_HEIGHT - usedHeight - 20,
         size: TEXT_SIZE,
+        font: mediumSansFont,
       },
     )
     usedHeight += TEXT_SIZE + 25
 
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
     if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
     currentPage = checkHeightResult.currentPage
     usedHeight = checkHeightResult.usedHeight
 
     const text = `Additional Notes: ${variation.variationNotes ? variation.variationNotes : 'None'}`
-    const textWidth = helveticaFont.widthOfTextAtSize(text, TEXT_SIZE - 10)
+    const textWidth = lightSansFont.widthOfTextAtSize(text, TEXT_SIZE - 10)
     const textHeightFactor = textWidth / (PAGE_WIDTH / 2 - 40) + 1
     currentPage.drawText(
       `Additional Notes: ${variation.variationNotes ? variation.variationNotes : ''}`,
@@ -443,11 +470,12 @@ function drawVariationsTable(
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH / 2 - 40,
+        font: lightSansFont,
       },
     )
     usedHeight += TEXT_SIZE * textHeightFactor
 
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
     if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
     currentPage = checkHeightResult.currentPage
     usedHeight = checkHeightResult.usedHeight
@@ -455,9 +483,9 @@ function drawVariationsTable(
     currentPage.drawText(`Size Details`, {
       x: 60,
       y: PAGE_HEIGHT - usedHeight,
-      size: TEXT_SIZE - 5,
+      size: TEXT_SIZE - 10,
       maxWidth: PAGE_WIDTH - 60,
-      font: helveticaBoldFont,
+      font: boldSansFont,
     })
 
     usedHeight += TEXT_SIZE
@@ -467,17 +495,18 @@ function drawVariationsTable(
       variation.closeSizeLength &&
       variation.closeSizeWidth
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(
-        `Close Size: ${variation.closeSizeName}- ${variation.closeSizeLength}mm x ${variation.closeSizeWidth}mm / ${Number(variation.closeSizeLength / 25.4).toFixed(2)}in x ${Number(variation.closeSizeWidth / 25.4).toFixed(2)}in`,
+        `Close Size: ${Number(variation.closeSizeLength / 25.4).toFixed(2)}in x ${Number(variation.closeSizeWidth / 25.4).toFixed(2)}in`,
         {
           x: 80,
           y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
+          size: TEXT_SIZE - 10,
           maxWidth: PAGE_WIDTH - 80,
+          font: lightSansFont,
         },
       )
       usedHeight += TEXT_SIZE + 5
@@ -488,17 +517,18 @@ function drawVariationsTable(
       variation.openSizeLength &&
       variation.openSizeWidth
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(
-        `Open Size: ${variation.openSizeName}- ${variation.openSizeLength}mm x ${variation.openSizeWidth}mm / ${Number(variation.openSizeLength / 25.4).toFixed(2)}in x ${Number(variation.openSizeWidth / 25.4).toFixed(2)}in`,
+        `Open Size: ${Number(variation.openSizeLength / 25.4).toFixed(2)}in x ${Number(variation.openSizeWidth / 25.4).toFixed(2)}in`,
         {
           x: 80,
           y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
+          size: TEXT_SIZE - 10,
           maxWidth: PAGE_WIDTH - 80,
+          font: lightSansFont,
         },
       )
       usedHeight += TEXT_SIZE + 5
@@ -514,36 +544,36 @@ function drawVariationsTable(
       quotationData.productType.productsTypeName === 'Notebooks' ||
       quotationData.productType.productsTypeName === 'Pads'
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Cover Details`, {
         x: 60,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 60,
-        font: helveticaBoldFont,
+        font: boldSansFont,
       })
 
       usedHeight += TEXT_SIZE + 5
     } else {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Sheet Details`, {
         x: 60,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 60,
-        font: helveticaBoldFont,
+        font: boldSansFont,
       })
 
       usedHeight += TEXT_SIZE + 5
     }
 
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
     currentPage = checkHeightResult.currentPage
     usedHeight = checkHeightResult.usedHeight
     currentPage.drawText(
@@ -551,87 +581,71 @@ function drawVariationsTable(
       {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       },
     )
     usedHeight += TEXT_SIZE
 
-    // checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-    // currentPage = checkHeightResult.currentPage
-    // usedHeight = checkHeightResult.usedHeight
-
-    // currentPage.drawText(`Pages: ${variation.coverPages}`, {
-    //   x: 80,
-    //   y: PAGE_HEIGHT - usedHeight,
-    //   size: TEXT_SIZE - 5,
-    //   maxWidth: PAGE_WIDTH - 80,
-    // })
-    // usedHeight += TEXT_SIZE
-
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-    currentPage = checkHeightResult.currentPage
-    usedHeight = checkHeightResult.usedHeight
-    currentPage.drawText(`Grammage: ${variation.coverGrammage} GSM`, {
-      x: 80,
-      y: PAGE_HEIGHT - usedHeight,
-      size: TEXT_SIZE - 5,
-      maxWidth: PAGE_WIDTH - 80,
-    })
-    usedHeight += TEXT_SIZE
-
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-    currentPage = checkHeightResult.currentPage
-    usedHeight = checkHeightResult.usedHeight
-    currentPage.drawText(`Lamination: ${variation.coverLamination}`, {
-      x: 80,
-      y: PAGE_HEIGHT - usedHeight,
-      size: TEXT_SIZE - 5,
-      maxWidth: PAGE_WIDTH - 80,
-    })
-    usedHeight += TEXT_SIZE
-
     let selectedPaper = variation.variationCalculations[0].coverPaper
-    let result = selectedPaper
-      .replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '')
-      .trim()
+    let result =
+      `${variation.coverGrammage} GSM ` +
+      selectedPaper.replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '').trim()
 
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
     currentPage = checkHeightResult.currentPage
     usedHeight = checkHeightResult.usedHeight
     currentPage.drawText(`Selected Paper: ${result}`, {
       x: 80,
       y: PAGE_HEIGHT - usedHeight,
-      size: TEXT_SIZE - 5,
+      size: TEXT_SIZE - 10,
       maxWidth: PAGE_WIDTH - 80,
+      font: lightSansFont,
     })
-    usedHeight += TEXT_SIZE + 5
+    usedHeight += TEXT_SIZE
+
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    currentPage = checkHeightResult.currentPage
+    usedHeight = checkHeightResult.usedHeight
+    currentPage.drawText(`Lamination: ${variation.coverLamination}`, {
+      x: 80,
+      y: PAGE_HEIGHT - usedHeight,
+      size: TEXT_SIZE - 10,
+      maxWidth: PAGE_WIDTH - 80,
+      font: lightSansFont,
+    })
+    usedHeight += TEXT_SIZE
+
     if (
-      quotationData.productType.productsTypeName === 'Catalogs' ||
-      quotationData.productType.productsTypeName === 'Books' ||
-      quotationData.productType.productsTypeName === 'Annual Reports' ||
-      quotationData.productType.productsTypeName === 'Brochures' ||
-      quotationData.productType.productsTypeName === "Children's Books" ||
-      quotationData.productType.productsTypeName === 'Magazines' ||
-      quotationData.productType.productsTypeName === 'Diaries' ||
-      quotationData.productType.productsTypeName === 'Notebooks' ||
-      quotationData.productType.productsTypeName === 'Pads'
+      (quotationData.productType.productsTypeName === 'Catalogs' ||
+        quotationData.productType.productsTypeName === 'Books' ||
+        quotationData.productType.productsTypeName === 'Annual Reports' ||
+        quotationData.productType.productsTypeName === 'Brochures' ||
+        quotationData.productType.productsTypeName === "Children's Books" ||
+        quotationData.productType.productsTypeName === 'Magazines' ||
+        quotationData.productType.productsTypeName === 'Diaries' ||
+        quotationData.productType.productsTypeName === 'Notebooks' ||
+        quotationData.productType.productsTypeName === 'Pads') &&
+      variation.textColors &&
+      variation.textGrammage &&
+      variation.textPages
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
-      currentPage.drawText(`Primary Text Details`, {
+      currentPage.drawText(`Text Details`, {
         x: 60,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 60,
-        font: helveticaBoldFont,
+        font: boldSansFont,
       })
 
       usedHeight += TEXT_SIZE + 5
 
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
@@ -640,68 +654,62 @@ function drawVariationsTable(
         {
           x: 80,
           y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
+          size: TEXT_SIZE - 10,
           maxWidth: PAGE_WIDTH - 80,
+          font: lightSansFont,
         },
       )
       usedHeight += TEXT_SIZE
 
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Pages: ${variation.textPages}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
 
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-      if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
-      currentPage = checkHeightResult.currentPage
-      usedHeight = checkHeightResult.usedHeight
-      currentPage.drawText(`Grammage: ${variation.textGrammage} GSM`, {
-        x: 80,
-        y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
-        maxWidth: PAGE_WIDTH - 80,
-      })
-      usedHeight += TEXT_SIZE
-
-      if (
-        variation.textLamination !== 'None' &&
-        variation.textLamination !== undefined &&
-        variation.textLamination !== null
-      ) {
-        checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-        currentPage = checkHeightResult.currentPage
-        usedHeight = checkHeightResult.usedHeight
-        currentPage.drawText(`Lamination: ${variation.textLamination}`, {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        })
-        usedHeight += TEXT_SIZE
-      }
       let selectedPaper = variation.variationCalculations[0].textPaper
-      let result = selectedPaper
-        .replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '')
-        .trim()
+      let result =
+        `${variation.textGrammage} GSM` +
+        selectedPaper
+          .replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '')
+          .trim()
 
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Selected Paper: ${result}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
-      usedHeight += TEXT_SIZE + 5
+      usedHeight += TEXT_SIZE
+    }
+    if (
+      variation.textLamination !== 'None' &&
+      variation.textLamination !== undefined &&
+      variation.textLamination !== null
+    ) {
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      currentPage = checkHeightResult.currentPage
+      usedHeight = checkHeightResult.usedHeight
+      currentPage.drawText(`Lamination: ${variation.textLamination}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 10,
+        maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
+      })
+      usedHeight += TEXT_SIZE
     }
 
     if (
@@ -709,20 +717,20 @@ function drawVariationsTable(
       variation.secondaryTextGrammage &&
       variation.secondaryTextPages
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Secondary Text Details`, {
         x: 60,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 60,
-        font: helveticaBoldFont,
+        font: boldSansFont,
       })
 
       usedHeight += TEXT_SIZE + 5
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
@@ -731,79 +739,72 @@ function drawVariationsTable(
         {
           x: 80,
           y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
+          size: TEXT_SIZE - 10,
           maxWidth: PAGE_WIDTH - 80,
+          font: lightSansFont,
         },
       )
       usedHeight += TEXT_SIZE
 
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Pages: ${variation.textPages}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
 
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-      if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
-      currentPage = checkHeightResult.currentPage
-      usedHeight = checkHeightResult.usedHeight
-      currentPage.drawText(`Grammage: ${variation.textGrammage} GSM`, {
-        x: 80,
-        y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
-        maxWidth: PAGE_WIDTH - 80,
-      })
-      usedHeight += TEXT_SIZE
-
-      if (
-        variation.textLamination !== 'None' &&
-        variation.textLamination !== undefined &&
-        variation.textLamination !== null
-      ) {
-        checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-        currentPage = checkHeightResult.currentPage
-        usedHeight = checkHeightResult.usedHeight
-        currentPage.drawText(`Lamination: ${variation.textLamination}`, {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        })
-        usedHeight += TEXT_SIZE
-      }
       let selectedPaper = variation.variationCalculations[0].secondaryTextPaper
-      let result = selectedPaper
-        .replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '')
-        .trim()
+      let result =
+        ` ${variation.secondaryTextGrammage} GSM` +
+        selectedPaper
+          .replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '')
+          .trim()
 
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Selected Paper: ${result}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
-      usedHeight += TEXT_SIZE + 5
+      usedHeight += TEXT_SIZE
     }
-
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    if (
+      variation.textLamination !== 'None' &&
+      variation.textLamination !== undefined &&
+      variation.textLamination !== null
+    ) {
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      currentPage = checkHeightResult.currentPage
+      usedHeight = checkHeightResult.usedHeight
+      currentPage.drawText(`Lamination: ${variation.textLamination}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 10,
+        maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
+      })
+      usedHeight += TEXT_SIZE
+    }
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
     currentPage = checkHeightResult.currentPage
     usedHeight = checkHeightResult.usedHeight
     currentPage.drawText(`Fabrication Details`, {
       x: 60,
       y: PAGE_HEIGHT - usedHeight,
-      size: TEXT_SIZE - 5,
+      size: TEXT_SIZE - 10,
       maxWidth: PAGE_WIDTH - 60,
-      font: helveticaBoldFont,
+      font: boldSansFont,
     })
 
     usedHeight += TEXT_SIZE + 5
@@ -813,15 +814,16 @@ function drawVariationsTable(
       variation.binding !== undefined &&
       variation.binding !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Binding: ${variation.binding}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -830,15 +832,16 @@ function drawVariationsTable(
       variation.coverUV !== undefined &&
       variation.coverUV !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Cover UV: ${variation.coverUV}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -847,15 +850,16 @@ function drawVariationsTable(
       variation.textUV !== undefined &&
       variation.textUV !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Text UV: ${variation.textUV}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -864,15 +868,16 @@ function drawVariationsTable(
       variation.coverCoating !== undefined &&
       variation.coverCoating !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Cover Coating: ${variation.coverCoating}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -881,15 +886,16 @@ function drawVariationsTable(
       variation.textCoating !== undefined &&
       variation.textCoating !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Text Coating: ${variation.textCoating}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -898,15 +904,16 @@ function drawVariationsTable(
       variation.coverEmbossing !== undefined &&
       variation.coverEmbossing !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Cover Embossing: ${variation.coverEmbossing}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -915,15 +922,16 @@ function drawVariationsTable(
       variation.coverFoiling !== undefined &&
       variation.coverFoiling !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Cover Foiling: ${variation.coverFoiling}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -933,15 +941,16 @@ function drawVariationsTable(
       variation.vdp !== undefined &&
       variation.vdp !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`VDP: ${variation.vdp}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -950,19 +959,17 @@ function drawVariationsTable(
       variation.coverDieCutting !== undefined &&
       variation.coverDieCutting !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
-      currentPage.drawText(
-        `Die Cutting(Outside): ${variation.coverDieCutting}`,
-        {
-          x: 80,
-          y: PAGE_HEIGHT - usedHeight,
-          size: TEXT_SIZE - 5,
-          maxWidth: PAGE_WIDTH - 80,
-        },
-      )
+      currentPage.drawText(`Die Cutting(Outer): ${variation.coverDieCutting}`, {
+        x: 80,
+        y: PAGE_HEIGHT - usedHeight,
+        size: TEXT_SIZE - 10,
+        maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
+      })
       usedHeight += TEXT_SIZE
     }
     if (
@@ -970,15 +977,16 @@ function drawVariationsTable(
       variation.textDieCutting !== undefined &&
       variation.textDieCutting !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
-      currentPage.drawText(`Die Cutting(Inside): ${variation.textDieCutting}`, {
+      currentPage.drawText(`Die Cutting(Inner): ${variation.textDieCutting}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -987,15 +995,16 @@ function drawVariationsTable(
       variation.gummingType !== undefined &&
       variation.gummingType !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Gumming: ${variation.gummingType}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
@@ -1004,28 +1013,30 @@ function drawVariationsTable(
       variation.makingProcess !== undefined &&
       variation.makingProcess !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Making: ${variation.makingProcess}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
-    checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
     currentPage = checkHeightResult.currentPage
     usedHeight = checkHeightResult.usedHeight
 
     currentPage.drawText(`Packaging Details`, {
       x: 60,
       y: PAGE_HEIGHT - usedHeight,
-      size: TEXT_SIZE - 5,
+      size: TEXT_SIZE - 10,
       maxWidth: PAGE_WIDTH - 60,
-      font: helveticaBoldFont,
+      font: boldSansFont,
     })
 
     usedHeight += TEXT_SIZE + 5
@@ -1035,25 +1046,27 @@ function drawVariationsTable(
       variation.packagingType !== undefined &&
       variation.packagingType !== null
     ) {
-      checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+      checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(`Packaging: ${variation.packagingType}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
-        size: TEXT_SIZE - 5,
+        size: TEXT_SIZE - 10,
         maxWidth: PAGE_WIDTH - 80,
+        font: lightSansFont,
       })
       usedHeight += TEXT_SIZE
     }
 
-    let usedHeightFromTable = drawRatesTable(
+    let usedHeightFromTable = await drawRatesTable(
       currentPage,
       insideInitialHeight,
       variation,
-      helveticaFont,
-      helveticaBoldFont,
+      lightSansFont,
+      mediumSansFont,
+      boldSansFont,
     )
 
     usedHeight =
@@ -1067,134 +1080,91 @@ function drawVariationsTable(
       opacity: 0.5,
     })
     usedHeight += 10
-  })
+  }
 
   return { currentPage, usedHeight }
 }
 
-function drawFooter(
+async function drawFooter(
   currentPage: PDFPage,
   usedHeight: number,
-  timesFont: any,
-  timesFontBold: any,
   pdfDoc: PDFDocument,
   quotationData: any,
+  lightSerifFont: any,
+  mediumSerifFont: any,
+  boldSerifFont: any,
 ) {
-  let checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  let checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
   currentPage = checkHeightResult.currentPage
   usedHeight = checkHeightResult.usedHeight
+
   currentPage.drawText(
     `This is a computer generated estimate and does not require a signature.`,
     {
       x: 40,
       y: PAGE_HEIGHT - usedHeight - 20,
       size: TEXT_SIZE - 8,
-      font: timesFont,
       opacity: 0.8,
+      font: lightSerifFont,
     },
   )
-  usedHeight += TEXT_SIZE - 8
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  usedHeight += TEXT_SIZE
+
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
   currentPage = checkHeightResult.currentPage
   usedHeight = checkHeightResult.usedHeight
-  currentPage.drawText(`Payment Terms`, {
+
+  let text = `Payment Terms: A 50% advance payment is required with an approved purchase order and The remaining balance is due before delivery of the completed job.`
+  let textWidth = mediumSerifFont.widthOfTextAtSize(text, TEXT_SIZE - 5)
+  let textHeightFactor = textWidth / (PAGE_WIDTH - 120)
+
+  currentPage.drawText(text, {
     x: 40,
     y: PAGE_HEIGHT - usedHeight - 20,
     size: TEXT_SIZE - 8,
-    font: timesFontBold,
     opacity: 1,
-  })
-
-  usedHeight += TEXT_SIZE - 8
-
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-  currentPage = checkHeightResult.currentPage
-  usedHeight = checkHeightResult.usedHeight
-
-  let text = `1. Advance Payment: A 50% advance payment is required before project commoncement. This advance payment is necessary to secure your order and cover initial material and labor costs.`
-  let textWidth = timesFont.widthOfTextAtSize(text, TEXT_SIZE - 5)
-  let textHeightFactor = textWidth / (PAGE_WIDTH - 120) + 1
-
-  currentPage.drawText(text, {
-    x: 80,
-    y: PAGE_HEIGHT - usedHeight - 20,
-    size: TEXT_SIZE - 8,
     maxWidth: PAGE_WIDTH - 120,
-    font: timesFont,
-    opacity: 0.8,
     lineHeight: 17,
+    font: mediumSerifFont,
   })
-  usedHeight += textHeightFactor * (TEXT_SIZE - 8)
+  usedHeight += textHeightFactor * (TEXT_SIZE - 5)
 
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  currentPage = checkHeightResult.currentPage
+  usedHeight = checkHeightResult.usedHeight
+  currentPage.drawText(
+    `GST & Freight: GST and freight charges are extra as applicable.`,
+    {
+      x: 40,
+      y: PAGE_HEIGHT - usedHeight - 20,
+      size: TEXT_SIZE - 8,
+      maxWidth: PAGE_WIDTH - 120,
+      opacity: 1,
+      font: mediumSerifFont,
+    },
+  )
+
+  usedHeight += TEXT_SIZE
+
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
   currentPage = checkHeightResult.currentPage
   usedHeight = checkHeightResult.usedHeight
 
-  text = `2. Final Payment: The remaining balance is due before delivery of the completed job. We will notify you once the job is ready for delivery, and full payment must be received prior to the release of the finished products.`
-  ;(textWidth = timesFont.widthOfTextAtSize(text, TEXT_SIZE - 5)),
-    (textHeightFactor = textWidth / (PAGE_WIDTH - 120) + 1)
-
-  currentPage.drawText(text, {
-    x: 80,
-    y: PAGE_HEIGHT - usedHeight - 20,
-    size: TEXT_SIZE - 8,
-    maxWidth: PAGE_WIDTH - 120,
-    font: timesFont,
-    opacity: 0.8,
-    lineHeight: 17,
-  })
-  usedHeight += textHeightFactor * (TEXT_SIZE - 8)
-
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-  currentPage = checkHeightResult.currentPage
-  usedHeight = checkHeightResult.usedHeight
-  currentPage.drawText(`GST & Freight`, {
-    x: 40,
-    y: PAGE_HEIGHT - usedHeight - 20,
-    size: TEXT_SIZE - 8,
-    font: timesFontBold,
-    opacity: 1,
-  })
-
-  usedHeight += TEXT_SIZE - 8
-
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-  currentPage = checkHeightResult.currentPage
-  usedHeight = checkHeightResult.usedHeight
-
-  text = `All rates mentioned above are exclusive of GST and freight charges. Applicable GST and freight costs will be added to the total amount payable.`
-  ;(textWidth = timesFont.widthOfTextAtSize(text, TEXT_SIZE - 5)),
-    (textHeightFactor = textWidth / (PAGE_WIDTH - 120) + 1)
-
-  currentPage.drawText(text, {
-    x: 80,
-    y: PAGE_HEIGHT - usedHeight - 20,
-    size: TEXT_SIZE - 8,
-    maxWidth: PAGE_WIDTH - 120,
-    font: timesFont,
-    opacity: 0.8,
-    lineHeight: 17,
-  })
-  usedHeight += textHeightFactor * (TEXT_SIZE - 8)
-
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
-  currentPage = checkHeightResult.currentPage
-  usedHeight = checkHeightResult.usedHeight
   currentPage.drawText(`Additional T&C`, {
     x: 40,
     y: PAGE_HEIGHT - usedHeight - 20,
     size: TEXT_SIZE - 8,
-    font: timesFontBold,
     opacity: 1,
+    font: mediumSerifFont,
   })
-  usedHeight += TEXT_SIZE - 8
+  usedHeight += TEXT_SIZE
 
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
   currentPage = checkHeightResult.currentPage
   usedHeight = checkHeightResult.usedHeight
 
-  text = `1. Delivery Schedule: Delivery dates provided are estimates and may be subject to change due to unforeseen circumstances such as equipment failure, natural disasters, or other unavoidable delays.`
-  ;(textWidth = timesFont.widthOfTextAtSize(text, TEXT_SIZE - 5)),
+  text = `1. Delivery dates provided are estimates and may be subject to change due to unforeseen circumstances.`
+  ;(textWidth = lightSerifFont.widthOfTextAtSize(text, TEXT_SIZE - 5)),
     (textHeightFactor = textWidth / (PAGE_WIDTH - 120) + 1)
 
   currentPage.drawText(text, {
@@ -1202,18 +1172,18 @@ function drawFooter(
     y: PAGE_HEIGHT - usedHeight - 20,
     size: TEXT_SIZE - 8,
     maxWidth: PAGE_WIDTH - 120,
-    font: timesFont,
     opacity: 0.8,
     lineHeight: 17,
+    font: lightSerifFont,
   })
   usedHeight += textHeightFactor * (TEXT_SIZE - 8)
 
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
   currentPage = checkHeightResult.currentPage
   usedHeight = checkHeightResult.usedHeight
 
-  text = `2. Quality Assurance: We strive to maintain high-quality standards in all our products. Should you find any defects or issues with our workmanship, please notify us within 2 days of receipt for resolution.`
-  ;(textWidth = timesFont.widthOfTextAtSize(text, TEXT_SIZE - 5)),
+  text = `2. Quality Assurance: We strive to maintain high-quality standards in all our products. If you notice any defects or issues with our workmanship, please notify us within 2 days of receipt for resolution.`
+  ;(textWidth = lightSerifFont.widthOfTextAtSize(text, TEXT_SIZE - 5)),
     (textHeightFactor = textWidth / (PAGE_WIDTH - 120) + 1)
 
   currentPage.drawText(text, {
@@ -1221,65 +1191,73 @@ function drawFooter(
     y: PAGE_HEIGHT - usedHeight - 20,
     size: TEXT_SIZE - 8,
     maxWidth: PAGE_WIDTH - 120,
-    font: timesFont,
     opacity: 0.8,
     lineHeight: 17,
+    font: lightSerifFont,
   })
   usedHeight += textHeightFactor * (TEXT_SIZE - 8)
 
-  usedHeight += 20
+  usedHeight += 40
 
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
   currentPage = checkHeightResult.currentPage
   usedHeight = checkHeightResult.usedHeight
 
   let salesRepDetails = `${quotationData.salesRep.salesRepName}\n${quotationData.salesRep.salesRepEmail}\n${quotationData.salesRep.salesRepMobile}`
 
-  currentPage.drawText(`Excel Printers Private Limited`, {
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  currentPage = checkHeightResult.currentPage
+  usedHeight = checkHeightResult.usedHeight
+  currentPage.drawText(`Warm Regards,\n`, {
     x: 40,
     y: PAGE_HEIGHT - usedHeight - 20,
-    size: TEXT_SIZE - 8,
+    size: TEXT_SIZE - 3,
     maxWidth: PAGE_WIDTH / 4,
-    font: timesFontBold,
     opacity: 0.8,
     lineHeight: 20,
+    font: mediumSerifFont,
   })
-  usedHeight += TEXT_SIZE - 8
+  usedHeight += TEXT_SIZE * 1.5
 
-  text = `07AABCE1085B1Z6\nA/82, Third Floor, Naraina Industrial Area Phase 1, New Delhi, Delhi - 110028\n`
-
-  currentPage.drawText(text, {
-    x: 40,
-    y: PAGE_HEIGHT - usedHeight - 20,
-    size: TEXT_SIZE - 8,
-    maxWidth: PAGE_WIDTH / 4,
-    font: timesFont,
-    opacity: 0.8,
-    lineHeight: 20,
-  })
-  usedHeight += TEXT_SIZE * 3
-
-  checkHeightResult = checkUsedHeight(currentPage, usedHeight, pdfDoc)
+  checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
   currentPage = checkHeightResult.currentPage
   usedHeight = checkHeightResult.usedHeight
 
   currentPage.drawText(salesRepDetails, {
     x: 40,
     y: PAGE_HEIGHT - usedHeight - 20,
-    size: TEXT_SIZE - 8,
+    size: TEXT_SIZE - 3,
     maxWidth: PAGE_WIDTH / 4,
-    font: timesFont,
     opacity: 0.8,
-    lineHeight: 20,
+    lineHeight: 25,
+    font: mediumSerifFont,
   })
+  usedHeight += TEXT_SIZE
+
+  const footerImage = path.join(process.cwd(), 'public', 'footer.png')
+
+  const footerBytes = fs.readFileSync(footerImage)
+
+  const footer = await pdfDoc.embedPng(footerBytes)
+
+  const footerDims = footer.scale(0.25)
+  currentPage.drawImage(footer, {
+    x: PAGE_WIDTH / 2 - footerDims.width / 2,
+    y: 0,
+    width: footerDims.width,
+    height: footerDims.height,
+  })
+
+  return usedHeight
 }
 
-function drawRatesTable(
+async function drawRatesTable(
   currentPage: PDFPage,
   usedHeight: number,
   variation: any,
-  font: any,
-  boldFont: any,
+  lightSansFont: any,
+  mediumSansFont: any,
+  boldSansFont: any,
 ) {
   const initialHeight = usedHeight + 80
   usedHeight = usedHeight + 50
@@ -1288,6 +1266,7 @@ function drawRatesTable(
     x: PAGE_WIDTH / 2 + 200,
     y: PAGE_HEIGHT - usedHeight,
     size: TEXT_SIZE - 5,
+    font: mediumSansFont,
   })
 
   usedHeight += TEXT_SIZE + 5
@@ -1302,6 +1281,7 @@ function drawRatesTable(
       x: PAGE_WIDTH / 2 + headerXPositions[index],
       y: PAGE_HEIGHT - usedHeight,
       size: TEXT_SIZE - 5,
+      font: mediumSansFont,
     })
   })
 
@@ -1318,33 +1298,61 @@ function drawRatesTable(
       x: PAGE_WIDTH / 2 + headerXPositions[0],
       y: rowYPosition,
       size: TEXT_SIZE - 5,
-      font: font,
+      font: mediumSansFont,
     })
 
     currentPage.drawText(row.rate.toString(), {
       x: PAGE_WIDTH / 2 + headerXPositions[1],
       y: rowYPosition,
       size: TEXT_SIZE - 5,
-      font: font,
+      font: mediumSansFont,
     })
 
     usedHeight += TEXT_SIZE - 10
   })
 
-  usedHeight += TEXT_SIZE * (indexMax + 1)
+  usedHeight += TEXT_SIZE * (indexMax + 0.5)
+
+  currentPage.drawLine({
+    start: { x: PAGE_WIDTH / 2 + 190, y: PAGE_HEIGHT - initialHeight + 20 },
+    end: { x: PAGE_WIDTH / 2 + 400, y: PAGE_HEIGHT - initialHeight + 20 },
+    thickness: 1,
+    color: rgb(112 / 255, 128 / 255, 144 / 255),
+  })
 
   currentPage.drawLine({
     start: { x: PAGE_WIDTH / 2 + 300, y: PAGE_HEIGHT - initialHeight + 20 },
     end: { x: PAGE_WIDTH / 2 + 300, y: PAGE_HEIGHT - usedHeight },
     thickness: 1,
-    color: rgb(0, 0, 0),
+    color: rgb(112 / 255, 128 / 255, 144 / 255),
   })
 
   currentPage.drawLine({
-    start: { x: PAGE_WIDTH / 2 + 200, y: PAGE_HEIGHT - initialHeight - 5 },
+    start: { x: PAGE_WIDTH / 2 + 190, y: PAGE_HEIGHT - initialHeight + 20 },
+    end: { x: PAGE_WIDTH / 2 + 190, y: PAGE_HEIGHT - usedHeight },
+    thickness: 1,
+    color: rgb(112 / 255, 128 / 255, 144 / 255),
+  })
+
+  currentPage.drawLine({
+    start: { x: PAGE_WIDTH / 2 + 400, y: PAGE_HEIGHT - initialHeight + 20 },
+    end: { x: PAGE_WIDTH / 2 + 400, y: PAGE_HEIGHT - usedHeight },
+    thickness: 1,
+    color: rgb(112 / 255, 128 / 255, 144 / 255),
+  })
+
+  currentPage.drawLine({
+    start: { x: PAGE_WIDTH / 2 + 190, y: PAGE_HEIGHT - initialHeight - 5 },
     end: { x: PAGE_WIDTH / 2 + 400, y: PAGE_HEIGHT - initialHeight - 5 },
     thickness: 1,
-    color: rgb(0, 0, 0),
+    color: rgb(112 / 255, 128 / 255, 144 / 255),
+  })
+
+  currentPage.drawLine({
+    start: { x: PAGE_WIDTH / 2 + 190, y: PAGE_HEIGHT - usedHeight },
+    end: { x: PAGE_WIDTH / 2 + 400, y: PAGE_HEIGHT - usedHeight },
+    thickness: 1,
+    color: rgb(112 / 255, 128 / 255, 144 / 255),
   })
 
   currentPage.drawRectangle({
@@ -1359,13 +1367,15 @@ function drawRatesTable(
   return usedHeight
 }
 
-function checkUsedHeight(
+async function checkUsedHeight(
   currentPage: PDFPage,
   usedHeight: number,
   pdfDoc: PDFDocument,
 ) {
-  if (usedHeight > PAGE_HEIGHT - 20) {
+  if (usedHeight > PAGE_HEIGHT - 200) {
     currentPage = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
+    await drawPageBackgrounds(currentPage, pdfDoc)
+
     return { currentPage: currentPage, usedHeight: 40 }
   } else {
     return { currentPage: currentPage, usedHeight: usedHeight }
@@ -1390,4 +1400,37 @@ async function getAllQuotationData(uuid: string) {
     },
   })
   return data
+}
+
+async function drawPageBackgrounds(currentPage: PDFPage, pdfDoc: PDFDocument) {
+  const watermarkImagePath = path.join(process.cwd(), 'public', 'watermark.png')
+  const watermarkImageBytes = fs.readFileSync(watermarkImagePath)
+
+  const textureBackgroundImagePath = path.join(
+    process.cwd(),
+    'public',
+    'white-texture.jpg',
+  )
+
+  const jpgImageBytes = fs.readFileSync(textureBackgroundImagePath)
+
+  const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
+  const watermarkImage = await pdfDoc.embedPng(watermarkImageBytes)
+  const watermarkDims = watermarkImage.scale(0.2)
+
+  currentPage.setLineHeight(25)
+  currentPage.drawImage(jpgImage, {
+    x: 0,
+    y: 0,
+    width: PAGE_WIDTH,
+    height: PAGE_HEIGHT,
+    opacity: 0.33,
+  })
+
+  currentPage.drawImage(watermarkImage, {
+    x: PAGE_WIDTH / 2 - watermarkDims.width / 2,
+    y: PAGE_HEIGHT / 2 - watermarkDims.height / 2,
+    width: watermarkDims.width,
+    height: watermarkDims.height,
+  })
 }
