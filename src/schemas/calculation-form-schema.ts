@@ -164,6 +164,38 @@ export const CalculationFormSchema = z.object({
       .transform((val) => val?.toString() || undefined),
   ),
 
+  coverWidthFlap: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+
+    z
+      .number()
+      .nonnegative({ message: 'Width Flap must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
+  coverLengthFlap: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Length Flap must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
   textBleed: z.preprocess(
     (val) => {
       if (typeof val === 'string') {
@@ -554,6 +586,21 @@ export const CalculationFormSchema = z.object({
     z
       .number()
       .nonnegative({ message: 'Hardcover width must be non-negative' })
+      .optional()
+      .transform((val) => val?.toString() || undefined),
+  ),
+
+  boardBleedMargin: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        const parsed = parseFloat(val)
+        return isNaN(parsed) ? undefined : parsed
+      }
+      return val
+    },
+    z
+      .number()
+      .nonnegative({ message: 'Bleed Margin must be non-negative' })
       .optional()
       .transform((val) => val?.toString() || undefined),
   ),

@@ -392,6 +392,8 @@ export const variationCalculation = createTable('variation_calculation', {
     scale: 2,
   }),
   coverWorkingWidth: numeric('cover_working_width', { precision: 7, scale: 2 }),
+  coverWidthFlap: numeric('cover_width_flap', { precision: 7, scale: 2 }),
+  coverLengthFlap: numeric('cover_length_flap', { precision: 7, scale: 2 }),
   textGutters: numeric('text_gutters', { precision: 7, scale: 2 }),
   textBleed: numeric('text_bleed', { precision: 7, scale: 2 }),
   textGrippers: numeric('text_grippers', { precision: 7, scale: 2 }),

@@ -54,12 +54,14 @@ export default function FabricationCalculation(props: {
   >
   fabricationCostDataTable: FabricationCostData | undefined
   textCostDataTable: TextCostData
+  secondaryTextCostDataTable: TextCostData
   coverCostDataTable: CoverCostData
 }) {
   const {
     variationData,
     fabricationCostDataTable,
     textCostDataTable,
+    secondaryTextCostDataTable,
     coverCostDataTable,
     setFabricationCostDataTable,
   } = props
@@ -69,6 +71,7 @@ export default function FabricationCalculation(props: {
       const fetchFabricationCostDataTable = await calculateFabricationCost(
         variationData,
         textCostDataTable,
+        secondaryTextCostDataTable,
         coverCostDataTable,
       )
       setFabricationCostDataTable(fetchFabricationCostDataTable)

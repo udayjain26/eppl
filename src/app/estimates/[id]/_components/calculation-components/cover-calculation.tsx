@@ -123,12 +123,16 @@ export default function CoverCalculation(props: {
 
   const effectiveCoverLength = props.variationData.openSizeLength
     ? props.variationData.openSizeLength +
-      Number(props.form.watch('coverBleed')) * 2
+      Number(props.form.watch('coverBleed')) * 2 +
+      Number(props.form.watch('coverLengthFlap')) * 2 +
+      Number(props.form.watch('addedHardcoverLength'))
     : 0
   const effectiveCoverWidth = props.variationData.openSizeWidth
     ? props.variationData.openSizeWidth +
       Number(props.form.watch('coverSpine')) +
-      Number(props.form.watch('coverBleed')) * 2
+      Number(props.form.watch('coverWidthFlap')) * 2 +
+      Number(props.form.watch('coverBleed')) * 2 +
+      Number(props.form.watch('addedHardcoverWidth'))
     : 0
   const coverPrintingType = props.form.watch('coverPrintingType')
   let grippers: number
@@ -296,6 +300,30 @@ export default function CoverCalculation(props: {
               render={({ field }) => (
                 <FormItem className=" ">
                   <FormLabel>Spine(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverWidthFlap"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Cover Width Flap(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={props.form.control}
+              name="coverLengthFlap"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Cover Length Flap(mm)</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
                   </FormControl>

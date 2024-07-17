@@ -132,11 +132,34 @@ export default function CalculationFields(props: {
         ? props.variationData.textPages / 2
         : 0
 
-      const boardThickness = props.variationData.boardThickness
-        ? props.variationData.boardThickness * 2
+      const secondaryGrammage = props.variationData.secondaryTextGrammage
+        ? props.variationData.secondaryTextGrammage
+        : 0
+      const secondaryLeaves = props.variationData.secondaryTextPages
+        ? props.variationData.secondaryTextPages / 2
         : 0
 
-      const computedSpine = grammage * leaves * 0.0015 + boardThickness
+      const boardThickness = props.variationData.boardThickness
+        ? Number(props.variationData.boardThickness)
+        : 0
+
+      const computedSpine = Number(
+        grammage * leaves * 0.0015 +
+          secondaryGrammage * secondaryLeaves * 0.0015 +
+          boardThickness * 2,
+      ).toFixed(2)
+
+      const computedCoverWidthFlap = props.variationData.boardType
+        ? Number(30).toFixed(2)
+        : 0
+      const computedCoverLengthFlap = props.variationData.boardType
+        ? Number(30).toFixed(2)
+        : 0
+
+      // const computedCoverLengthFlap = Number(
+      //   Number(props.variationData.closeSizeLength) +
+      //     Number(data?.addedHardcoverLength),
+      // ).toFixed(2)
 
       form.reset({
         coverSpine:
@@ -178,6 +201,15 @@ export default function CalculationFields(props: {
         coverPlateSize: data?.coverPlateSize
           ? data.coverPlateSize.toString()
           : 'Small',
+
+        coverWidthFlap:
+          data?.coverWidthFlap && Number(data?.coverWidthFlap) !== 0
+            ? data.coverWidthFlap.toString()
+            : computedCoverWidthFlap.toString(),
+        coverLengthFlap:
+          data?.coverLengthFlap && Number(data?.coverLengthFlap)
+            ? data.coverLengthFlap.toString()
+            : computedCoverLengthFlap.toString(),
         textGutters: data?.textGutters ? data.textGutters.toString() : '0',
         textBleed: data?.textBleed ? data.textBleed.toString() : '3',
         textGrippers: data?.textGrippers ? data.textGrippers.toString() : '10',
@@ -266,6 +298,9 @@ export default function CalculationFields(props: {
         addedHardcoverWidth: data?.addedHardcoverWidth
           ? data.addedHardcoverWidth.toString()
           : '0',
+        boardBleedMargin: data?.boardBleedMargin
+          ? data.boardBleedMargin.toString()
+          : '3',
       })
     }
     fetchCalculationData()

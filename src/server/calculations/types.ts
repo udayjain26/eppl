@@ -20,6 +20,8 @@ export type VariationCalculationData =
       coverPrintingRateFactor?: number
       coverWorkingLength?: number
       coverWorkingWidth?: number
+      coverWidthFlap?: number
+      coverLengthFlap?: number
       coverPlateSize?: string
       textGutters?: number
       textBleed?: number
@@ -52,5 +54,6 @@ export type VariationCalculationData =
       discountPercentage: number
       addedHardcoverLength: number
       addedHardcoverWidth: number
+      boardBleedMargin: number
     }
   | undefined

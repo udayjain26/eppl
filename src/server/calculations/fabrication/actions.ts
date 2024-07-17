@@ -29,27 +29,43 @@ import { text } from 'stream/consumers'
 export async function calculateFabricationCost(
   variationData: VariationData,
   textCostDataTable: TextCostData,
+  secondaryTextCostDataTable: TextCostData,
   coverCostDataTable: CoverCostData,
 ): Promise<FabricationCostData> {
-  let fabricationForms =
+  let fabricationForms = 0
+  let primaryFabricationForms =
     textCostDataTable?.textForms.totalFormsFB +
     textCostDataTable?.textForms.totalForms2Ups / 2 +
     textCostDataTable?.textForms.totalForms4Ups / 4 +
     textCostDataTable?.textForms.totalForms8Ups / 8
 
+  let secondaryFabricationForms =
+    secondaryTextCostDataTable?.textForms.totalFormsFB +
+    secondaryTextCostDataTable?.textForms.totalForms2Ups / 2 +
+    secondaryTextCostDataTable?.textForms.totalForms4Ups / 4 +
+    secondaryTextCostDataTable?.textForms.totalForms8Ups / 8
+
   if (typeof textCostDataTable?.pagesPerSheet === 'number') {
     if (textCostDataTable?.pagesPerSheet > 16) {
-      fabricationForms = fabricationForms * 2
+      primaryFabricationForms = primaryFabricationForms * 2
+    }
+  }
+  if (typeof secondaryTextCostDataTable?.pagesPerSheet === 'number') {
+    if (secondaryTextCostDataTable?.pagesPerSheet > 16) {
+      secondaryFabricationForms = secondaryFabricationForms * 2
     }
   }
 
-  if (!fabricationForms) {
+  if (!primaryFabricationForms && !secondaryFabricationForms) {
     fabricationForms = 0
+  } else {
+    fabricationForms = primaryFabricationForms + secondaryFabricationForms
   }
 
   const fabricationCostDataDict = getFabricationCostsDict(
     variationData,
     textCostDataTable,
+    secondaryTextCostDataTable,
     coverCostDataTable,
   )
   return {
@@ -63,15 +79,24 @@ export async function calculateFabricationCost(
 function getFabricationCostsDict(
   variationData: VariationData,
   textCostDataTable: TextCostData,
+  secondaryTextCostDataTable: TextCostData,
   coverCostDataTable: CoverCostData,
 ): FabricationCostDataDict[] {
   const data = variationData.variationQtysRates.map((o) => {
     const jobQuantity = o.quantity
     let coverTotalSheets = 0
 
-    let textTotalSheets = textCostDataTable?.textCostDataDict.find(
-      (row) => row.jobQuantity === jobQuantity,
-    )?.totalSheets
+    let primaryTextSheets =
+      textCostDataTable?.textCostDataDict.find(
+        (row) => row.jobQuantity === jobQuantity,
+      )?.totalSheets || 0
+
+    let secondaryTextSheets =
+      secondaryTextCostDataTable?.textCostDataDict.find(
+        (row) => row.jobQuantity === jobQuantity,
+      )?.totalSheets || 0
+
+    let textTotalSheets = primaryTextSheets + secondaryTextSheets
 
     coverTotalSheets =
       coverCostDataTable?.coverCostDataDict.find(

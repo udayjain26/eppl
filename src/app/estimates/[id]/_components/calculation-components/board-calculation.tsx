@@ -56,8 +56,8 @@ import { calculateBoardCost } from '@/server/calculations/board/actions'
 
 export type BoardCostData = {
   hardCoverPiecesPerSheet: number
-  hardCoverBoardSize: string
   hardCoverBoardAreaUsed: number
+  hardCoverBoardSize: string
 
   spinePiecesPerSheet: number
   spineBoardAreaUsed: number
@@ -110,9 +110,33 @@ export default function BoardCalculation(props: {
   const addedHardcoverLength = Number(props.form.watch('addedHardcoverLength'))
   const addedHardcoverWidth = Number(props.form.watch('addedHardcoverWidth'))
   const bookSpineWidth = Number(props.form.watch('coverSpine'))
+  const boardBleedMargin = Number(props.form.watch('boardBleedMargin'))
+
+  const hardcoverLength = Number(
+    (bookCloseLength + addedHardcoverLength) / 25.4,
+  ).toFixed(2)
+
+  const effectiveHardcoverLength = Number(
+    (bookCloseLength + addedHardcoverLength + boardBleedMargin * 2) / 25.4,
+  ).toFixed(2)
+
+  const hardcoverWidth = Number(
+    (bookCloseWidth + addedHardcoverWidth) / 25.4,
+  ).toFixed(2)
+
+  const effectiveHardcoverWidth = Number(
+    (bookCloseWidth + addedHardcoverWidth + boardBleedMargin * 2) / 25.4,
+  ).toFixed(2)
+
+  const bookSpineWidthInches = Number(bookSpineWidth / 25.4).toFixed(2)
+
+  const effectiveBookSpineWidth = Number(
+    (bookSpineWidth + boardBleedMargin * 2) / 25.4,
+  ).toFixed(2)
 
   const [debouncedAddedHardcoverLength] = useDebounce(addedHardcoverLength, 500)
   const [debouncedAddedHardcoverWidth] = useDebounce(addedHardcoverWidth, 500)
+  const [debouncedBoardBleedMargin] = useDebounce(boardBleedMargin, 500)
 
   useEffect(() => {
     const calculateBoardCostData = async () => {
@@ -120,7 +144,11 @@ export default function BoardCalculation(props: {
       props.setBoardCostDataTable(fetchBoardCostData)
     }
     calculateBoardCostData()
-  }, [debouncedAddedHardcoverLength, debouncedAddedHardcoverWidth])
+  }, [
+    debouncedAddedHardcoverLength,
+    debouncedAddedHardcoverWidth,
+    debouncedBoardBleedMargin,
+  ])
 
   return (
     <>
@@ -193,73 +221,66 @@ export default function BoardCalculation(props: {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={props.form.control}
-                  name="hardCoverWorkingLength"
-                  render={({ field }) => (
-                    <FormItem className=" ">
-                      <FormLabel>Working Length(mm)</FormLabel>
-                      <FormControl>
-                        <Input {...field}></Input>
-                      </FormControl>
-                      <span className=" pl-2 text-sm ">
-                        {!isNaN(Number(mmToInches(Number(field.value))))
-                          ? mmToInches(Number(field.value))
-                          : 0}
-                        in
-                      </span>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={props.form.control}
-                  name="hardCoverWorkingWidth"
-                  render={({ field }) => (
-                    <FormItem className=" ">
-                      <FormLabel>Working Width(mm)</FormLabel>
-                      <FormControl>
-                        <Input {...field}></Input>
-                      </FormControl>
-                      <span className=" pl-2 text-sm ">
-                        {!isNaN(Number(mmToInches(Number(field.value))))
-                          ? mmToInches(Number(field.value))
-                          : 0}
-                        in
-                      </span>
-                    </FormItem>
-                  )}
-                />
               </>
             )}
+            <FormField
+              control={props.form.control}
+              name="boardBleedMargin"
+              render={({ field }) => (
+                <FormItem className=" ">
+                  <FormLabel>Bleed Margin(mm)</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <span className=" pl-2 text-sm ">
+                    {!isNaN(Number(mmToInches(Number(field.value))))
+                      ? mmToInches(Number(field.value))
+                      : 0}
+                    in
+                  </span>
+                </FormItem>
+              )}
+            />
           </div>
         </div>
         <div className="flex w-full max-w-[20rem] flex-col ">
-          <h1 className="underline">Calculated</h1>
+          <h1 className="underline">Calculated Dimensions</h1>
 
           <div className="flex  flex-col gap-y-1 text-sm">
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">
-                  Hard Cover Dimensions:
-                </span>
+                <span className="text-muted-foreground">Hard Cover Dims:</span>
                 <span>
-                  {Number(
-                    (bookCloseLength + addedHardcoverLength) / 25.4,
-                  ).toFixed(2)}
-                  {'in'} x{' '}
-                  {Number(
-                    (bookCloseWidth + addedHardcoverWidth) / 25.4,
-                  ).toFixed(2)}
+                  {hardcoverLength}
+                  {'in'} x {hardcoverWidth}
                   {'in'}
                 </span>
               </li>
               <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Spine Dimensions</span>
+                <span className="text-muted-foreground">
+                  Effective Hard Cover Dims:
+                </span>
                 <span>
-                  {Number(
-                    (bookCloseLength + addedHardcoverLength) / 25.4,
-                  ).toFixed(2)}
-                  {'in'} x {Number(bookSpineWidth / 25.4).toFixed(2)}
+                  {effectiveHardcoverLength}
+                  {'in'} x {effectiveHardcoverWidth}
+                  {'in'}
+                </span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">Spine Dims:</span>
+                <span>
+                  {hardcoverLength}
+                  {'in'} x {bookSpineWidth}
+                  {'in'}
+                </span>
+              </li>
+              <li className="flex items-center justify-between border-b-2">
+                <span className="text-muted-foreground">
+                  Effective Spine Dims:
+                </span>
+                <span>
+                  {effectiveHardcoverLength}
+                  {'in'} x {effectiveBookSpineWidth}
                   {'in'}
                 </span>
               </li>
