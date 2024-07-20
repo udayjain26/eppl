@@ -63,6 +63,7 @@ export default function MainView(props: {
       ) // Assuming you have an API route to generate PDF
 
       if (!response.ok) {
+        console.log(response)
         throw new Error('Failed to Fetch PDF')
       }
 
@@ -81,6 +82,7 @@ export default function MainView(props: {
         setLoadingPdf(false) // Set loading state to false once loaded
       }
     } catch (error) {
+      console.error(error)
       toast.error('Failed to fetch PDF')
       setLoadingPdf(false) // Set loading state to false in case of error
     }

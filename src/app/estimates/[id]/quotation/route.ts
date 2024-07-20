@@ -1,20 +1,11 @@
 'use server'
 
-import {
-  PDFDocument,
-  PDFPage,
-  StandardFonts,
-  clip,
-  degrees,
-  grayscale,
-  rgb,
-} from 'pdf-lib'
+import { PDFDocument, PDFPage, rgb } from 'pdf-lib'
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import { db } from '@/server/db'
 import fontkit from '@pdf-lib/fontkit'
-import { use } from 'react'
 
 const PAGE_WIDTH = 1240
 const PAGE_HEIGHT = 1754
@@ -23,6 +14,8 @@ const TEXT_SIZE = 25
 
 export async function GET(req: NextRequest) {
   try {
+    // Create a NextResponse object to send the PDF
+
     let currentPage: PDFPage | null = null
     let usedHeight = 0
 
@@ -185,7 +178,6 @@ export async function GET(req: NextRequest) {
 
     const pdfBytes = await pdfDoc.save()
 
-    // Create a NextResponse object to send the PDF
     const response = new NextResponse(Buffer.from(pdfBytes), {
       status: 200,
       headers: {
@@ -197,7 +189,6 @@ export async function GET(req: NextRequest) {
 
     return response
   } catch (error) {
-    console.error(error)
     return new NextResponse('Failed to generate PDF', { status: 500 })
   }
 }
