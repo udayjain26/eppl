@@ -72,6 +72,14 @@ function calculatePackagingCostDict(
       let shrinkWrapCost = (ratePerPiece || 0) * jobQuantity
 
       totalCost += shrinkWrapCost
+    } else if (variationData.packagingType === 'Shrink Wrap') {
+      const ratePerPiece = packagingTypes.find(
+        (row) => row.label === 'Shrink Wrap',
+      )?.rate
+
+      let shrinkWrapCost = ((ratePerPiece || 0) * jobQuantity) / 5
+
+      totalCost += shrinkWrapCost
     }
 
     const costPerPiece = totalCost / jobQuantity

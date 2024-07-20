@@ -59,7 +59,9 @@ export async function calculateFabricationCost(
   if (!primaryFabricationForms && !secondaryFabricationForms) {
     fabricationForms = 0
   } else {
-    fabricationForms = primaryFabricationForms + secondaryFabricationForms
+    fabricationForms = !Number.isNaN(secondaryFabricationForms)
+      ? Number(primaryFabricationForms) + Number(secondaryFabricationForms)
+      : Number(primaryFabricationForms)
   }
 
   const fabricationCostDataDict = getFabricationCostsDict(

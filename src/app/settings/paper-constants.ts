@@ -89,7 +89,7 @@ export const paperMills: PaperMill[] = [
     ],
   },
   { label: 'Nevia', qualities: ['Art Paper', 'Others'] },
-  { label: 'Hikote', qualities: ['Others'] },
+  { label: 'Moorim', qualities: ['Hikote', 'Others'] },
   { label: 'ChingMing', qualities: ['Others'] },
   { label: 'Sripathi', qualities: ['Others'] },
   {
@@ -135,7 +135,15 @@ export const paperMills: PaperMill[] = [
   { label: 'Star', qualities: ['Others'] },
   { label: 'Sangal', qualities: ['Others'] },
   { label: 'Fedregoni', qualities: ['Others'] },
-  { label: 'Cordenons', qualities: ['Astropremium White', 'Others'] },
+  {
+    label: 'Cordenons',
+    qualities: [
+      'Astropremium White',
+      'Modigliani Candido',
+      'Natural Evolution White',
+      'Others',
+    ],
+  },
   { label: 'Sappi', qualities: ['Others'] },
   { label: 'Stora Enso', qualities: ['Creamy', 'Others'] },
   {

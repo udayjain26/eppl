@@ -676,7 +676,7 @@ async function drawVariationsTable(
 
       let selectedPaper = variation.variationCalculations[0].textPaper
       let result =
-        `${variation.textGrammage} GSM` +
+        `${variation.textGrammage} GSM ` +
         selectedPaper
           .replace(/\b\d{2}\.\d{2}x\d{2}\.\d{2}\/\d+gsm\b/, '')
           .trim()
@@ -735,7 +735,7 @@ async function drawVariationsTable(
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
       currentPage.drawText(
-        `Colors: ${variation.textColors} + ${variation.textColors}`,
+        `Colors: ${variation.secondaryTextColors} + ${variation.secondaryTextColors}`,
         {
           x: 80,
           y: PAGE_HEIGHT - usedHeight,
@@ -750,7 +750,7 @@ async function drawVariationsTable(
       if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
-      currentPage.drawText(`Pages: ${variation.textPages}`, {
+      currentPage.drawText(`Pages: ${variation.secondaryTextPages}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 10,
@@ -787,7 +787,7 @@ async function drawVariationsTable(
       checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
       currentPage = checkHeightResult.currentPage
       usedHeight = checkHeightResult.usedHeight
-      currentPage.drawText(`Lamination: ${variation.textLamination}`, {
+      currentPage.drawText(`Lamination: ${variation.secondaryTextLamination}`, {
         x: 80,
         y: PAGE_HEIGHT - usedHeight,
         size: TEXT_SIZE - 10,

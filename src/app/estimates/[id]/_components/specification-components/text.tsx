@@ -51,6 +51,9 @@ export default function Text(props: {
   const [openSecondaryPaperType, setOpenSecondaryPaperType] =
     React.useState(false)
 
+  const [openInsertLamination, setOpenInsertLamination] = React.useState(false)
+  const [openInsertPaperType, setOpenInsertPaperType] = React.useState(false)
+
   // const [openPaper, setOpenPaper] = React.useState(false)
   // const [selectedPaper, setSelectedPaper] = useState<PaperData | null>(null)
 
@@ -466,6 +469,212 @@ export default function Text(props: {
             </div>
           </AccordionContent>
         </AccordionItem>
+        {/* <AccordionItem value="sheet inserts">
+          <AccordionTrigger>Add Sheet Inserts</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-y-2 p-1">
+            <div className="flex flex-row gap-x-1">
+              <div className="flex flex-col">
+                {' '}
+                <FormField
+                  control={props.control}
+                  name="insertColors"
+                  render={({ field }) => (
+                    <FormItem className="w-16">
+                      <FormLabel>#Colors</FormLabel>
+                      <FormControl>
+                        <Input {...field}></Input>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex flex-col">
+                {' '}
+                <FormField
+                  control={props.control}
+                  name="insertPages"
+                  render={({ field }) => (
+                    <FormItem className="w-16">
+                      <FormLabel>#Pages</FormLabel>
+                      <FormControl>
+                        <Input {...field}></Input>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex flex-col">
+                {' '}
+                <FormField
+                  control={props.control}
+                  name="insertLamination"
+                  render={({ field }) => (
+                    <FormItem
+                      className="flex flex-col 
+           gap-y-1 pt-[6px]"
+                    >
+                      <FormLabel>Insert Lamination</FormLabel>
+
+                      <Popover
+                        open={openInsertLamination}
+                        onOpenChange={setOpenInsertLamination}
+                      >
+                        <PopoverTrigger className="" asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openInsertLamination}
+                            className="w-48 justify-between"
+                          >
+                            <input
+                              type="hidden"
+                              {...field}
+                              value={field.value ? field.value : ''}
+                            />
+                            {field.value
+                              ? laminations.find(
+                                  (size) => size.label === field.value,
+                                )?.label
+                              : 'Select lamination...'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-48 p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search laminations..."
+                              className="h-10"
+                            />
+                            <CommandEmpty>No lamination found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandList>
+                                {laminations.map((lam) => (
+                                  <CommandItem
+                                    key={lam.label}
+                                    value={lam.label}
+                                    onSelect={() => {
+                                      props.form.setValue(
+                                        'insertLamination',
+                                        lam.label,
+                                      )
+                                      field.onChange(lam.label)
+                                      props.form.trigger('insertLamination') // Trigger form validation and state update
+
+                                      setOpenInsertLamination(false)
+                                    }}
+                                  >
+                                    {lam.label}
+                                    <CheckIcon
+                                      className={cn(
+                                        'ml-auto h-4 w-4',
+                                        field.value === lam.label
+                                          ? 'opacity-100'
+                                          : 'opacity-0',
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandList>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            <div className="flex flex-row gap-x-1">
+              <FormField
+                control={props.control}
+                name="insertGrammage"
+                render={({ field }) => (
+                  <FormItem className="w-20">
+                    <FormLabel>Paper GSM</FormLabel>
+                    <FormControl>
+                      <Input {...field}></Input>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={props.control}
+                name="insertPaperType"
+                render={({ field }) => (
+                  <FormItem
+                    className="flex flex-col 
+           gap-y-1 pt-[6px]"
+                  >
+                    <FormLabel>Insert Paper Type</FormLabel>
+
+                    <Popover
+                      open={openInsertPaperType}
+                      onOpenChange={setOpenInsertPaperType}
+                    >
+                      <PopoverTrigger className="" asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={openInsertPaperType}
+                          className="w-56 justify-between"
+                        >
+                          <input
+                            type="hidden"
+                            {...field}
+                            value={field.value ? field.value : ''}
+                          />
+                          {field.value
+                            ? paperTypes.find(
+                                (type) => type.label === field.value,
+                              )?.label
+                            : 'Select paper type...'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-48 p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search paper types..."
+                            className="h-10"
+                          />
+                          <CommandEmpty>No paper type found.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandList>
+                              {paperTypes.map((type) => (
+                                <CommandItem
+                                  key={type.label}
+                                  value={type.label}
+                                  onSelect={() => {
+                                    props.form.setValue(
+                                      'insertPaperType',
+                                      type.label,
+                                    )
+                                    field.onChange(type.label)
+                                    props.form.trigger('insertPaperType') // Trigger form validation and state update
+
+                                    setOpenInsertPaperType(false)
+                                  }}
+                                >
+                                  {type.label}
+                                  <CheckIcon
+                                    className={cn(
+                                      'ml-auto h-4 w-4',
+                                      field.value === type.label
+                                        ? 'opacity-100'
+                                        : 'opacity-0',
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandList>
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </AccordionContent>
+        </AccordionItem> */}
       </Accordion>
 
       <MySep />

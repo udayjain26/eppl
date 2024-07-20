@@ -394,6 +394,22 @@ export const productFieldMap: productFieldMapType = {
     ],
     fabricationComponents: ['coverUV', 'coverDieCutting', 'coverCoating'],
   },
+  Dockets: {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverUV', 'coverDieCutting', 'coverCoating'],
+  },
   "Centre Pin Children's Books": {
     specificationComponents: [
       'closeSize',
@@ -504,6 +520,30 @@ export const productFieldMap: productFieldMapType = {
     calculationComponents: [
       'totalCalculation',
       'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: [
+      'coverUV',
+      'coverFoiling',
+      'coverEmbossing',
+      'coverDieCutting',
+      'making',
+    ],
+  },
+  'Top Bottom Rigid Box': {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'board',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'boardCalculation',
       'fabricationCalculation',
       'packagingCalculation',
     ],

@@ -127,6 +127,9 @@ export default function CoverCalculation(props: {
       Number(props.form.watch('coverLengthFlap')) * 2 +
       Number(props.form.watch('addedHardcoverLength'))
     : 0
+
+  console.log(props.form.watch('addedHardcoverLength'))
+
   const effectiveCoverWidth = props.variationData.openSizeWidth
     ? props.variationData.openSizeWidth +
       Number(props.form.watch('coverSpine')) +
@@ -308,10 +311,10 @@ export default function CoverCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="coverWidthFlap"
+              name="coverLengthFlap"
               render={({ field }) => (
                 <FormItem className=" ">
-                  <FormLabel>Cover Width Flap(mm)</FormLabel>
+                  <FormLabel>Cover Length Flap(mm)</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
                   </FormControl>
@@ -320,10 +323,10 @@ export default function CoverCalculation(props: {
             />
             <FormField
               control={props.form.control}
-              name="coverLengthFlap"
+              name="coverWidthFlap"
               render={({ field }) => (
                 <FormItem className=" ">
-                  <FormLabel>Cover Length Flap(mm)</FormLabel>
+                  <FormLabel>Cover Width Flap(mm)</FormLabel>
                   <FormControl>
                     <Input {...field}></Input>
                   </FormControl>

@@ -294,7 +294,11 @@ export default function CalculationFields(props: {
               : '0',
         addedHardcoverLength: data?.addedHardcoverLength
           ? data.addedHardcoverLength.toString()
-          : '8',
+          : props.variationData.boardType === 'G/G Kappa Board'
+            ? '8'
+            : props.variationData.boardType === 'G/W Kappa Board'
+              ? '8'
+              : '0',
         addedHardcoverWidth: data?.addedHardcoverWidth
           ? data.addedHardcoverWidth.toString()
           : '0',

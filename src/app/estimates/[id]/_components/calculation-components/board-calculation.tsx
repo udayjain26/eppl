@@ -87,6 +87,7 @@ export const boardProductMap: { [key: string]: string[] } = {
   'Coffee Table Books': ['hardcover', 'spine'],
   'Hardbound Books': ['hardcover', 'spine'],
   'Hardbound Diaries': ['hardcover', 'spine'],
+  'Top Bottom Rigid Box': ['Top Case', 'Bottom Case'],
 }
 
 const mmToInches = (mm: number) => (mm / 25.4).toFixed(2)
@@ -113,41 +114,53 @@ export default function BoardCalculation(props: {
   const boardBleedMargin = Number(props.form.watch('boardBleedMargin'))
 
   const hardcoverLength = Number(
-    (bookCloseLength + addedHardcoverLength) / 25.4,
+    bookCloseLength + addedHardcoverLength,
   ).toFixed(2)
 
   const effectiveHardcoverLength = Number(
-    (bookCloseLength + addedHardcoverLength + boardBleedMargin * 2) / 25.4,
+    bookCloseLength + addedHardcoverLength + boardBleedMargin * 2,
   ).toFixed(2)
 
-  const hardcoverWidth = Number(
-    (bookCloseWidth + addedHardcoverWidth) / 25.4,
-  ).toFixed(2)
+  const hardcoverWidth = Number(bookCloseWidth + addedHardcoverWidth).toFixed(2)
 
   const effectiveHardcoverWidth = Number(
-    (bookCloseWidth + addedHardcoverWidth + boardBleedMargin * 2) / 25.4,
+    bookCloseWidth + addedHardcoverWidth + boardBleedMargin * 2,
   ).toFixed(2)
 
-  const bookSpineWidthInches = Number(bookSpineWidth / 25.4).toFixed(2)
+  const bookSpineWidthInches = Number(bookSpineWidth).toFixed(2)
 
   const effectiveBookSpineWidth = Number(
-    (bookSpineWidth + boardBleedMargin * 2) / 25.4,
+    bookSpineWidth + boardBleedMargin * 2,
   ).toFixed(2)
 
-  const [debouncedAddedHardcoverLength] = useDebounce(addedHardcoverLength, 500)
-  const [debouncedAddedHardcoverWidth] = useDebounce(addedHardcoverWidth, 500)
-  const [debouncedBoardBleedMargin] = useDebounce(boardBleedMargin, 500)
+  const [debouncedEffectiveHardcoverLength] = useDebounce(
+    Number(effectiveHardcoverLength),
+    500,
+  )
+  const [debouncedEffectiveHardcoverWidth] = useDebounce(
+    Number(effectiveHardcoverWidth),
+    500,
+  )
+  const [debouncedEffectiveBookSpineWidth] = useDebounce(
+    Number(effectiveBookSpineWidth),
+    500,
+  )
 
   useEffect(() => {
     const calculateBoardCostData = async () => {
-      const fetchBoardCostData = await calculateBoardCost()
-      props.setBoardCostDataTable(fetchBoardCostData)
+      const fetchBoardCostData = await calculateBoardCost(
+        props.variationData,
+        debouncedEffectiveHardcoverLength,
+        debouncedEffectiveHardcoverWidth,
+        debouncedEffectiveBookSpineWidth,
+      )
+      setBoardCostDataTable(fetchBoardCostData)
     }
     calculateBoardCostData()
   }, [
-    debouncedAddedHardcoverLength,
-    debouncedAddedHardcoverWidth,
-    debouncedBoardBleedMargin,
+    debouncedEffectiveHardcoverLength,
+    debouncedEffectiveHardcoverWidth,
+    debouncedEffectiveBookSpineWidth,
   ])
 
   return (
@@ -248,42 +261,55 @@ export default function BoardCalculation(props: {
 
           <div className="flex  flex-col gap-y-1 text-sm">
             <ul className="flex flex-col gap-y-1">
-              <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Hard Cover Dims:</span>
-                <span>
-                  {hardcoverLength}
-                  {'in'} x {hardcoverWidth}
-                  {'in'}
-                </span>
-              </li>
-              <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">
-                  Effective Hard Cover Dims:
-                </span>
-                <span>
-                  {effectiveHardcoverLength}
-                  {'in'} x {effectiveHardcoverWidth}
-                  {'in'}
-                </span>
-              </li>
-              <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">Spine Dims:</span>
-                <span>
-                  {hardcoverLength}
-                  {'in'} x {bookSpineWidth}
-                  {'in'}
-                </span>
-              </li>
-              <li className="flex items-center justify-between border-b-2">
-                <span className="text-muted-foreground">
-                  Effective Spine Dims:
-                </span>
-                <span>
-                  {effectiveHardcoverLength}
-                  {'in'} x {effectiveBookSpineWidth}
-                  {'in'}
-                </span>
-              </li>
+              {boardPiecesComponents.includes('hardcover') && (
+                <>
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Hard Cover Dims:
+                    </span>
+                    <span>
+                      {(Number(hardcoverLength) / 25.4).toFixed(2)}
+                      {'in'} x {(Number(hardcoverWidth) / 25.4).toFixed(2)}
+                      {'in'}
+                    </span>
+                  </li>
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Effective Hard Cover Dims:
+                    </span>
+                    <span>
+                      {(Number(effectiveHardcoverLength) / 25.4).toFixed(2)}
+                      {'in'} x{' '}
+                      {(Number(effectiveHardcoverWidth) / 25.4).toFixed(2)}
+                      {'in'}
+                    </span>
+                  </li>
+                </>
+              )}
+              {boardPiecesComponents.includes('spine') && (
+                <>
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">Spine Dims:</span>
+                    <span>
+                      {(Number(hardcoverLength) / 25.4).toFixed(2)}
+                      {'in'} x{' '}
+                      {(Number(bookSpineWidthInches) / 25.4).toFixed(2)}
+                      {'in'}
+                    </span>
+                  </li>
+                  <li className="flex items-center justify-between border-b-2">
+                    <span className="text-muted-foreground">
+                      Effective Spine Dims:
+                    </span>
+                    <span>
+                      {(Number(effectiveHardcoverLength) / 25.4).toFixed(2)}
+                      {'in'} x{' '}
+                      {(Number(effectiveBookSpineWidth) / 25.4).toFixed(2)}
+                      {'in'}
+                    </span>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>

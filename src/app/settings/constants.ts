@@ -74,22 +74,32 @@ export const coatings = [
   { label: 'None', value: 'none', rate: 0 },
   {
     label: 'Single Side Aqueous Coating Gloss',
-    value: 'single_side_aqueous_coating',
+    value: 'single_side_aqueous_coating_gloss',
     rate: 1.9,
   },
   {
     label: 'Both Side Aqueous Coating Gloss',
-    value: 'both_side_aqueous_coating',
+    value: 'both_side_aqueous_coating_gloss',
+    rate: 3.8,
+  },
+  {
+    label: 'Single Side Silky Varnish',
+    value: 'single_side_silky_varnish',
+    rate: 1.9,
+  },
+  {
+    label: 'Both Side Silky Varnish',
+    value: 'both_side_silky_varnish',
     rate: 3.8,
   },
   {
     label: 'Single Side Aqueous Coating Matt',
-    value: 'single_side_aqueous_coating',
+    value: 'single_side_aqueous_coating_matt',
     rate: 2.25,
   },
   {
     label: 'Both Side Aqueous Coating Matt',
-    value: 'both_side_aqueous_coating',
+    value: 'both_side_aqueous_coating_matt',
     rate: 4.5,
   },
 ]
@@ -209,7 +219,7 @@ export const packagingTypes = [
   { label: 'Standard', value: 'none', rate: 2.25 },
   { label: 'New Cartons', value: 'new_carton', rate: 4.5 },
   { label: 'Shrink Wrap Induvidual', value: 'shrink_wrap_induvidual', rate: 3 },
-  { label: 'Shrink Wrap', value: 'Shrink Wrap', rate: 5 },
+  { label: 'Shrink Wrap', value: 'Shrink_wrap', rate: 5 },
 ]
 
 export const catalogBrochureBindingTypes = [
