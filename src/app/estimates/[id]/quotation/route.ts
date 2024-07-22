@@ -465,6 +465,7 @@ async function drawVariationsTable(
       },
     )
     usedHeight += TEXT_SIZE * textHeightFactor
+    let tableLoc = usedHeight
 
     checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
     if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
@@ -1051,6 +1052,11 @@ async function drawVariationsTable(
       usedHeight += TEXT_SIZE
     }
 
+    checkHeightResult = await checkUsedHeight(currentPage, usedHeight, pdfDoc)
+    if (currentPage !== checkHeightResult.currentPage) insideInitialHeight = 0
+    currentPage = checkHeightResult.currentPage
+    usedHeight = checkHeightResult.usedHeight
+
     let usedHeightFromTable = await drawRatesTable(
       currentPage,
       insideInitialHeight,
@@ -1058,6 +1064,7 @@ async function drawVariationsTable(
       lightSansFont,
       mediumSansFont,
       boldSansFont,
+      tableLoc,
     )
 
     usedHeight =
@@ -1249,6 +1256,7 @@ async function drawRatesTable(
   lightSansFont: any,
   mediumSansFont: any,
   boldSansFont: any,
+  tableLoc: number,
 ) {
   const initialHeight = usedHeight + 80
   usedHeight = usedHeight + 50
@@ -1363,7 +1371,7 @@ async function checkUsedHeight(
   usedHeight: number,
   pdfDoc: PDFDocument,
 ) {
-  if (usedHeight > PAGE_HEIGHT - 200) {
+  if (usedHeight > PAGE_HEIGHT - 50) {
     currentPage = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
     await drawPageBackgrounds(currentPage, pdfDoc)
 
@@ -1425,3 +1433,5 @@ async function drawPageBackgrounds(currentPage: PDFPage, pdfDoc: PDFDocument) {
     height: watermarkDims.height,
   })
 }
+
+export const runtime = 'edge'

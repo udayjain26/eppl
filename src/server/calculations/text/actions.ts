@@ -150,6 +150,7 @@ export async function calculateTextCost(
       totalSheets,
       textWorkingLength,
       textWorkingWidth,
+      textType,
     )
 
     const totalCost = paperCost + plateCost + printingCost + laminationCost
@@ -186,12 +187,21 @@ function calculateLaminationCost(
   totalSheets: number,
   textWorkingLength: number,
   textWorkingWidth: number,
+  textType: string,
 ) {
   const paperLengthInM = textWorkingLength / 1000
   const paperWidthInM = textWorkingWidth / 1000
-  const laminationRate = laminations.find(
-    (lam) => lam.label === variationData.textLamination,
-  )?.rate!
+  let laminationRate = 0
+
+  if (textType === 'secondaryText') {
+    laminationRate = laminations.find(
+      (lam) => lam.label === variationData.secondaryTextLamination,
+    )?.rate!
+  } else {
+    laminationRate = laminations.find(
+      (lam) => lam.label === variationData.textLamination,
+    )?.rate!
+  }
 
   if (laminationRate !== 0) {
     const laminationCost = (
