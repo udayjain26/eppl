@@ -146,7 +146,7 @@ export async function GET(req: NextRequest) {
     drawDatesData(currentPage, usedHeight, quotationData, lightSansFont)
     usedHeight += pngDims.height
 
-    usedHeight = drawEstimateDetails(
+    usedHeight = await drawEstimateDetails(
       currentPage,
       usedHeight,
       quotationData,
@@ -195,7 +195,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-function drawDatesData(
+async function drawDatesData(
   currentPage: PDFPage,
   usedHeight: number,
   quotationData: any,
@@ -212,7 +212,7 @@ function drawDatesData(
   return usedHeight
 }
 
-function drawEstimateDetails(
+async function drawEstimateDetails(
   currentPage: PDFPage,
   usedHeight: number,
   quotationData: any,
