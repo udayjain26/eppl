@@ -12,6 +12,8 @@ const PAGE_HEIGHT = 1754
 const IMAGE_SCALE_FACTOR = 0.15
 const TEXT_SIZE = 25
 
+export const runtime = 'edge'
+
 export async function GET(req: NextRequest) {
   try {
     // Create a NextResponse object to send the PDF
