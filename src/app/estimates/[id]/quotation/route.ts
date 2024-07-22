@@ -2,7 +2,6 @@ import { PDFDocument, PDFPage, rgb } from 'pdf-lib'
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
-import { db } from '@/server/db'
 import fontkit from '@pdf-lib/fontkit'
 
 const PAGE_WIDTH = 1240
@@ -12,7 +11,8 @@ const TEXT_SIZE = 25
 
 // export const runtime = 'edge'
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
+  console.log('POST /api/estimates/quotation/pdf')
   try {
     // Create a NextResponse object to send the PDF
 
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
       return new NextResponse('Failed to generate PDF', { status: 500 })
     }
 
-    const quotationData = await getAllQuotationData(id)
+    const quotationData = await req.json() // Extract the data from the request body
 
     if (!quotationData) {
       return new NextResponse('Failed to generate PDF', { status: 500 })
@@ -1379,26 +1379,6 @@ async function checkUsedHeight(
   } else {
     return { currentPage: currentPage, usedHeight: usedHeight }
   }
-}
-
-async function getAllQuotationData(uuid: string) {
-  const data = await db.query.estimates.findFirst({
-    where: (estimates, { eq }) => eq(estimates.uuid, uuid),
-    with: {
-      client: true,
-      contact: true,
-      product: true,
-      productType: true,
-      salesRep: true,
-      variations: {
-        with: {
-          variationQtysRates: true,
-          variationCalculations: true,
-        },
-      },
-    },
-  })
-  return data
 }
 
 async function drawPageBackgrounds(currentPage: PDFPage, pdfDoc: PDFDocument) {

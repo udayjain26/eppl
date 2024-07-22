@@ -37,6 +37,7 @@ import {
 import CreatePaperForm from '@/app/settings/_components/create-paper-form'
 import { createVariation, deleteVariation } from '@/server/variations/actions'
 import { PaperData } from '@/server/paper/types'
+import { getAllQuotationData } from '@/server/estimates/queries'
 
 export default function MainView(props: {
   estimateData: EstimateTableRow
@@ -57,10 +58,20 @@ export default function MainView(props: {
   const viewPdf = async () => {
     setLoadingPdf(true) // Set loading state to true
     try {
+      // Fetch quotation data
+      const quotationData = await getAllQuotationData(props.estimateData.uuid)
+
       // Example: Fetch PDF data from a server endpoint
       const response = await fetch(
         `/estimates/${props.estimateData.uuid}/quotation`,
-      ) // Assuming you have an API route to generate PDF
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(quotationData), // Send quotation data in the body
+        },
+      )
 
       if (!response.ok) {
         console.log(response)

@@ -92,3 +92,23 @@ export async function getEstimateById(id: string) {
     throw new Error('Failed to fetch estimate data')
   }
 }
+
+export async function getAllQuotationData(uuid: string) {
+  const data = await db.query.estimates.findFirst({
+    where: (estimates, { eq }) => eq(estimates.uuid, uuid),
+    with: {
+      client: true,
+      contact: true,
+      product: true,
+      productType: true,
+      salesRep: true,
+      variations: {
+        with: {
+          variationQtysRates: true,
+          variationCalculations: true,
+        },
+      },
+    },
+  })
+  return data
+}
