@@ -9,7 +9,8 @@ const PAGE_HEIGHT = 1754
 const IMAGE_SCALE_FACTOR = 0.15
 const TEXT_SIZE = 25
 
-// export const runtime = 'edge'
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 export async function POST(req: NextRequest, res: NextResponse) {
   console.log('POST /api/estimates/quotation/pdf')
