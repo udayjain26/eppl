@@ -7,6 +7,8 @@ import path from 'path'
 import { db } from '@/server/db'
 import fontkit from '@pdf-lib/fontkit'
 
+export const runtime = 'edge'
+
 const PAGE_WIDTH = 1240
 const PAGE_HEIGHT = 1754
 const IMAGE_SCALE_FACTOR = 0.15
@@ -1433,5 +1435,3 @@ async function drawPageBackgrounds(currentPage: PDFPage, pdfDoc: PDFDocument) {
     height: watermarkDims.height,
   })
 }
-
-export const runtime = 'edge'
