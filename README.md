@@ -6,7 +6,7 @@ Check out the deployment on [eppl live.](https://eppl.vercel.app)
 
 ## Demo
 
-Demo Link [](https://www.loom.com/share/69373575073e403f9c96e3879e763046?sid=6ca38dc2-f519-4ef9-868a-37538a3212d2) 
+[Demo Link](https://www.loom.com/share/69373575073e403f9c96e3879e763046?sid=6ca38dc2-f519-4ef9-868a-37538a3212d2) 
 
 
 # How to use:
