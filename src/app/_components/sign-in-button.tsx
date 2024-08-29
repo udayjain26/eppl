@@ -11,7 +11,7 @@ export default function SignInButtonWithLogo() {
       <ClerkLoaded>
         <SignInButton
           // mode="modal"
-          forceRedirectUrl={'/dashboard'}
+          forceRedirectUrl={'/clients'}
           fallbackRedirectUrl={'/'}
         ></SignInButton>
         <LogIn strokeWidth="1" size={24} />

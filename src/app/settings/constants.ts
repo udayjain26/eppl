@@ -266,7 +266,11 @@ export const postpressProcesses = [
 ]
 
 export const makingProcesses = [
-  { label: 'Envelope Making', value: 'envelope', rate: 300 },
+  { label: 'Envelope Making', value: 'envelope_making', rate: 300 },
+  { label: 'Tentcard Making', value: 'tentcard_making', rate: 1500 },
+  { label: 'Dangler Making', value: 'dangler_making', rate: 2500 },
+  { label: 'Monocarton Making', value: 'monocarton_making', rate: 4000 },
+
   {
     label: 'Carrybag Double Pasting',
     value: 'carrybag_double_pasting',
@@ -324,6 +328,14 @@ export const uvTypes = [
     smallFixedCharge: 1500,
     bigFixedCharge: 2500,
   },
+  {
+    label: 'Hybrid + Emboss UV',
+    value: 'hybrid_emboss_uv',
+    smallSheetRate: 5.5,
+    bigSheetRate: 11,
+    smallFixedCharge: 1500,
+    bigFixedCharge: 2500,
+  },
 ]
 
 // rates are in rupees per 1000 qty
@@ -369,8 +381,20 @@ export const dieCuttingTypes = [
     dieCost: 1000,
   },
   {
+    label: 'Monocarton Die Cutting',
+    value: 'monocarton_die_cutting',
+    rate: 500,
+    dieCost: 2000,
+  },
+  {
     label: 'Complex Die Cutting',
     value: 'complex_die_cutting',
+    rate: 400,
+    dieCost: 2000,
+  },
+  {
+    label: 'Laser Die Cutting',
+    value: 'laser_die_cutting',
     rate: 400,
     dieCost: 2000,
   },

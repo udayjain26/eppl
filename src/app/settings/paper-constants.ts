@@ -61,6 +61,10 @@ export const paperMills: PaperMill[] = [
     ],
   },
   {
+    label: 'APP',
+    qualities: ['Sinarmas'],
+  },
+  {
     label: 'Avery Dennison',
     qualities: ['Fasson'],
   },

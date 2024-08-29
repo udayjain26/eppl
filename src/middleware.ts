@@ -19,7 +19,7 @@ export default clerkMiddleware((auth, request) => {
 
   // If the user is authenticated and the request is for the home page, redirect to the dashboard
   if (userId && pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/clients', request.url))
   }
 })
 

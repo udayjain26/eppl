@@ -208,6 +208,38 @@ export const productFieldMap: productFieldMapType = {
     ],
     fabricationComponents: ['coverDieCutting'],
   },
+  'Tent Cards': {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverDieCutting', 'making'],
+  },
+  Danglers: {
+    specificationComponents: [
+      'openSize',
+      'sheetPrinting',
+      'fabrication',
+      'packaging',
+      'dispatch',
+    ],
+    calculationComponents: [
+      'totalCalculation',
+      'sheetPrintingCalculation',
+      'fabricationCalculation',
+      'packagingCalculation',
+    ],
+    fabricationComponents: ['coverDieCutting', 'making'],
+  },
 
   Catalogs: {
     specificationComponents: [
@@ -486,6 +518,7 @@ export const productFieldMap: productFieldMapType = {
       'coverFoiling',
       'coverEmbossing',
       'coverDieCutting',
+      'making',
     ],
   },
   'Lock Bottom Monocartons': {

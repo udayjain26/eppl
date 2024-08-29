@@ -83,10 +83,10 @@ export default function SheetPrinting(props: {
             control={props.control}
             name="coverPages"
             render={({ field }) => (
-              <FormItem className="w-20 text-gray-500">
+              <FormItem className="w-20 ">
                 <FormLabel>#Pages</FormLabel>
                 <FormControl>
-                  <Input readOnly={true} defaultValue={2} {...field}></Input>
+                  <Input defaultValue={2} {...field}></Input>
                 </FormControl>
               </FormItem>
             )}
